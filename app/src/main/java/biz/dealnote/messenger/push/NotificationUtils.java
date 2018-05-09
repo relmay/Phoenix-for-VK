@@ -7,9 +7,11 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 
+import com.google.firebase.messaging.RemoteMessage;
 import com.squareup.picasso.Transformation;
 
 import java.io.IOException;
+import java.util.Map;
 
 import biz.dealnote.messenger.api.PicassoInstance;
 import biz.dealnote.messenger.settings.CurrentTheme;
@@ -68,8 +70,8 @@ public class NotificationUtils {
         }
     }
 
-    public static int optInt(Bundle extras, String name, int defaultValue) {
-        String value = extras.getString(name);
+    public static int optInt(RemoteMessage data, String name, int defaultValue) {
+        String value = data.getData().get(name);
 
         try {
             return safeIsEmpty(value) ? defaultValue : Integer.parseInt(value);
@@ -78,8 +80,8 @@ public class NotificationUtils {
         }
     }
 
-    public static int optInt(Bundle extras, String name) {
-        return optInt(extras, name, 0);
+    public static int optInt(RemoteMessage data, String name) {
+        return optInt(data, name, 0);
     }
 
     public static void configOtherPushNotification(Notification notification) {

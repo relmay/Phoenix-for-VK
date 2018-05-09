@@ -10,4 +10,4 @@
     app:popupTheme="?toolbarPopupStyle"
     app:subtitleTextAppearance="@style/Theme.Subtitle.Toolbar"
     app:theme="?toolbarAppStyle"
-    app:titleTextAppearance="@style/Theme.Title.Toolbar" />
+    app:titleTextAppearance="@style/Theme.Title.Toolbar"/>

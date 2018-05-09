@@ -1,3 +1,4 @@
+//noinspection GradleCompatible
 apply plugin: 'com.android.application'
 
 android {
@@ -8,13 +9,12 @@ android {
         exclude 'META-INF/NOTICE'
     }
 
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 'android-P'
 
     defaultConfig {
         applicationId "biz.dealnote.messenger"
-        minSdkVersion 16
-        targetSdkVersion 27
+        minSdkVersion 'P'
+        targetSdkVersion 'P'
         versionCode 40700
         versionName '4_0_7'
 
@@ -63,7 +63,7 @@ android {
 
     productFlavors {
         full {
-            applicationId "biz.dealnote.phoenix"
+            applicationId "ru.ezorrio.phoenix"
             dimension "type"
             buildConfigField 'int', 'VK_API_APP_ID', getProps("full_vk_app_id")
             buildConfigField 'String', 'GCM_SENDER_ID', getProps("full_gcm_sender_id")
@@ -123,8 +123,8 @@ allprojects {
     }
 }
 
-ext.supportLibraryVersion = '27.1.0'
-ext.firebaseLibraryVersion = '11.8.0'
+ext.supportLibraryVersion = '28.0.0-alpha1'
+ext.firebaseLibraryVersion = '15.0.2'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -132,25 +132,27 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
     implementation "com.android.support:cardview-v7:$supportLibraryVersion"
     implementation "com.android.support:design:$supportLibraryVersion"
-    implementation "com.android.support:support-core-ui:$supportLibraryVersion"
+    implementation "com.android.support:viewpager:$supportLibraryVersion"
+    implementation "com.android.support:swiperefreshlayout:$supportLibraryVersion"
+    implementation "com.android.support:drawerlayout:$supportLibraryVersion"
     implementation "com.android.support:support-vector-drawable:$supportLibraryVersion"
     implementation "com.android.support:support-media-compat:$supportLibraryVersion"
     implementation "com.android.support:customtabs:$supportLibraryVersion"
     implementation 'com.squareup.picasso:picasso:3.0.0-SNAPSHOT'
-    implementation "com.google.android.gms:play-services-gcm:$firebaseLibraryVersion"
+    implementation "com.google.firebase:firebase-messaging:$firebaseLibraryVersion"
     implementation 'com.github.chrisbanes:PhotoView:2.1.3'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation files('libs/YouTubeAndroidPlayerApi.jar')
-    implementation project(':mvpcore')
+    implementation project(path: ':mvpcore', configuration: 'default')
     implementation 'com.squareup.retrofit2:retrofit:2.2.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.2.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     implementation "com.google.firebase:firebase-crash:$firebaseLibraryVersion"
-    implementation "com.google.firebase:firebase-database:$firebaseLibraryVersion"
+    implementation "com.google.firebase:firebase-database:15.0.1"
     implementation 'com.google.android.exoplayer:exoplayer:2.7.1'
     implementation "com.android.support:exifinterface:$supportLibraryVersion"
 }

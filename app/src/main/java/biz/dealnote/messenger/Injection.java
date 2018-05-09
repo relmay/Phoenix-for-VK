@@ -21,9 +21,9 @@ import biz.dealnote.messenger.media.gif.AppGifPlayerFactory;
 import biz.dealnote.messenger.media.gif.IGifPlayerFactory;
 import biz.dealnote.messenger.media.voice.IVoicePlayerFactory;
 import biz.dealnote.messenger.media.voice.VoicePlayerFactory;
-import biz.dealnote.messenger.push.GcmTokenProvider;
+import biz.dealnote.messenger.push.FcmTokenProvider;
 import biz.dealnote.messenger.push.IDevideIdProvider;
-import biz.dealnote.messenger.push.IGcmTokenProvider;
+import biz.dealnote.messenger.push.IFcmTokenProvider;
 import biz.dealnote.messenger.push.IPushRegistrationResolver;
 import biz.dealnote.messenger.push.PushRegistrationResolver;
 import biz.dealnote.messenger.settings.IProxySettings;
@@ -65,8 +65,8 @@ public class Injection {
             synchronized (Injection.class){
                 if(isNull(resolver)){
                     final Context context = provideApplicationContext();
-                    final IDevideIdProvider devideIdProvider = () -> Utils.getDiviceId(context);
-                    final IGcmTokenProvider tokenProvider = new GcmTokenProvider(context);
+                    final IDevideIdProvider devideIdProvider = () -> Utils.getDeviceId(context);
+                    final IFcmTokenProvider tokenProvider = new FcmTokenProvider();
                     resolver = new PushRegistrationResolver(tokenProvider, devideIdProvider, provideSettings(), provideNetworkInterfaces());
                 }
             }

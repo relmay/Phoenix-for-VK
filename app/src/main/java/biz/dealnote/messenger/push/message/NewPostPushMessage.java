@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
+import com.google.firebase.messaging.RemoteMessage;
+
 import biz.dealnote.messenger.Extra;
 import biz.dealnote.messenger.R;
 import biz.dealnote.messenger.activity.MainActivity;
@@ -30,18 +32,16 @@ import static biz.dealnote.messenger.util.Utils.stringEmptyIfNull;
  */
 public class NewPostPushMessage {
 
-    //onMessage, from: 237327763482, collapseKey: new_post, extras: Bundle[{google.sent_time=1484043151928, from_id=-114075457, post_id=11, text=Добрый вечер, type=new_post, google.message_id=0:1484043151930717%8c76e97a5216abdf, group_name=Phoenix for VK Closed, _genSrv=518507, sandbox=0, collapse_key=new_post, post_type=group_status}]
-            //01-10 12:12:31.581 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: google.sent_time, value: 1484043151928, class: class java.lang.Long
-//01-10 12:12:31.581 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: from_id, value: -114075457, class: class java.lang.String
-//01-10 12:12:31.581 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: post_id, value: 11, class: class java.lang.String
-//01-10 12:12:31.581 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: text, value: Добрый вечер, class: class java.lang.String
-//01-10 12:12:31.581 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: type, value: new_post, class: class java.lang.String
-//01-10 12:12:31.581 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: google.message_id, value: 0:1484043151930717%8c76e97a5216abdf, class: class java.lang.String
-//01-10 12:12:31.581 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: group_name, value: Phoenix for VK Closed, class: class java.lang.String
-//01-10 12:12:31.581 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: _genSrv, value: 518507, class: class java.lang.String
-//01-10 12:12:31.582 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: sandbox, value: 0, class: class java.lang.String
-//01-10 12:12:31.582 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: collapse_key, value: new_post, class: class java.lang.String
-//01-10 12:12:31.582 28251-8113/biz.dealnote.phoenix D/MyGcmListenerService: key: post_type, value: group_status, class: class java.lang.String
+ //04-14 13:00:42.166 1784-2485/ru.ezorrio.phoenix D/MyFcmListenerService: onMessage,
+    // from: 652332232777, collapseKey: null, data: {image_type=user, from_id=280186075,
+    // id=new_post_280186075_56, url=https://vk.com/wall280186075_56,
+    // body=Добро пожаловать на мою страницу. Мы тестируем FCM, icon=followers_24,
+    // time=1523700043, type=post, badge=1,
+    // image=[{"width":200,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cb\/OkkyraBZJCY.jpg","height":200},
+    // {"width":100,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cc\/dRPyhRW_dvU.jpg","height":100},
+    // {"width":50,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cd\/BB6tk_bcJ3U.jpg","height":50}],
+    // sound=1, title=Yevgeni Polkin published a post, to_id=216143660, group_id=posts,
+    // context={"item_id":"56","owner_id":280186075,"type":"post"}}
 
     private final int accountId;
 
@@ -59,14 +59,14 @@ public class NewPostPushMessage {
 
     //private String postType;
 
-    public NewPostPushMessage(int accountId, Bundle bundle){
+    public NewPostPushMessage(int accountId, RemoteMessage remote){
         this.accountId = accountId;
-        this.fromId = optInt(bundle, "from_id");
-        this.postId = optInt(bundle, "post_id");
-        this.text = bundle.getString("text");
-        this.groupName = bundle.getString("group_name");
-        this.firstName = bundle.getString("first_name");
-        this.lastName = bundle.getString("last_name");
+        this.fromId = optInt(remote, "from_id");
+        this.postId = optInt(remote, "post_id");
+        this.text = remote.getData().get("text");
+        this.groupName = remote.getData().get("group_name");
+        this.firstName = remote.getData().get("first_name");
+        this.lastName = remote.getData().get("last_name");
         //this.postType = bundle.getString("post_type"); // group_status, status
     }
 

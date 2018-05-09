@@ -26,7 +26,7 @@ public interface IAccountApi {
 
     @CheckResult
     Single<Boolean> registerDevice(String token, String deviceModel, Integer deviceYear, String deviceId,
-                                   String systemVersion, String settings);
+                                   String systemVersion, String pushProvider, String settings);
 
     @CheckResult
     Single<Boolean> setOffline();

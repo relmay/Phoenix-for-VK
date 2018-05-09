@@ -6,9 +6,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
+
+import com.google.firebase.messaging.RemoteMessage;
 
 import biz.dealnote.messenger.Extra;
 import biz.dealnote.messenger.R;
@@ -18,7 +19,7 @@ import biz.dealnote.messenger.link.types.AbsLink;
 import biz.dealnote.messenger.link.types.WallPostLink;
 import biz.dealnote.messenger.longpoll.AppNotificationChannels;
 import biz.dealnote.messenger.longpoll.NotificationHelper;
-import biz.dealnote.messenger.model.Owner;
+import biz.dealnote.messenger.model.Community;
 import biz.dealnote.messenger.place.PlaceFactory;
 import biz.dealnote.messenger.push.NotificationScheduler;
 import biz.dealnote.messenger.push.NotificationUtils;
@@ -29,53 +30,49 @@ import biz.dealnote.messenger.util.Utils;
 
 import static biz.dealnote.messenger.push.NotificationUtils.configOtherPushNotification;
 
-public class WallPostGCMMessage {
+public class WallPublishFCMMessage {
 
-    private static final String TAG = WallPostGCMMessage.class.getSimpleName();
+    private static final String TAG = WallPublishFCMMessage.class.getSimpleName();
 
-    //from_id=175895893, first_name=Руслан, from=376771982493, text=Тест push-уведомлений, type=wall_post, place=wall25651989_2509, collapse_key=wall_post, last_name=Колбаса
+    // collapseKey: wall_publish, extras: Bundle[{from=376771982493, name=Phoenix for VK,
+    // text=Тестирование уведомлений, type=wall_publish, place=wall-72124992_4914,
+    // group_id=72124992, sandbox=0, collapse_key=wall_publish}]
 
-    private int from_id;
-    //public String first_name;
-    //public String last_name;
     //public long from;
+    //public String name;
     private String text;
     //public String type;
     private String place;
+    private int group_id;
 
-    public static WallPostGCMMessage fromBundle(@NonNull Bundle bundle) {
-        WallPostGCMMessage message = new WallPostGCMMessage();
-        message.from_id = NotificationUtils.optInt(bundle, "from_id");
-        //message.first_name = bundle.getString("first_name");
-        //message.last_name = bundle.getString("last_name");
-
-        //if(bundle.containsKey("from")){
-        //    message.from = Long.parseLong(bundle.getString("from"));
-        //}
-
-        message.text = bundle.getString("text");
+    public static WallPublishFCMMessage fromRemoteMessage(@NonNull RemoteMessage remote) {
+        WallPublishFCMMessage message = new WallPublishFCMMessage();
+        //message.name = bundle.getString("name");
+        //message.from = optLong(bundle, "from");
+        message.group_id = NotificationUtils.optInt(remote, "group_id");
+        message.text = remote.getData().get("text");
         //message.type = bundle.getString("type");
-        message.place = bundle.getString("place");
+        message.place = remote.getData().get("place");
         return message;
     }
 
-    public void nofify(final Context context, int accountId){
+    public void notify(final Context context, int accountId){
         if (!Settings.get()
                 .notifications()
-                .isNewPostOnOwnWallNotifEnabled()) {
+                .isWallPublishNotifEnabled()){
             return;
         }
 
         Context app = context.getApplicationContext();
-        OwnerInfo.getRx(app, accountId, from_id)
+        OwnerInfo.getRx(app, accountId, -Math.abs(group_id))
                 .subscribeOn(NotificationScheduler.INSTANCE)
-                .subscribe(ownerInfo -> notifyImpl(app, ownerInfo.getOwner(), ownerInfo.getAvatar()), throwable -> {/*ignore*/});
+                .subscribe(ownerInfo -> notifyImpl(app, ownerInfo.getCommunity(), ownerInfo.getAvatar()), throwable -> {/*ignore*/});
     }
 
-    private void notifyImpl(Context context, @NonNull Owner owner, Bitmap avatar){
+    private void notifyImpl(Context context, @NonNull Community community, Bitmap bitmap){
         String url = "vk.com/" + place;
-
         AbsLink link = VkLinkParser.parse(url);
+
         if(link == null || !(link instanceof WallPostLink)){
             PersistentLogger.logThrowable("Push issues", new Exception("Unknown place: " + place));
             return;
@@ -90,9 +87,9 @@ public class WallPostGCMMessage {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, AppNotificationChannels.NEW_POST_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notify_statusbar)
-                .setLargeIcon(avatar)
-                .setContentTitle(owner.getFullName())
-                .setContentText(context.getString(R.string.published_post_on_your_wall))
+                .setLargeIcon(bitmap)
+                .setContentTitle(community.getFullName())
+                .setContentText(context.getString(R.string.postings_you_the_news))
                 .setSubText(text)
                 .setAutoCancel(true);
 
@@ -112,6 +109,6 @@ public class WallPostGCMMessage {
         Notification notification = builder.build();
 
         configOtherPushNotification(notification);
-        nManager.notify(place, NotificationHelper.NOTIFICATION_WALL_POST_ID, notification);
+        nManager.notify(place, NotificationHelper.NOTIFICATION_WALL_PUBLISH_ID, notification);
     }
 }

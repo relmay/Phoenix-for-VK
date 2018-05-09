@@ -15,14 +15,19 @@ public class VkPushRegistration {
     @SerializedName("vkToken")
     private final String vkToken;
 
-    @SerializedName("gmcToken")
-    private final String gmcToken;
+    @SerializedName("pushProvider")
+    private final String pushProvider;
 
-    public VkPushRegistration(int userId, @NonNull String deviceId, @NonNull String vkToken, @NonNull String gmcToken) {
+    @SerializedName("fcmToken")
+    private final String fcmToken;
+
+    public VkPushRegistration(int userId, @NonNull String deviceId, @NonNull String vkToken,
+                              @NonNull String pushProvider, @NonNull String fcmToken) {
         this.userId = userId;
         this.deviceId = deviceId;
         this.vkToken = vkToken;
-        this.gmcToken = gmcToken;
+        this.pushProvider = pushProvider;
+        this.fcmToken = fcmToken;
     }
 
     public int getUserId() {
@@ -33,11 +38,15 @@ public class VkPushRegistration {
         return vkToken;
     }
 
-    public String getGmcToken() {
-        return gmcToken;
+    public String getFcmToken() {
+        return fcmToken;
     }
 
     public String getDeviceId() {
         return deviceId;
+    }
+
+    public String getPushProvider() {
+        return pushProvider;
     }
 }

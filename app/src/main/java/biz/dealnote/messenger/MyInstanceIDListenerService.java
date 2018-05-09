@@ -16,19 +16,16 @@
 
 package biz.dealnote.messenger;
 
-import com.google.android.gms.iid.InstanceIDListenerService;
+
+import android.annotation.SuppressLint;
+
+import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import biz.dealnote.messenger.push.IPushRegistrationResolver;
 import biz.dealnote.messenger.util.RxUtils;
 
-public class MyInstanceIDListenerService extends InstanceIDListenerService {
-
-    /**
-     * Called if InstanceID token is updated. This may occur if the security of
-     * the previous token had been compromised. This call is initiated by the
-     * InstanceID provider.
-     */
-    // [START refresh_token]
+public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
+    @SuppressLint("CheckResult")
     @Override
     public void onTokenRefresh() {
         final IPushRegistrationResolver registrationResolver = Injection.providePushRegistrationResolver();
@@ -36,9 +33,5 @@ public class MyInstanceIDListenerService extends InstanceIDListenerService {
         registrationResolver.resolvePushRegistration()
                 .compose(RxUtils.applyCompletableIOToMainSchedulers())
                 .subscribe(() -> {}, Throwable::printStackTrace);
-
-        // Fetch updated Instance ID token and notify our app's server of any changes (if applicable).
-        //RequestHelper.checkPushRegistration(this);
     }
-    // [END refresh_token]
 }

@@ -30,9 +30,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -1189,9 +1186,10 @@ public class MainActivity extends AppCompatActivity implements NavigationFragmen
      * the Google Play Store or enable it in the device's system settings.
      */
     public static boolean checkPlayServices(Context context) {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
-        return resultCode == ConnectionResult.SUCCESS;
+//        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+//        int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
+//        return resultCode == ConnectionResult.SUCCESS;
+        return true;
     }
 
     private boolean isActivityDestroyed() {

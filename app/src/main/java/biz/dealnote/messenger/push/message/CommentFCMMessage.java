@@ -5,10 +5,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.text.Spannable;
+
+import com.google.firebase.messaging.RemoteMessage;
 
 import biz.dealnote.messenger.Extra;
 import biz.dealnote.messenger.R;
@@ -29,7 +30,7 @@ import biz.dealnote.messenger.util.Utils;
 
 import static biz.dealnote.messenger.push.NotificationUtils.configOtherPushNotification;
 
-public class CommentGCMMessage {
+public class CommentFCMMessage {
 
     /**
      * Идентификатор пользователя
@@ -50,15 +51,15 @@ public class CommentGCMMessage {
     //extras: Bundle[{google.sent_time=1477925617791, from_id=175895893, reply_id=3686, sex=2,
     // text=да, type=comment, place=wall25651989_3499, google.message_id=0:1477925617795994%8c76e97a38a5ee5f, _genSrv=833239, sandbox=0, collapse_key=comment}]
 
-    public static CommentGCMMessage fromBundle(@NonNull Bundle bundle) {
-        CommentGCMMessage message = new CommentGCMMessage();
-        message.from_id = NotificationUtils.optInt(bundle, "from_id");
-        message.reply_id = NotificationUtils.optInt(bundle, "reply_id");
+    public static CommentFCMMessage fromRemoteMessage(@NonNull RemoteMessage remote) {
+        CommentFCMMessage message = new CommentFCMMessage();
+        message.from_id = NotificationUtils.optInt(remote, "from_id");
+        message.reply_id = NotificationUtils.optInt(remote, "reply_id");
         //message.sex = optInt(bundle, "sex");
         //message.from = optLong(bundle, "google.sent_time");
-        message.text = bundle.getString("text");
+        message.text = remote.getData().get("text");
         //message.type = bundle.getString("type");
-        message.place = bundle.getString("place");
+        message.place = remote.getData().get("place");
         return message;
     }
 

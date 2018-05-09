@@ -4,7 +4,7 @@ package biz.dealnote.messenger.push;
  * Created by admin on 08.10.2016.
  * phoenix
  */
-public final class CollapseKey {
+public final class PushType {
     public static final String MSG = "msg";
     public static final String WALL_POST = "wall_post";
     public static final String REPLY = "reply";

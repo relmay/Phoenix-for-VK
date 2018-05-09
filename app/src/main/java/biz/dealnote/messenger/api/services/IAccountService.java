@@ -61,6 +61,7 @@ public interface IAccountService {
                                                  @Field("device_year") Integer deviceYear,
                                                  @Field("device_id") String deviceId,
                                                  @Field("system_version") String systemVersion,
+                                                 @Field("push_provider") String pushProvider,
                                                  @Field("settings") String settings);
 
     /**

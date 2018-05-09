@@ -31,13 +31,13 @@ public class PushRegistrationResolver implements IPushRegistrationResolver {
 
     private static final String TAG = PushRegistrationResolver.class.getSimpleName();
 
-    private final IGcmTokenProvider gcmTokenProvider;
+    private final IFcmTokenProvider fcmTokenProvider;
     private final IDevideIdProvider devideIdProvider;
     private final ISettings settings;
     private final INetworker networker;
 
-    public PushRegistrationResolver(IGcmTokenProvider gcmTokenProvider, IDevideIdProvider devideIdProvider, ISettings settings, INetworker networker) {
-        this.gcmTokenProvider = gcmTokenProvider;
+    public PushRegistrationResolver(IFcmTokenProvider fcmTokenProvider, IDevideIdProvider devideIdProvider, ISettings settings, INetworker networker) {
+        this.fcmTokenProvider = fcmTokenProvider;
         this.devideIdProvider = devideIdProvider;
         this.settings = settings;
         this.networker = networker;
@@ -112,7 +112,7 @@ public class PushRegistrationResolver implements IPushRegistrationResolver {
 
                     if (!hasOk && hasAuth) {
                         final String vkToken = settings.accounts().getAccessToken(accountId);
-                        final VkPushRegistration current = new VkPushRegistration(accountId, data.deviceId, vkToken, data.gcmToken);
+                        final VkPushRegistration current = new VkPushRegistration(accountId, data.deviceId, vkToken, "fcm", data.fcmToken);
                         target.add(current);
 
                         completable = completable.andThen(register(current));
@@ -156,7 +156,9 @@ public class PushRegistrationResolver implements IPushRegistrationResolver {
 
             return networker.vkManual(registration.getUserId(), registration.getVkToken())
                     .account()
-                    .registerDevice(registration.getGmcToken(), deviceModel, null, registration.getDeviceId(), osVersion, targetSettingsStr)
+                    .registerDevice(registration.getFcmToken(), deviceModel, null,
+                            registration.getDeviceId(), osVersion, registration.getPushProvider(),
+                            targetSettingsStr)
                     .toCompletable();
         } catch (JSONException e) {
             return Completable.error(e);
@@ -181,12 +183,11 @@ public class PushRegistrationResolver implements IPushRegistrationResolver {
 
     private static final class Data {
 
-        final String gcmToken;
-
+        final String fcmToken;
         final String deviceId;
 
-        Data(String gcmToken, String deviceId) {
-            this.gcmToken = gcmToken;
+        Data(String fcmToken, String deviceId) {
+            this.fcmToken = fcmToken;
             this.deviceId = deviceId;
         }
     }
@@ -196,7 +197,7 @@ public class PushRegistrationResolver implements IPushRegistrationResolver {
             return Reason.REMOVE;
         }
 
-        if (!data.gcmToken.equals(available.getGmcToken())) {
+        if (!data.fcmToken.equals(available.getFcmToken())) {
             return Reason.REMOVE;
         }
 
@@ -226,8 +227,8 @@ public class PushRegistrationResolver implements IPushRegistrationResolver {
     private Single<Data> getInfo() {
         return Single.fromCallable(() -> {
             String deviceId = devideIdProvider.getDeviceId();
-            String gcmToken = gcmTokenProvider.getToken();
-            return new Data(gcmToken, deviceId);
+            String fcmToken = fcmTokenProvider.getToken();
+            return new Data(fcmToken, deviceId);
         });
     }
 
@@ -239,8 +240,8 @@ public class PushRegistrationResolver implements IPushRegistrationResolver {
         }
 
         String deviceId = devideIdProvider.getDeviceId();
-        String gcmToken = gcmTokenProvider.getToken();
+        String fcmToken = fcmTokenProvider.getToken();
         String vkToken = settings.accounts().getAccessToken(accountId);
-        return new VkPushRegistration(accountId, deviceId, vkToken, gcmToken);
+        return new VkPushRegistration(accountId, deviceId, vkToken, "fcm", fcmToken);
     }
 }

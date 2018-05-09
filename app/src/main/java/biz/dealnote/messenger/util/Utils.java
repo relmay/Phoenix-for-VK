@@ -785,7 +785,7 @@ public class Utils {
         }
     }
 
-    public static String getDiviceId(Context context) {
+    public static String getDeviceId(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
