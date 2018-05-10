@@ -1,8 +1,8 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +28,7 @@ import biz.dealnote.messenger.view.OnlineView;
  * Created by admin on 14.06.2017.
  * phoenix
  */
-public class CommunityManagersAdapter extends RecyclerView.Adapter<CommunityManagersAdapter.Holder> {
+public class CommunityManagersAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<CommunityManagersAdapter.Holder> {
 
     private List<Manager> users;
     private Transformation transformation;

@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.db.interfaces;
 
-import android.support.annotation.CheckResult;
-import android.support.annotation.Nullable;
+import androidx.annotation.CheckResult;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 

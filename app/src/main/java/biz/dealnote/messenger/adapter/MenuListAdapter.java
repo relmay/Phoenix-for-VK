@@ -1,8 +1,8 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -111,7 +111,7 @@ public class MenuListAdapter extends RecyclerBindableAdapter<AbsDrawerItem, Recy
     }
 
     @Override
-    protected RecyclerView.ViewHolder viewHolder(View view, int type) {
+    protected androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder(View view, int type) {
         switch (type) {
             case AbsDrawerItem.TYPE_DIVIDER:
                 return new DividerHolder(view);
@@ -169,7 +169,7 @@ public class MenuListAdapter extends RecyclerBindableAdapter<AbsDrawerItem, Recy
         }
     }
 
-    private class NoIconHolder extends RecyclerView.ViewHolder {
+    private class NoIconHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
         TextView txTitle;
         View contentRoot;
 
@@ -180,7 +180,7 @@ public class MenuListAdapter extends RecyclerBindableAdapter<AbsDrawerItem, Recy
         }
     }
 
-    private class RecentChatHolder extends RecyclerView.ViewHolder {
+    private class RecentChatHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         TextView tvChatTitle;
         ImageView ivChatImage;

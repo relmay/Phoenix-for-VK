@@ -4,15 +4,15 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,7 +81,7 @@ public class DocsFragment extends BasePresenterFragment<DocsListPresenter, IDocL
         return newInstance(buildArgs(accountId, ownerId, action));
     }
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerBindableAdapter mDocsAdapter;
 
     private DocsUploadAdapter mUploadAdapter;
@@ -90,7 +90,7 @@ public class DocsFragment extends BasePresenterFragment<DocsListPresenter, IDocL
 
     private View mHeaderView;
 
-    private RecyclerView mRecyclerView;
+    private androidx.recyclerview.widget.RecyclerView mRecyclerView;
 
     private View mUploadRoot;
 
@@ -119,11 +119,11 @@ public class DocsFragment extends BasePresenterFragment<DocsListPresenter, IDocL
 
         mDocsAdapter = createAdapter(mImagesOnly, Collections.emptyList());
 
-        FloatingActionButton buttonAdd = root.findViewById(R.id.add_button);
+        com.google.android.material.floatingactionbutton.FloatingActionButton buttonAdd = root.findViewById(R.id.add_button);
         buttonAdd.setOnClickListener(v -> getPresenter().fireButtonAddClick());
 
         RecyclerView uploadRecyclerView = root.findViewById(R.id.uploads_recycler_view);
-        uploadRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        uploadRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false));
 
         mUploadAdapter = new DocsUploadAdapter(getActivity(), Collections.emptyList(), this);
 
@@ -132,7 +132,7 @@ public class DocsFragment extends BasePresenterFragment<DocsListPresenter, IDocL
         mHeaderView = View.inflate(getActivity(), R.layout.header_feed, null);
 
         RecyclerView headerRecyclerView = mHeaderView.findViewById(R.id.header_list);
-        headerRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        headerRecyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getActivity(), androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false));
 
         mFiltersAdapter = new HorizontalOptionsAdapter<>(Collections.emptyList());
         mFiltersAdapter.setListener(entry -> getPresenter().fireFilterClick(entry));
@@ -171,7 +171,7 @@ public class DocsFragment extends BasePresenterFragment<DocsListPresenter, IDocL
     private RecyclerView.LayoutManager createLayoutManager(boolean asImages) {
         if (asImages) {
             int columnCount = getResources().getInteger(R.integer.local_gallery_column_count);
-            return new GridLayoutManager(getActivity(), columnCount);
+            return new androidx.recyclerview.widget.GridLayoutManager(getActivity(), columnCount);
         } else {
             return new LinearLayoutManager(getActivity());
         }

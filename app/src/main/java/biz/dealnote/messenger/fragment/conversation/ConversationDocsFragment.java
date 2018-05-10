@@ -1,10 +1,10 @@
 package biz.dealnote.messenger.fragment.conversation;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,12 +20,12 @@ public class ConversationDocsFragment extends AbsChatAttachmentsFragment<Documen
         implements DocsAdapter.ActionListener, IChatAttachmentDocsView {
 
     @Override
-    protected RecyclerView.LayoutManager createLayoutManager() {
+    protected androidx.recyclerview.widget.RecyclerView.LayoutManager createLayoutManager() {
         return new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
     }
 
     @Override
-    public RecyclerView.Adapter createAdapter() {
+    public androidx.recyclerview.widget.RecyclerView.Adapter createAdapter() {
         DocsAdapter simpleDocRecycleAdapter = new DocsAdapter(Collections.emptyList());
         simpleDocRecycleAdapter.setActionListner(this);
         return simpleDocRecycleAdapter;

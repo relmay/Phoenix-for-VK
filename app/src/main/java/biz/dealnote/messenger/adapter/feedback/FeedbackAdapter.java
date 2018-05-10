@@ -2,7 +2,7 @@ package biz.dealnote.messenger.adapter.feedback;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -284,7 +284,7 @@ public class FeedbackAdapter extends RecyclerBindableAdapter<Feedback, FeedbackA
         } else return HEADER_OLD;
     }
 
-    class FeedbackHolder extends RecyclerView.ViewHolder {
+    class FeedbackHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         View headerRoot;
         View contentRoot;

@@ -11,18 +11,18 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -201,10 +201,10 @@ public class MainActivity extends AppCompatActivity implements NavigationFragmen
         setStatusbarColored(true, Settings.get().ui().isMonochromeWhite(this));
 
         mDrawerLayout = findViewById(R.id.my_drawer_layout);
-        mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+        mDrawerLayout.addDrawerListener(new androidx.drawerlayout.widget.DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerStateChanged(int newState) {
-                if (newState != DrawerLayout.STATE_IDLE || mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                if (newState != androidx.drawerlayout.widget.DrawerLayout.STATE_IDLE || mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                     if (Objects.nonNull(mActionMode)) {
                         mActionMode.finish();
                     }
@@ -285,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements NavigationFragmen
     private void resolveToolbarNavigationIcon() {
         if (isNull(mToolbar)) return;
 
-        FragmentManager manager = getSupportFragmentManager();
+        androidx.fragment.app.FragmentManager manager = getSupportFragmentManager();
         if (manager.getBackStackEntryCount() > 1) {
             Drawable backIcon = getFrontFragement() instanceof PhotoPagerFragment ||
                     getFrontFragement() instanceof GifPagerFragment ?
@@ -297,7 +297,7 @@ public class MainActivity extends AppCompatActivity implements NavigationFragmen
         } else {
             mToolbar.setNavigationIcon(CurrentTheme.getDrawableFromAttribute(this, R.attr.toolbarDrawerIcon));
             mToolbar.setNavigationOnClickListener(v -> {
-                if (mDrawerLayout.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_UNLOCKED) {
+                if (mDrawerLayout.getDrawerLockMode(GravityCompat.START) == androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED) {
                     NavigationFragment navigationFragment = getNavigationFragment();
 
                     if (navigationFragment.isDrawerOpen()) {
@@ -568,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements NavigationFragmen
             manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }*/
 
-        manager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        manager.popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         // TODO: 13.12.2017 Exception java.lang.IllegalStateException:Can not perform this action after onSaveInstanceState
         Logger.d(TAG, "Back stack was cleared");
@@ -679,7 +679,7 @@ public class MainActivity extends AppCompatActivity implements NavigationFragmen
             return;
         }
 
-        Fragment front = getFrontFragement();
+        androidx.fragment.app.Fragment front = getFrontFragement();
         if (front instanceof BackPressCallback) {
             if (!(((BackPressCallback) front).onBackPressed())) {
                 return;

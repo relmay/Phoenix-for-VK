@@ -1,10 +1,10 @@
 package biz.dealnote.messenger.fragment.conversation;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,9 +23,9 @@ public class ConversationPhotosFragment extends AbsChatAttachmentsFragment<Photo
         IChatAttachmentPhotosView> implements FavePhotosAdapter.PhotoSelectionListener, IChatAttachmentPhotosView {
 
     @Override
-    protected RecyclerView.LayoutManager createLayoutManager() {
+    protected androidx.recyclerview.widget.RecyclerView.LayoutManager createLayoutManager() {
         int columns = getContext().getResources().getInteger(R.integer.photos_column_count);
-        return new GridLayoutManager(getActivity(), columns);
+        return new androidx.recyclerview.widget.GridLayoutManager(getActivity(), columns);
     }
 
     @Override

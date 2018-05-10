@@ -1,14 +1,14 @@
 package biz.dealnote.messenger.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +60,7 @@ public class CommunityControlFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_community_control, container, false);
         ((AppCompatActivity) getActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
 
-        ViewPager pager = root.findViewById(R.id.view_pager);
+        androidx.viewpager.widget.ViewPager pager = root.findViewById(R.id.view_pager);
         pager.setOffscreenPageLimit(2);
 
         List<ITab> tabs = new ArrayList<>();
@@ -128,14 +128,14 @@ public class CommunityControlFragment extends Fragment {
     }
 
     private interface IFragmentCreator {
-        Fragment create();
+        androidx.fragment.app.Fragment create();
     }
 
     private static class Adapter extends FragmentStatePagerAdapter {
 
         private final List<ITab> tabs;
 
-        Adapter(List<ITab> tabs, FragmentManager fm) {
+        Adapter(List<ITab> tabs, androidx.fragment.app.FragmentManager fm) {
             super(fm);
             this.tabs = tabs;
         }

@@ -2,8 +2,8 @@ package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.ColorInt;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.ColorInt;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +36,7 @@ import static biz.dealnote.messenger.util.Utils.isEmpty;
  * Created by admin on 15.04.2017.
  * phoenix
  */
-public class AttachmentsBottomSheetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AttachmentsBottomSheetAdapter extends RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder> {
 
     private static final int ERROR_COLOR = Color.parseColor("#ff0000");
     private static final int VTYPE_BUTTON = 0;

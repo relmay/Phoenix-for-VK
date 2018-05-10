@@ -2,14 +2,14 @@ package biz.dealnote.messenger.fragment;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,7 +54,7 @@ import static biz.dealnote.messenger.util.Objects.nonNull;
 import static biz.dealnote.messenger.util.Utils.nonEmpty;
 
 public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, IFeedView> implements IFeedView,
-        SwipeRefreshLayout.OnRefreshListener, FeedAdapter.ClickListener, HorizontalOptionsAdapter.Listener<FeedSource> {
+        androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener, FeedAdapter.ClickListener, HorizontalOptionsAdapter.Listener<FeedSource> {
 
     private static final String TAG = FeedFragment.class.getSimpleName();
 
@@ -63,7 +63,7 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
     private RecyclerView mRecycleView;
     private RecyclerView.LayoutManager mFeedLayoutManager;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
 
     private LoadMoreFooterHelper mLoadMoreFooterHelper;
 
@@ -132,7 +132,7 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
             boolean land = Utils.isLandscape(getActivity());
             mFeedLayoutManager = new StaggeredGridLayoutManager(land ? 2 : 1, StaggeredGridLayoutManager.VERTICAL);
         } else {
-            mFeedLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+            mFeedLayoutManager = new LinearLayoutManager(getActivity(), androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, false);
         }
 
         mRecycleView = root.findViewById(R.id.fragment_feeds_list);
@@ -155,7 +155,7 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
         ViewGroup headerView = (ViewGroup) inflater.inflate(R.layout.header_feed, mRecycleView, false);
         RecyclerView headerRecyclerView = headerView.findViewById(R.id.header_list);
 
-        mHeaderLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        mHeaderLayoutManager = new androidx.recyclerview.widget.LinearLayoutManager(getActivity(), androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false);
         headerRecyclerView.setLayoutManager(mHeaderLayoutManager);
 
         mAdapter = new FeedAdapter(getActivity(), Collections.emptyList(), this);
@@ -294,8 +294,8 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
 
     private void restoreRecycleViewManagerState(String state) {
         if (nonEmpty(state)) {
-            if (mFeedLayoutManager instanceof LinearLayoutManager) {
-                LinearLayoutManager.SavedState savedState = gson().fromJson(state, LinearLayoutManager.SavedState.class);
+            if (mFeedLayoutManager instanceof androidx.recyclerview.widget.LinearLayoutManager) {
+                androidx.recyclerview.widget.LinearLayoutManager.SavedState savedState = gson().fromJson(state, LinearLayoutManager.SavedState.class);
                 mFeedLayoutManager.onRestoreInstanceState(savedState);
             }
 

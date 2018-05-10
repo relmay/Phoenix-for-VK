@@ -1,13 +1,13 @@
 package biz.dealnote.messenger.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,7 +46,7 @@ public class MessagesLookFragment extends PlaceSupportPresenterFragment<Messages
     private static final String TAG = MessagesLookFragment.class.getSimpleName();
     private static final int REQUEST_FORWARD_MESSAGE = 1566;
 
-    private RecyclerView mRecyclerView;
+    private androidx.recyclerview.widget.RecyclerView mRecyclerView;
     private MessagesAdapter mMessagesAdapter;
 
     public static Bundle buildArgs(int accountId, int peerId, int focusMesssageId) {
@@ -75,7 +75,7 @@ public class MessagesLookFragment extends PlaceSupportPresenterFragment<Messages
         View root = inflater.inflate(R.layout.fragment_messages_lookup, container, false);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(),
+        androidx.recyclerview.widget.RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, true);
 
         mRecyclerView = root.findViewById(R.id.recycleView);

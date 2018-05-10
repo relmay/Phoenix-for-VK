@@ -1,11 +1,11 @@
 package biz.dealnote.messenger.view;
 
 import android.content.Context;
-import android.support.v4.widget.DrawerLayout;
+import androidx.drawerlayout.widget.DrawerLayout;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-public class ErrorIgnoreDrawerLayout extends DrawerLayout {
+public class ErrorIgnoreDrawerLayout extends androidx.drawerlayout.widget.DrawerLayout {
 
     public ErrorIgnoreDrawerLayout(Context context) {
         super(context);

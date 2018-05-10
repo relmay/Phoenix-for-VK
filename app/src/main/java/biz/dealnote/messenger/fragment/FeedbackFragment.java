@@ -1,13 +1,13 @@
 package biz.dealnote.messenger.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,14 +40,14 @@ import biz.dealnote.mvp.core.IPresenterFactory;
 
 import static biz.dealnote.messenger.util.Objects.nonNull;
 
-public class FeedbackFragment extends PlaceSupportPresenterFragment<FeedbackPresenter, IFeedbackView> implements SwipeRefreshLayout.OnRefreshListener,
+public class FeedbackFragment extends PlaceSupportPresenterFragment<FeedbackPresenter, IFeedbackView> implements androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener,
         IFeedbackView, FeedbackAdapter.ClickListener, AttachmentsViewBinder.OnAttachmentsActionCallback {
 
     private static final String TAG = FeedbackFragment.class.getSimpleName();
 
     private FeedbackAdapter mAdapter;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView mEmptyText;
     private LoadMoreFooterHelper mLoadMoreHelper;
 
@@ -79,7 +79,7 @@ public class FeedbackFragment extends PlaceSupportPresenterFragment<FeedbackPres
         ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme(getActivity(), mSwipeRefreshLayout);
 
         RecyclerView.LayoutManager manager = new LinearLayoutManager(getActivity());
-        RecyclerView recyclerView = root.findViewById(R.id.recycleView);
+        androidx.recyclerview.widget.RecyclerView recyclerView = root.findViewById(R.id.recycleView);
         recyclerView.setLayoutManager(manager);
         recyclerView.addOnScrollListener(new PicassoPauseOnScrollListener(Constants.PICASSO_TAG));
         recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {

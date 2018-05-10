@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class PrivacyViewFragment extends AccountDependencyDialogFragment impleme
         mAdapter = new PrivacyAdapter(getActivity(), mPrivacy);
         mAdapter.setActionListener(this);
 
-        RecyclerView recyclerView = root.findViewById(R.id.recycleView);
+        androidx.recyclerview.widget.RecyclerView recyclerView = root.findViewById(R.id.recycleView);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setAdapter(mAdapter);
 

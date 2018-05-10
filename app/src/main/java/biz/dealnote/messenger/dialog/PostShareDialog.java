@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import static biz.dealnote.messenger.util.RxUtils.ignore;
  * Created by admin on 3/26/2018.
  * Phoenix-for-VK
  */
-public class PostShareDialog extends DialogFragment {
+public class PostShareDialog extends androidx.fragment.app.DialogFragment {
 
     public static PostShareDialog newInstance(int accountId, @NonNull Post post) {
         Bundle args = new Bundle();
@@ -44,7 +44,7 @@ public class PostShareDialog extends DialogFragment {
         return fragment;
     }
 
-    public PostShareDialog targetTo(Fragment fragment, int requestCode) {
+    public PostShareDialog targetTo(androidx.fragment.app.Fragment fragment, int requestCode) {
         setTargetFragment(fragment, requestCode);
         return this;
     }

@@ -7,14 +7,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.view.GravityCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +44,7 @@ import biz.dealnote.messenger.view.MySearchView;
 
 import static biz.dealnote.messenger.util.Objects.nonNull;
 
-public class SeachTabsFragment extends Fragment implements MySearchView.OnQueryTextListener,
+public class SeachTabsFragment extends androidx.fragment.app.Fragment implements MySearchView.OnQueryTextListener,
         MySearchView.OnBackButtonClickListener, MySearchView.OnAdditionalButtonClickListener {
 
     private static final String TAG = SeachTabsFragment.class.getSimpleName();
@@ -100,7 +100,7 @@ public class SeachTabsFragment extends Fragment implements MySearchView.OnQueryT
         int tabColorPrimary = CurrentTheme.getPrimaryTextColorOnColoredBackgroundCode(getActivity());
         int tabColorSecondary = CurrentTheme.getSecondaryTextColorOnColoredBackgroundCode(getActivity());
 
-        TabLayout tabLayout = root.findViewById(R.id.tablayout);
+        com.google.android.material.tabs.TabLayout tabLayout = root.findViewById(R.id.tablayout);
         tabLayout.setTabTextColors(tabColorSecondary, tabColorPrimary);
 
         mSearchView = root.findViewById(R.id.searchview);
@@ -142,21 +142,21 @@ public class SeachTabsFragment extends Fragment implements MySearchView.OnQueryT
         return root;
     }
 
-    private FragmentManager.FragmentLifecycleCallbacks mLifecycleCallbacks = new FragmentManager.FragmentLifecycleCallbacks() {
+    private androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks mLifecycleCallbacks = new FragmentManager.FragmentLifecycleCallbacks() {
         @Override
-        public void onFragmentViewCreated(FragmentManager fm, Fragment f, View v, Bundle savedInstanceState) {
+        public void onFragmentViewCreated(androidx.fragment.app.FragmentManager fm, Fragment f, View v, Bundle savedInstanceState) {
             syncChildFragment(f);
         }
     };
 
     private void syncChildFragment(){
-        Fragment fragment = mAdapter.findFragmentByPosition(mCurrentTab);
+        androidx.fragment.app.Fragment fragment = mAdapter.findFragmentByPosition(mCurrentTab);
         if(nonNull(fragment)){
             syncChildFragment(fragment);
         }
     }
 
-    private void syncChildFragment(Fragment fragment) {
+    private void syncChildFragment(androidx.fragment.app.Fragment fragment) {
         int fragmentPosition = fragment.getArguments().getInt(Extra.POSITION);
 
         Logger.d(TAG, "syncChildFragment, current: " + mCurrentTab + ", fp: " + fragmentPosition + ", f: " + fragment.getClass());
@@ -268,16 +268,16 @@ public class SeachTabsFragment extends Fragment implements MySearchView.OnQueryT
 
     private class Adapter extends MyFragmentStatePagerAdapter {
 
-        public Adapter(FragmentManager fm) {
+        public Adapter(androidx.fragment.app.FragmentManager fm) {
             super(fm);
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public androidx.fragment.app.Fragment getItem(int position) {
             int accountId = Accounts.fromArgs(getArguments());
             BaseSearchCriteria criteria = getArguments().getParcelable(Extra.CRITERIA);
 
-            Fragment fragment;
+            androidx.fragment.app.Fragment fragment;
 
             switch (position) {
                 case TAB_PEOPLE:
@@ -383,7 +383,7 @@ public class SeachTabsFragment extends Fragment implements MySearchView.OnQueryT
         }
     }
 
-    private FragmentManager.OnBackStackChangedListener backStackChangedListener = this::resolveLeftButton;
+    private androidx.fragment.app.FragmentManager.OnBackStackChangedListener backStackChangedListener = this::resolveLeftButton;
 
     @Override
     public void onAttach(Context context) {

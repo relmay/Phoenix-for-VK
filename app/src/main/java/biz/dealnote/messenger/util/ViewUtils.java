@@ -3,10 +3,10 @@ package biz.dealnote.messenger.util;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.util.Property;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
@@ -113,7 +113,7 @@ public class ViewUtils {
         }
     }
 
-    public static void setupSwipeRefreshLayoutWithCurrentTheme(Activity activity, SwipeRefreshLayout swipeRefreshLayout) {
+    public static void setupSwipeRefreshLayoutWithCurrentTheme(Activity activity, androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeRefreshLayout) {
         swipeRefreshLayout.setProgressBackgroundColorSchemeColor(CurrentTheme.getMessageBackgroundSquare(activity));
 
         int primaryColor = CurrentTheme.getIconColorActive(activity);

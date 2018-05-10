@@ -2,12 +2,12 @@ package biz.dealnote.messenger.fragment;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -305,7 +305,7 @@ public class UserWallFragment extends AbsWallFragment<IUserWallView, UserWallPre
         TextView bAudios;
         TextView bVideos;
 
-        FloatingActionButton fabMessage;
+        com.google.android.material.floatingactionbutton.FloatingActionButton fabMessage;
         Button bToggleInfo;
         Button bPrimaryAction;
 

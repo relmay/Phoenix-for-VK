@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import biz.dealnote.messenger.Extra;
 import biz.dealnote.messenger.util.Objects;
@@ -32,11 +32,11 @@ public class KeyExchangeActionReceiver extends BroadcastReceiver {
     public void register(@NonNull Context context){
         IntentFilter filter = new IntentFilter();
         filter.addAction(KeyExchangeService.WHAT_SESSION_STATE_CHANGED);
-        LocalBroadcastManager.getInstance(context).registerReceiver(this, filter);
+        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context).registerReceiver(this, filter);
     }
 
     public void unregister(@NonNull Context context){
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
+        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
     }
 
     protected void onSessionStateChanged(int accountId, int peerId, long sessionId, @SessionState int sessionState){

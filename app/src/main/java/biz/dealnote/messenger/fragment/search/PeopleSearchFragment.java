@@ -1,9 +1,9 @@
 package biz.dealnote.messenger.fragment.search;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class PeopleSearchFragment extends AbsSearchFragment<PeopleSearchPresente
     }
 
     @Override
-    void setAdapterData(RecyclerView.Adapter adapter, List<User> data) {
+    void setAdapterData(androidx.recyclerview.widget.RecyclerView.Adapter adapter, List<User> data) {
         ((PeopleAdapter) adapter).setItems(data);
     }
 
@@ -42,7 +42,7 @@ public class PeopleSearchFragment extends AbsSearchFragment<PeopleSearchPresente
     }
 
     @Override
-    protected RecyclerView.LayoutManager createLayoutManager() {
+    protected androidx.recyclerview.widget.RecyclerView.LayoutManager createLayoutManager() {
         return new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
     }
 

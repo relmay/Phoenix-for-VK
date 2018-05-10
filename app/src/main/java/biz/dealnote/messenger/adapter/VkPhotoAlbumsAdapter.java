@@ -1,8 +1,8 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +17,7 @@ import biz.dealnote.messenger.api.PicassoInstance;
 import biz.dealnote.messenger.model.PhotoAlbum;
 import biz.dealnote.messenger.model.PhotoSize;
 
-public class VkPhotoAlbumsAdapter extends RecyclerView.Adapter<VkPhotoAlbumsAdapter.Holder> {
+public class VkPhotoAlbumsAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<VkPhotoAlbumsAdapter.Holder> {
 
     private Context context;
     private List<PhotoAlbum> data;
@@ -62,7 +62,7 @@ public class VkPhotoAlbumsAdapter extends RecyclerView.Adapter<VkPhotoAlbumsAdap
         return data.size();
     }
 
-    public class Holder extends RecyclerView.ViewHolder {
+    public class Holder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         ImageView imageView;
         TextView title;

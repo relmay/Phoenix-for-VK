@@ -1,6 +1,6 @@
 package biz.dealnote.messenger.adapter;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +45,7 @@ public class DrawerCategotiesAdapter extends RecyclerView.Adapter<DrawerCategoti
         notifyDataSetChanged();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         CheckBox checkBox;
 

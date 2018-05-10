@@ -1,14 +1,14 @@
 package biz.dealnote.messenger.fragment.conversation;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import biz.dealnote.messenger.Extra;
 import biz.dealnote.messenger.api.model.VKApiAttachment;
 
 public class ConversationFragmentFactory {
 
-    public static Fragment newInstance(Bundle args){
+    public static androidx.fragment.app.Fragment newInstance(Bundle args){
         String type = args.getString(Extra.TYPE);
         if(type == null){
             throw new IllegalArgumentException("Type cant bee null");

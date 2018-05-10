@@ -3,13 +3,13 @@ package biz.dealnote.messenger.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,7 +90,7 @@ public class VideosFragment extends BasePresenterFragment<VideosListPresenter, I
 
     private VideosAdapter mAdapter;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView mEmpty;
 
     @Override
@@ -160,7 +160,7 @@ public class VideosFragment extends BasePresenterFragment<VideosListPresenter, I
         mEmpty = root.findViewById(R.id.empty);
 
         int columns = getContext().getResources().getInteger(R.integer.videos_column_count);
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
+        androidx.recyclerview.widget.StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);
         recyclerView.addOnScrollListener(new PicassoPauseOnScrollListener(Constants.PICASSO_TAG));
         recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {

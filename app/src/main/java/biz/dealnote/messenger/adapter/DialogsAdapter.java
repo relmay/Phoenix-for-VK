@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -62,7 +62,7 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.DialogVi
         this.mDialogsUnreadColor = CurrentTheme.getDialogsUnreadColor(context);
         this.mIconColorActiveColor = CurrentTheme.getIconColorActive(context);
         this.mForegroundColorSpan = new ForegroundColorSpan(CurrentTheme.getPrimaryTextColorCode(context));
-        this.mDataObserver = new RecyclerView.AdapterDataObserver() {
+        this.mDataObserver = new androidx.recyclerview.widget.RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
                 initStartOfTodayDate();
@@ -266,7 +266,7 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.DialogVi
         return mDialogs.size();
     }
 
-    class DialogViewHolder extends RecyclerView.ViewHolder {
+    class DialogViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         View mContentRoot;
         TextView mDialogTitle;

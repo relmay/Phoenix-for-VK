@@ -6,12 +6,12 @@ import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -286,7 +286,7 @@ public class DocPreviewFragment extends BaseFragment implements View.OnClickList
 
     private void onDeleteSuccess() {
         if (nonNull(rootView)) {
-            Snackbar.make(rootView, R.string.deleted, Snackbar.LENGTH_LONG).show();
+            com.google.android.material.snackbar.Snackbar.make(rootView, R.string.deleted, com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show();
         }
 
         deleted = true;
@@ -384,7 +384,7 @@ public class DocPreviewFragment extends BaseFragment implements View.OnClickList
 
     private void onDocumentAdded() {
         if (nonNull(rootView)) {
-            Snackbar.make(rootView, R.string.added, Snackbar.LENGTH_LONG).show();
+            com.google.android.material.snackbar.Snackbar.make(rootView, R.string.added, com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show();
         }
 
         deleted = false;

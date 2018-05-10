@@ -2,10 +2,10 @@ package biz.dealnote.mvp.core;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 
 import java.lang.ref.WeakReference;
 
@@ -56,10 +56,10 @@ public class ViewHostDelegate<P extends IPresenter<V>, V extends IMvpView> {
         }
 
         final Context app = context.getApplicationContext();
-        PresenterLoader<P> loader = (PresenterLoader<P>) loaderManager.initLoader(LOADER_ID, mLastKnownPresenterState, new LoaderManager.LoaderCallbacks<P>() {
+        PresenterLoader<P> loader = (PresenterLoader<P>) loaderManager.initLoader(LOADER_ID, mLastKnownPresenterState, new androidx.loader.app.LoaderManager.LoaderCallbacks<P>() {
             @NonNull
             @Override
-            public Loader<P> onCreateLoader(int id, Bundle args) {
+            public androidx.loader.content.Loader<P> onCreateLoader(int id, Bundle args) {
                 return new PresenterLoader<>(app, mLifecycleCallback.getPresenterFactory(args), mTag);
             }
 
@@ -81,7 +81,7 @@ public class ViewHostDelegate<P extends IPresenter<V>, V extends IMvpView> {
 
     @SuppressWarnings("unchecked")
     public void onDestroy() {
-        Loader loader = mLoaderManager.getLoader(LOADER_ID);
+        androidx.loader.content.Loader loader = mLoaderManager.getLoader(LOADER_ID);
         if (loader instanceof PresenterLoader) {
             ((PresenterLoader) loader).setAdditionaLoadCompleteListener(null);
         }
@@ -129,9 +129,9 @@ public class ViewHostDelegate<P extends IPresenter<V>, V extends IMvpView> {
         return mPresenter != null;
     }
 
-    private Loader.OnLoadCompleteListener<P> mOnLoadCompleteListener = new Loader.OnLoadCompleteListener<P>() {
+    private androidx.loader.content.Loader.OnLoadCompleteListener<P> mOnLoadCompleteListener = new Loader.OnLoadCompleteListener<P>() {
         @Override
-        public void onLoadComplete(@NonNull Loader<P> loader, P data) {
+        public void onLoadComplete(@NonNull androidx.loader.content.Loader<P> loader, P data) {
             onPresenterReceived(data);
         }
     };

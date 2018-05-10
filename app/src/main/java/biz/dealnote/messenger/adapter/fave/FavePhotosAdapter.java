@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter.fave;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +19,7 @@ import biz.dealnote.messenger.settings.CurrentTheme;
 import biz.dealnote.messenger.util.AppTextUtils;
 import biz.dealnote.messenger.util.Utils;
 
-public class FavePhotosAdapter extends RecyclerView.Adapter<FavePhotosAdapter.ViewHolder> {
+public class FavePhotosAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<FavePhotosAdapter.ViewHolder> {
 
     private List<Photo> data;
     private int colorPrimary;
@@ -75,7 +75,7 @@ public class FavePhotosAdapter extends RecyclerView.Adapter<FavePhotosAdapter.Vi
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         View cardView;
         ImageView photoImageView;

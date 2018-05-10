@@ -3,7 +3,7 @@ package biz.dealnote.messenger.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +27,7 @@ import biz.dealnote.messenger.util.ViewUtils;
 
 import static biz.dealnote.messenger.util.Objects.nonNull;
 
-public class OwnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class OwnersAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder> {
 
     private Context mContext;
     private List<? extends Owner> mData;
@@ -40,7 +40,7 @@ public class OwnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public androidx.recyclerview.widget.RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType){
             case TYPE_USER:
                 return new PeopleHolder(LayoutInflater.from(mContext).inflate(R.layout.item_people, parent, false));
@@ -122,7 +122,7 @@ public class OwnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
-    private class PeopleHolder extends RecyclerView.ViewHolder {
+    private class PeopleHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         TextView name;
         TextView subtitle;

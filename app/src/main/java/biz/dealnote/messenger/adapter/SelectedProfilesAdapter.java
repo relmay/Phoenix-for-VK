@@ -2,7 +2,7 @@ package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +19,7 @@ import biz.dealnote.messenger.api.PicassoInstance;
 import biz.dealnote.messenger.model.User;
 import biz.dealnote.messenger.settings.CurrentTheme;
 
-public class SelectedProfilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SelectedProfilesAdapter extends RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder> {
 
     private static final int VIEW_TYPE_CHECK = 0;
     private static final int VIEW_TYPE_USER = 1;
@@ -50,7 +50,7 @@ public class SelectedProfilesAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(androidx.recyclerview.widget.RecyclerView.ViewHolder holder, int position) {
         if(position == 0){
             bindCheckViewHolder((CheckViewHolder) holder);
         } else {
@@ -109,7 +109,7 @@ public class SelectedProfilesAdapter extends RecyclerView.Adapter<RecyclerView.V
         void onCheckClick();
     }
 
-    private class CheckViewHolder extends RecyclerView.ViewHolder {
+    private class CheckViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         TextView counter;
         View root;
@@ -133,7 +133,7 @@ public class SelectedProfilesAdapter extends RecyclerView.Adapter<RecyclerView.V
         notifyItemChanged(0);
     }
 
-    private class ProfileViewHolder extends RecyclerView.ViewHolder {
+    private class ProfileViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         ImageView avatar;
         TextView name;

@@ -3,16 +3,16 @@ package biz.dealnote.messenger.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +44,7 @@ import biz.dealnote.messenger.util.ViewUtils;
 import biz.dealnote.mvp.core.IPresenterFactory;
 
 public class VKPhotoAlbumsFragment extends BasePresenterFragment<PhotoAlbumsPresenter, IPhotoAlbumsView> implements IPhotoAlbumsView,
-        VkPhotoAlbumsAdapter.ClickListener, SwipeRefreshLayout.OnRefreshListener {
+        VkPhotoAlbumsAdapter.ClickListener, androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener {
 
     public static final String ACTION_SELECT_ALBUM = "biz.dealnote.messenger.ACTION_SELECT_ALBUM";
 
@@ -60,8 +60,8 @@ public class VKPhotoAlbumsFragment extends BasePresenterFragment<PhotoAlbumsPres
         return fragment;
     }
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private FloatingActionButton mFab;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
+    private com.google.android.material.floatingactionbutton.FloatingActionButton mFab;
     private VkPhotoAlbumsAdapter mAdapter;
     private TextView mEmptyText;
 
@@ -85,7 +85,7 @@ public class VKPhotoAlbumsFragment extends BasePresenterFragment<PhotoAlbumsPres
         mEmptyText = view.findViewById(R.id.empty);
 
         int columnCount = getResources().getInteger(R.integer.photos_albums_column_count);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), columnCount));
+        recyclerView.setLayoutManager(new androidx.recyclerview.widget.GridLayoutManager(getActivity(), columnCount));
         recyclerView.addOnScrollListener(new PicassoPauseOnScrollListener(Constants.PICASSO_TAG));
 
         mAdapter = new VkPhotoAlbumsAdapter(getActivity(), Collections.emptyList());

@@ -2,15 +2,15 @@ package biz.dealnote.messenger.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.view.GravityCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +74,7 @@ public class CommunitiesFragment extends BasePresenterFragment<CommunitiesPresen
         mSwipeRefreshLayout = root.findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(() -> getPresenter().fireRefresh());
 
-        RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
+        androidx.recyclerview.widget.RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
             @Override
@@ -111,7 +111,7 @@ public class CommunitiesFragment extends BasePresenterFragment<CommunitiesPresen
         }
     }
 
-    private FragmentManager.OnBackStackChangedListener backStackChangedListener = this::resolveLeftButton;
+    private androidx.fragment.app.FragmentManager.OnBackStackChangedListener backStackChangedListener = this::resolveLeftButton;
 
     @Override
     public void onAttach(Context context) {
@@ -236,7 +236,7 @@ public class CommunitiesFragment extends BasePresenterFragment<CommunitiesPresen
 
     @Override
     public void onBackButtonClick() {
-        FragmentActivity activity = getActivity();
+        androidx.fragment.app.FragmentActivity activity = getActivity();
         if (isNull(activity)) return;
 
         if (activity.getSupportFragmentManager().getBackStackEntryCount() == 1 && activity instanceof AppStyleable) {

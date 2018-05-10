@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +24,7 @@ import biz.dealnote.messenger.util.ViewUtils;
 
 import static biz.dealnote.messenger.util.Utils.nonEmpty;
 
-public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Holder> {
+public class AccountAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<AccountAdapter.Holder> {
 
     private Context context;
     private List<Account> data;

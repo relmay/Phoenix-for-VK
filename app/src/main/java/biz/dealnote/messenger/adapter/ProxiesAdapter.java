@@ -1,6 +1,6 @@
 package biz.dealnote.messenger.adapter;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
@@ -81,7 +81,7 @@ public class ProxiesAdapter extends RecyclerBindableAdapter<ProxyConfig, Proxies
         return R.layout.item_proxy;
     }
 
-    static class Holder extends RecyclerView.ViewHolder {
+    static class Holder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         TextView address;
         TextView port;

@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +25,7 @@ import biz.dealnote.messenger.util.ViewUtils;
  * Created by golde on 02.05.2017.
  * phoenix
  */
-public class DialogPreviewAdapter extends RecyclerView.Adapter<DialogPreviewAdapter.DialogPreviewHolder> {
+public class DialogPreviewAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<DialogPreviewAdapter.DialogPreviewHolder> {
 
     private List<Object> mData;
     private Transformation mTransformation;
@@ -92,7 +92,7 @@ public class DialogPreviewAdapter extends RecyclerView.Adapter<DialogPreviewAdap
         notifyDataSetChanged();
     }
 
-    class DialogPreviewHolder extends RecyclerView.ViewHolder {
+    class DialogPreviewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         private ImageView mAvatar;
         private TextView mTitle;

@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -41,7 +41,7 @@ import biz.dealnote.messenger.util.Objects;
 import biz.dealnote.messenger.util.Utils;
 import io.reactivex.disposables.CompositeDisposable;
 
-public class FilterEditFragment extends BottomSheetDialogFragment implements SearchOptionsAdapter.OptionClickListener {
+public class FilterEditFragment extends com.google.android.material.bottomsheet.BottomSheetDialogFragment implements SearchOptionsAdapter.OptionClickListener {
 
     private ArrayList<BaseOption> mData;
     private SearchOptionsAdapter mAdapter;
@@ -94,7 +94,7 @@ public class FilterEditFragment extends BottomSheetDialogFragment implements Sea
 
         mEmptyText = root.findViewById(R.id.empty_text);
 
-        RecyclerView mRecyclerView = root.findViewById(R.id.recycler_view);
+        androidx.recyclerview.widget.RecyclerView mRecyclerView = root.findViewById(R.id.recycler_view);
 
         RecyclerView.LayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(manager);

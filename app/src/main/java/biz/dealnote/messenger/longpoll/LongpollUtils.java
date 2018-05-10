@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,12 +68,12 @@ public class LongpollUtils {
             };
 
             e.setCancellable(() -> {
-                LocalBroadcastManager.getInstance(app).unregisterReceiver(receiver);
+                androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(app).unregisterReceiver(receiver);
                 Logger.d(TAG, "Dispose");
             });
 
             if (!e.isDisposed()) {
-                LocalBroadcastManager.getInstance(app).registerReceiver(receiver,
+                androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(app).registerReceiver(receiver,
                         new IntentFilter(LongpollService.WHAT_REALTIME_ACTIONS));
                 Logger.d(TAG, "Register");
             }

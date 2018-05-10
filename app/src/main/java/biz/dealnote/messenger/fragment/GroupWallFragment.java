@@ -6,11 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -320,7 +320,7 @@ public class GroupWallFragment extends AbsWallFragment<IGroupWallView, GroupWall
             fabMessage = root.findViewById(R.id.header_group_fab_message);
 
             RecyclerView filterList = root.findViewById(R.id.post_filter_recyclerview);
-            filterList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+            filterList.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             mFiltersAdapter = new HorizontalOptionsAdapter<>(Collections.emptyList());
             mFiltersAdapter.setListener(entry -> getPresenter().fireFilterEntryClick(entry));
 

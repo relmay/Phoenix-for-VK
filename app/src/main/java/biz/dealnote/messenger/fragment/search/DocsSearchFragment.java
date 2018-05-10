@@ -1,10 +1,10 @@
 package biz.dealnote.messenger.fragment.search;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
@@ -29,20 +29,20 @@ public class DocsSearchFragment extends AbsSearchFragment<DocsSearchPresenter, I
     }
 
     @Override
-    void setAdapterData(RecyclerView.Adapter adapter, List<Document> data) {
+    void setAdapterData(androidx.recyclerview.widget.RecyclerView.Adapter adapter, List<Document> data) {
         ((DocsAdapter) adapter).setItems(data);
     }
 
     @Override
-    RecyclerView.Adapter createAdapter(List<Document> data) {
+    androidx.recyclerview.widget.RecyclerView.Adapter createAdapter(List<Document> data) {
         DocsAdapter adapter = new DocsAdapter(data);
         adapter.setActionListner(this);
         return adapter;
     }
 
     @Override
-    protected RecyclerView.LayoutManager createLayoutManager() {
-        return new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+    protected androidx.recyclerview.widget.RecyclerView.LayoutManager createLayoutManager() {
+        return new androidx.recyclerview.widget.LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
     }
 
     @Override

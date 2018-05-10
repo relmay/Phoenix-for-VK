@@ -4,13 +4,13 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +54,10 @@ public class VKPhotosFragment extends BasePresenterFragment<VkPhotosPresenter, I
     private static final String TAG = VKPhotosFragment.class.getSimpleName();
     private static final int REQUEST_PERMISSION_READ_EXTARNAL_STORAGE = 14;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
     private BigVkPhotosAdapter mAdapter;
     private TextView mEmptyText;
-    private FloatingActionButton mFab;
+    private com.google.android.material.floatingactionbutton.FloatingActionButton mFab;
     private String mAction;
 
     public static Bundle buildArgs(int accountId, int ownerId, int albumId, String action) {
@@ -91,14 +91,14 @@ public class VKPhotosFragment extends BasePresenterFragment<VkPhotosPresenter, I
         ((AppCompatActivity) getActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
 
         int columnCount = getResources().getInteger(R.integer.local_gallery_column_count);
-        RecyclerView.LayoutManager manager = new GridLayoutManager(getActivity(), columnCount);
+        androidx.recyclerview.widget.RecyclerView.LayoutManager manager = new GridLayoutManager(getActivity(), columnCount);
 
         mSwipeRefreshLayout = root.findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(() -> getPresenter().fireRefresh());
 
         ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme(getActivity(), mSwipeRefreshLayout);
 
-        RecyclerView mRecyclerView = root.findViewById(R.id.list);
+        androidx.recyclerview.widget.RecyclerView mRecyclerView = root.findViewById(R.id.list);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.addOnScrollListener(new PicassoPauseOnScrollListener(TAG));
         mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {

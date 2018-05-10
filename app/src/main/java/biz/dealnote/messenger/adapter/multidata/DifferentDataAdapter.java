@@ -1,13 +1,13 @@
 package biz.dealnote.messenger.adapter.multidata;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import biz.dealnote.messenger.util.Utils;
 
-public abstract class DifferentDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class DifferentDataAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<List<?>> mData;
 

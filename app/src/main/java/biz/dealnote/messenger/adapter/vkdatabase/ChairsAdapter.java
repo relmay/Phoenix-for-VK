@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter.vkdatabase;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +12,7 @@ import java.util.List;
 import biz.dealnote.messenger.R;
 import biz.dealnote.messenger.model.database.Chair;
 
-public class ChairsAdapter extends RecyclerView.Adapter<ChairsAdapter.Holder> {
+public class ChairsAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<ChairsAdapter.Holder> {
 
     private Context mContext;
     private List<Chair> mData;

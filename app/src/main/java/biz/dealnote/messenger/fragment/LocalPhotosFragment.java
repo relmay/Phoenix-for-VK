@@ -3,14 +3,14 @@ package biz.dealnote.messenger.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,12 +36,12 @@ import biz.dealnote.messenger.util.ViewUtils;
 import biz.dealnote.mvp.core.IPresenterFactory;
 
 public class LocalPhotosFragment extends BasePresenterFragment<LocalPhotosPresenter, ILocalPhotosView>
-        implements ILocalPhotosView, LocalPhotosAdapter.ClickListener, SwipeRefreshLayout.OnRefreshListener {
+        implements ILocalPhotosView, LocalPhotosAdapter.ClickListener, androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener {
 
     public static final String EXTRA_MAX_SELECTION_COUNT = "max_selection_count";
 
-    private RecyclerView mRecyclerView;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private androidx.recyclerview.widget.RecyclerView mRecyclerView;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
     private LocalPhotosAdapter mAdapter;
     private TextView mEmptyTextView;
     private FloatingActionButton fabAttach;
@@ -70,7 +70,7 @@ public class LocalPhotosFragment extends BasePresenterFragment<LocalPhotosPresen
         ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme(getActivity(), mSwipeRefreshLayout);
 
         int columnCount = getResources().getInteger(R.integer.local_gallery_column_count);
-        RecyclerView.LayoutManager manager = new GridLayoutManager(getActivity(), columnCount);
+        RecyclerView.LayoutManager manager = new androidx.recyclerview.widget.GridLayoutManager(getActivity(), columnCount);
 
         mRecyclerView = view.findViewById(R.id.list);
         mRecyclerView.setLayoutManager(manager);

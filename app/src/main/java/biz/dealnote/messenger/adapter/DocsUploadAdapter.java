@@ -2,8 +2,8 @@ package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.ColorInt;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.ColorInt;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,7 +122,7 @@ public class DocsUploadAdapter extends RecyclerView.Adapter<DocsUploadAdapter.Ho
         notifyDataSetChanged();
     }
 
-    static class Holder extends RecyclerView.ViewHolder implements IdentificableHolder {
+    static class Holder extends androidx.recyclerview.widget.RecyclerView.ViewHolder implements IdentificableHolder {
 
         TextView title;
         TextView status;

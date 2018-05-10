@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +18,7 @@ import biz.dealnote.messenger.util.Utils;
 import static biz.dealnote.messenger.util.Utils.isEmpty;
 import static biz.dealnote.messenger.util.Utils.nonEmpty;
 
-public class VideoAlbumsNewAdapter extends RecyclerView.Adapter<VideoAlbumsNewAdapter.ViewHolder> {
+public class VideoAlbumsNewAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<VideoAlbumsNewAdapter.ViewHolder> {
 
     public static final String PICASSO_TAG = "VideoAlbumsNewAdapter";
 
@@ -69,7 +69,7 @@ public class VideoAlbumsNewAdapter extends RecyclerView.Adapter<VideoAlbumsNewAd
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
         ImageView ivPhoto;
         TextView tvCount;
         TextView tvTitle;

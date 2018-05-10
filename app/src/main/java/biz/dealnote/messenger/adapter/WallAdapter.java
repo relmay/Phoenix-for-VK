@@ -1,9 +1,9 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +38,7 @@ import static biz.dealnote.messenger.util.Utils.isEmpty;
 import static biz.dealnote.messenger.util.Utils.nonEmpty;
 import static biz.dealnote.messenger.util.Utils.safeAllIsEmpty;
 
-public class WallAdapter extends RecyclerBindableAdapter<Post, RecyclerView.ViewHolder> {
+public class WallAdapter extends RecyclerBindableAdapter<Post, androidx.recyclerview.widget.RecyclerView.ViewHolder> {
 
     private static final int TYPE_SCHEDULED = 2;
     private static final int TYPE_DELETED = 1;
@@ -67,7 +67,7 @@ public class WallAdapter extends RecyclerBindableAdapter<Post, RecyclerView.View
     }
 
     @Override
-    protected void onBindItemViewHolder(RecyclerView.ViewHolder viewHolder, int position, int type) {
+    protected void onBindItemViewHolder(androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder, int position, int type) {
         Post item = getItem(position);
         switch (type) {
             case TYPE_NORMAL:
@@ -278,7 +278,7 @@ public class WallAdapter extends RecyclerBindableAdapter<Post, RecyclerView.View
         void onLikeClick(Post post);
     }
 
-    private class DeletedHolder extends RecyclerView.ViewHolder {
+    private class DeletedHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         Button bRestore;
 

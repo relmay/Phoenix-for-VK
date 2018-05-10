@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter.fave;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,7 @@ import biz.dealnote.messenger.R;
 import biz.dealnote.messenger.model.User;
 import biz.dealnote.messenger.util.ViewUtils;
 
-public class FaveUsersAdapter extends RecyclerView.Adapter<FaveUsersAdapter.Holder> {
+public class FaveUsersAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<FaveUsersAdapter.Holder> {
 
     private List<User> data;
     private Context context;
@@ -54,7 +54,7 @@ public class FaveUsersAdapter extends RecyclerView.Adapter<FaveUsersAdapter.Hold
         notifyDataSetChanged();
     }
 
-    public class Holder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+    public class Holder extends androidx.recyclerview.widget.RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
         ImageView avatar;
         TextView name;
@@ -83,18 +83,18 @@ public class FaveUsersAdapter extends RecyclerView.Adapter<FaveUsersAdapter.Hold
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    public void onAttachedToRecyclerView(androidx.recyclerview.widget.RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         this.recyclerView = recyclerView;
     }
 
     @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+    public void onDetachedFromRecyclerView(androidx.recyclerview.widget.RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
         this.recyclerView = null;
     }
 
-    private RecyclerView recyclerView;
+    private androidx.recyclerview.widget.RecyclerView recyclerView;
 
     public interface ClickListener {
         void onUserClick(int index, User user);

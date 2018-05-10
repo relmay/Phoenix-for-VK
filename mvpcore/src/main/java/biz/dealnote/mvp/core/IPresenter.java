@@ -1,6 +1,6 @@
 package biz.dealnote.mvp.core;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by admin on 11.07.2016.

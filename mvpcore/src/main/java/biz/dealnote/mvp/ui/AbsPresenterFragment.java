@@ -1,9 +1,9 @@
 package biz.dealnote.mvp.ui;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import biz.dealnote.mvp.core.ViewHostDelegate;
  * Created by ruslan.kolbasa on 08.09.2016.
  * mvpcore
  */
-public abstract class AbsPresenterFragment<P extends IPresenter<V>, V extends IMvpView> extends Fragment implements ViewHostDelegate.PresenterLifecycleCallback<P,V> {
+public abstract class AbsPresenterFragment<P extends IPresenter<V>, V extends IMvpView> extends androidx.fragment.app.Fragment implements ViewHostDelegate.PresenterLifecycleCallback<P,V> {
 
     private ViewHostDelegate<P, V> mViewHostDelegate;
 

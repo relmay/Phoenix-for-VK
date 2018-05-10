@@ -4,17 +4,17 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -74,11 +74,11 @@ public class DialogsFragment extends BasePresenterFragment<DialogsPresenter, IDi
         return fragment;
     }
 
-    private RecyclerView mRecyclerView;
+    private androidx.recyclerview.widget.RecyclerView mRecyclerView;
     private DialogsAdapter mAdapter;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private FloatingActionButton mFab;
+    private com.google.android.material.floatingactionbutton.FloatingActionButton mFab;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class DialogsFragment extends BasePresenterFragment<DialogsPresenter, IDi
         ((AppCompatActivity) getActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
 
         mRecyclerView = root.findViewById(R.id.recycleView);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getActivity()));
         mRecyclerView.addOnScrollListener(new PicassoPauseOnScrollListener(DialogsAdapter.PICASSO_TAG));
         mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
             @Override
@@ -117,7 +117,7 @@ public class DialogsFragment extends BasePresenterFragment<DialogsPresenter, IDi
         return root;
     }
 
-    private final RecyclerView.OnScrollListener mFabScrollListener = new RecyclerView.OnScrollListener() {
+    private final RecyclerView.OnScrollListener mFabScrollListener = new androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
         int scrollMinOffset = 0;
 
         @Override

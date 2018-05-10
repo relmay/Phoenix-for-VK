@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter;
 
 import android.graphics.PorterDuff;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +15,7 @@ import biz.dealnote.messenger.R;
 import biz.dealnote.messenger.model.FileItem;
 import biz.dealnote.messenger.settings.CurrentTheme;
 
-public class FileManagerAdapter extends RecyclerView.Adapter<FileManagerAdapter.Holder> {
+public class FileManagerAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<FileManagerAdapter.Holder> {
 
     private List<FileItem> data;
 

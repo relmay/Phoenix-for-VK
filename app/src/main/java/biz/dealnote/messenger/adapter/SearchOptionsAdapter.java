@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter;
 
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SwitchCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,14 +18,14 @@ import biz.dealnote.messenger.fragment.search.options.SimpleNumberOption;
 import biz.dealnote.messenger.fragment.search.options.SimpleTextOption;
 import biz.dealnote.messenger.fragment.search.options.SpinnerOption;
 
-public class SearchOptionsAdapter extends RecyclerBindableAdapter<BaseOption, RecyclerView.ViewHolder> {
+public class SearchOptionsAdapter extends RecyclerBindableAdapter<BaseOption, androidx.recyclerview.widget.RecyclerView.ViewHolder> {
 
     public SearchOptionsAdapter(List<BaseOption> items) {
         super(items);
     }
 
     @Override
-    protected void onBindItemViewHolder(RecyclerView.ViewHolder viewHolder, int position, int type) {
+    protected void onBindItemViewHolder(androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder, int position, int type) {
         BaseOption option = getItem(position);
 
         switch (type){
@@ -177,7 +177,7 @@ public class SearchOptionsAdapter extends RecyclerBindableAdapter<BaseOption, Re
         return null;
     }
 
-    public class NormalHolder extends RecyclerView.ViewHolder {
+    public class NormalHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         TextView title;
         TextView value;
@@ -191,7 +191,7 @@ public class SearchOptionsAdapter extends RecyclerBindableAdapter<BaseOption, Re
         }
     }
 
-    public class SimpleBooleanHolder extends RecyclerView.ViewHolder {
+    public class SimpleBooleanHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         SwitchCompat checkableView;
 

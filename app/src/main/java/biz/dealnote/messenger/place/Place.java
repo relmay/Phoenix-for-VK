@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 public class Place implements Parcelable {
 
@@ -109,7 +109,7 @@ public class Place implements Parcelable {
         }
     }
 
-    public Place targetTo(Fragment fragment, int requestCode){
+    public Place targetTo(androidx.fragment.app.Fragment fragment, int requestCode){
         this.target = fragment;
         this.requestCode = requestCode;
         return this;
@@ -162,7 +162,7 @@ public class Place implements Parcelable {
         return target != null;
     }
 
-    public void applyTargetingTo(@NonNull Fragment fragment){
+    public void applyTargetingTo(@NonNull androidx.fragment.app.Fragment fragment){
         if(hasTargeting()){
             fragment.setTargetFragment(target, requestCode);
         }

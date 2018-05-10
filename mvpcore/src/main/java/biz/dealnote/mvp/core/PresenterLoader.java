@@ -1,7 +1,7 @@
 package biz.dealnote.mvp.core;
 
 import android.content.Context;
-import android.support.v4.content.Loader;
+import androidx.loader.content.Loader;
 
 import biz.dealnote.mvp.Logger;
 

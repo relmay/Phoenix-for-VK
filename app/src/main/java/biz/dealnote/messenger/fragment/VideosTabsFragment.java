@@ -1,14 +1,14 @@
 package biz.dealnote.messenger.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -75,10 +75,10 @@ public class VideosTabsFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        ViewPager viewPager = view.findViewById(R.id.fragment_videos_pager);
+        androidx.viewpager.widget.ViewPager viewPager = view.findViewById(R.id.fragment_videos_pager);
         setupViewPager(viewPager);
 
-        TabLayout tabLayout = view.findViewById(R.id.fragment_videos_tabs);
+        com.google.android.material.tabs.TabLayout tabLayout = view.findViewById(R.id.fragment_videos_tabs);
         tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
         int tabColorPrimary = CurrentTheme.getPrimaryTextColorOnColoredBackgroundCode(getActivity());
         int tabColorSecondary = CurrentTheme.getSecondaryTextColorOnColoredBackgroundCode(getActivity());
@@ -90,7 +90,7 @@ public class VideosTabsFragment extends BaseFragment {
         return accountId;
     }
 
-    private void setupViewPager(ViewPager viewPager) {
+    private void setupViewPager(androidx.viewpager.widget.ViewPager viewPager) {
         VideosFragment fragment = VideosFragment.newInstance(getAccountId(), ownerId, 0, action, null);
         fragment.getArguments().putBoolean(VideosFragment.EXTRA_IN_TABS_CONTAINER, true);
 
@@ -131,7 +131,7 @@ public class VideosTabsFragment extends BaseFragment {
                 .apply(getActivity());
     }
 
-    static class Adapter extends FragmentPagerAdapter {
+    static class Adapter extends androidx.fragment.app.FragmentPagerAdapter {
 
         private final List<Fragment> mFragments = new ArrayList<>();
         private final List<String> mFragmentTitles = new ArrayList<>();

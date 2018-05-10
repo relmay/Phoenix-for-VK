@@ -1,10 +1,10 @@
 package biz.dealnote.messenger.fragment.search;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import java.util.List;
 
@@ -69,7 +69,7 @@ public class WallSearchFragment extends AbsSearchFragment<WallSearchPresenter, I
 
         if (Utils.is600dp(getActivity())) {
             boolean land = Utils.isLandscape(getActivity());
-            manager = new StaggeredGridLayoutManager(land ? 2 : 1, StaggeredGridLayoutManager.VERTICAL);
+            manager = new androidx.recyclerview.widget.StaggeredGridLayoutManager(land ? 2 : 1, androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL);
         } else {
             manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         }

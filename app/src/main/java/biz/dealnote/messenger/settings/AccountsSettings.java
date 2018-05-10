@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,9 +75,9 @@ class AccountsSettings implements ISettings.IAccountsSettings {
                 }
             };
 
-            e.setCancellable(() -> LocalBroadcastManager.getInstance(app).unregisterReceiver(receiver));
+            e.setCancellable(() -> androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(app).unregisterReceiver(receiver));
             if (!e.isDisposed()) {
-                LocalBroadcastManager.getInstance(app).registerReceiver(receiver, new IntentFilter(WHAT_ACCOUNT_CHANGE));
+                androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(app).registerReceiver(receiver, new IntentFilter(WHAT_ACCOUNT_CHANGE));
             }
         });
     }
@@ -119,7 +119,7 @@ class AccountsSettings implements ISettings.IAccountsSettings {
         Intent intent = new Intent(WHAT_ACCOUNT_CHANGE);
         intent.putExtra(Extra.ACCOUNT_ID, getCurrent());
 
-        LocalBroadcastManager.getInstance(app).sendBroadcast(intent);
+        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(app).sendBroadcast(intent);
     }
 
     @Override

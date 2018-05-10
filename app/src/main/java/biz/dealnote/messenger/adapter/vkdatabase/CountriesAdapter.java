@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter.vkdatabase;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +12,7 @@ import java.util.List;
 import biz.dealnote.messenger.R;
 import biz.dealnote.messenger.model.database.Country;
 
-public class CountriesAdapter extends RecyclerView.Adapter<CountriesAdapter.Holder> {
+public class CountriesAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<CountriesAdapter.Holder> {
 
     private Context mContext;
     private List<Country> mData;
@@ -49,7 +49,7 @@ public class CountriesAdapter extends RecyclerView.Adapter<CountriesAdapter.Hold
         notifyDataSetChanged();
     }
 
-    public class Holder extends RecyclerView.ViewHolder {
+    public class Holder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         TextView name;
 

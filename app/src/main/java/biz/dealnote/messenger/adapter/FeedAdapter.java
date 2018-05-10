@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter;
 
 import android.app.Activity;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -125,7 +125,7 @@ public class FeedAdapter extends RecyclerBindableAdapter<News, FeedAdapter.PostH
         return nextHolderId;
     }
 
-    class PostHolder extends RecyclerView.ViewHolder implements IdentificableHolder {
+    class PostHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder implements IdentificableHolder {
 
         private View cardView;
 

@@ -1,8 +1,8 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +23,7 @@ import static biz.dealnote.messenger.util.Utils.nonEmpty;
  * Created by admin on 13.06.2017.
  * phoenix
  */
-public class CommunityLinksAdapter extends RecyclerView.Adapter<CommunityLinksAdapter.Holder> {
+public class CommunityLinksAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<CommunityLinksAdapter.Holder> {
 
     private List<VKApiCommunity.Link> links;
 
@@ -98,7 +98,7 @@ public class CommunityLinksAdapter extends RecyclerView.Adapter<CommunityLinksAd
         notifyDataSetChanged();
     }
 
-    static class Holder extends RecyclerView.ViewHolder {
+    static class Holder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         TextView title;
         TextView subtitle;

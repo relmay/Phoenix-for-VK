@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.RemoteInput;
+import androidx.core.app.RemoteInput;
 import android.widget.Toast;
 
 import java.util.Collection;

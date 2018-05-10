@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -60,7 +60,7 @@ public class CommentsAdapter extends RecyclerBindableAdapter<Comment, RecyclerVi
     }
 
     @Override
-    protected void onBindItemViewHolder(RecyclerView.ViewHolder viewHolder, int position, int type) {
+    protected void onBindItemViewHolder(androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder, int position, int type) {
         switch (type){
             case TYPE_NORMAL:
                 bindNormalHolder((NormalCommentHoler) viewHolder, getItem(position));
@@ -170,7 +170,7 @@ public class CommentsAdapter extends RecyclerBindableAdapter<Comment, RecyclerVi
     }
 
     @Override
-    protected RecyclerView.ViewHolder viewHolder(View view, int type) {
+    protected androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder(View view, int type) {
         switch (type){
             case TYPE_NORMAL:
                 return new NormalCommentHoler(view);
@@ -196,7 +196,7 @@ public class CommentsAdapter extends RecyclerBindableAdapter<Comment, RecyclerVi
     private static final int TYPE_DELETED = 0;
     private static final int TYPE_NORMAL = 1;
 
-    private class DeletedHolder extends RecyclerView.ViewHolder {
+    private class DeletedHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         Button buttonRestore;
 
@@ -206,7 +206,7 @@ public class CommentsAdapter extends RecyclerBindableAdapter<Comment, RecyclerVi
         }
     }
 
-    private class NormalCommentHoler extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+    private class NormalCommentHoler extends androidx.recyclerview.widget.RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
         TextView tvOwnerName;
         ImageView ivOwnerAvatar;
@@ -308,18 +308,18 @@ public class CommentsAdapter extends RecyclerBindableAdapter<Comment, RecyclerVi
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    public void onAttachedToRecyclerView(androidx.recyclerview.widget.RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         this.recyclerView = recyclerView;
     }
 
     @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+    public void onDetachedFromRecyclerView(androidx.recyclerview.widget.RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
         this.recyclerView = null;
     }
 
-    private RecyclerView recyclerView;
+    private androidx.recyclerview.widget.RecyclerView recyclerView;
 
     @Override
     protected int getItemType(int position) {

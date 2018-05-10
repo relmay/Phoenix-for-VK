@@ -3,7 +3,7 @@ package biz.dealnote.messenger.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import biz.dealnote.messenger.Extra;
 import biz.dealnote.messenger.R;
@@ -26,7 +26,7 @@ public class AttachmentsActivity extends NoMainActivity implements PlaceProvider
         mUploadServiceToken = UploadUtils.bindToService(this, null);
 
         if (savedInstanceState == null) {
-            Fragment fragment = null;
+            androidx.fragment.app.Fragment fragment = null;
 
             int type = getIntent().getExtras().getInt(Extra.TYPE);
             int accountId = getIntent().getExtras().getInt(Extra.ACCOUNT_ID);
@@ -64,7 +64,7 @@ public class AttachmentsActivity extends NoMainActivity implements PlaceProvider
     @Override
     public void openPlace(Place place) {
         if(place.type == Place.VIDEO_ALBUM){
-            Fragment fragment = VideosFragment.newInstance(place.getArgs());
+            androidx.fragment.app.Fragment fragment = VideosFragment.newInstance(place.getArgs());
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment, fragment)

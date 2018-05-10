@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter;
 
 import android.net.Uri;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +17,7 @@ import biz.dealnote.messenger.api.PicassoInstance;
 import biz.dealnote.messenger.model.LocalImageAlbum;
 import biz.dealnote.messenger.model.LocalPhoto;
 
-public class LocalPhotoAlbumsAdapter extends RecyclerView.Adapter<LocalPhotoAlbumsAdapter.Holder> {
+public class LocalPhotoAlbumsAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<LocalPhotoAlbumsAdapter.Holder> {
 
     private List<LocalImageAlbum> data;
     public static final String PICASSO_TAG = "LocalPhotoAlbumsAdapter.TAG";
@@ -73,7 +73,7 @@ public class LocalPhotoAlbumsAdapter extends RecyclerView.Adapter<LocalPhotoAlbu
         void onClick(LocalImageAlbum album);
     }
 
-    public static class Holder extends RecyclerView.ViewHolder {
+    public static class Holder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         ImageView image;
         TextView title;

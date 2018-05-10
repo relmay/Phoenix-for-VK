@@ -1,13 +1,13 @@
 package biz.dealnote.messenger.listener;
 
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import biz.dealnote.messenger.util.Objects;
 
-public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScrollListener {
+public abstract class EndlessRecyclerOnScrollListener extends androidx.recyclerview.widget.RecyclerView.OnScrollListener {
 
     public EndlessRecyclerOnScrollListener() {
 
@@ -23,10 +23,10 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
     }
 
     @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+    public void onScrolled(androidx.recyclerview.widget.RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
 
-        RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+        androidx.recyclerview.widget.RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
 
         if(Objects.isNull(manager)){
             // wtf?
@@ -39,15 +39,15 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 
         boolean isLastElementVisible = false;
         if (manager instanceof StaggeredGridLayoutManager) {
-            isLastElementVisible = isAtLastElementOfStaggedGridLayoutManager((StaggeredGridLayoutManager) manager);
+            isLastElementVisible = isAtLastElementOfStaggedGridLayoutManager((androidx.recyclerview.widget.StaggeredGridLayoutManager) manager);
         }
 
-        if (manager instanceof LinearLayoutManager) {
-            isLastElementVisible = isAtLastElementOfLinearLayoutManager((LinearLayoutManager) manager);
+        if (manager instanceof androidx.recyclerview.widget.LinearLayoutManager) {
+            isLastElementVisible = isAtLastElementOfLinearLayoutManager((androidx.recyclerview.widget.LinearLayoutManager) manager);
         }
 
         if (manager instanceof GridLayoutManager) {
-            isLastElementVisible = isAtLastElementOfGridLayoutManager((GridLayoutManager) manager);
+            isLastElementVisible = isAtLastElementOfGridLayoutManager((androidx.recyclerview.widget.GridLayoutManager) manager);
         }
 
         if (isLastElementVisible) {
@@ -58,7 +58,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 
         boolean isFirstElementVisible = false;
 
-        if (manager instanceof LinearLayoutManager) {
+        if (manager instanceof androidx.recyclerview.widget.LinearLayoutManager) {
             isFirstElementVisible = ((LinearLayoutManager) manager).findFirstVisibleItemPosition() == 0;
         }
 
@@ -72,7 +72,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
     private int totalItemCount;
     private int pastVisibleItems;
 
-    private boolean isAtLastElementOfLinearLayoutManager(LinearLayoutManager linearLayoutManager) {
+    private boolean isAtLastElementOfLinearLayoutManager(androidx.recyclerview.widget.LinearLayoutManager linearLayoutManager) {
         visibleItemCount = linearLayoutManager.getChildCount();
         totalItemCount = linearLayoutManager.getItemCount();
         pastVisibleItems = linearLayoutManager.findFirstVisibleItemPosition();

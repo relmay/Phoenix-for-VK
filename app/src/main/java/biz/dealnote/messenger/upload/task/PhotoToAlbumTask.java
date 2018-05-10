@@ -1,9 +1,9 @@
 package biz.dealnote.messenger.upload.task;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.media.ExifInterface;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.exifinterface.media.ExifInterface;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -88,7 +88,7 @@ public class PhotoToAlbumTask extends AbstractUploadTask<PhotoToAlbumTask.Respon
             Double longitude = null;
 
             try {
-                ExifInterface exif = new ExifInterface(uploadObject.getFileUri().getPath());
+                androidx.exifinterface.media.ExifInterface exif = new androidx.exifinterface.media.ExifInterface(uploadObject.getFileUri().getPath());
                 ExifGeoDegree exifGeoDegree = new ExifGeoDegree(exif);
 
                 if (exifGeoDegree.isValid()) {

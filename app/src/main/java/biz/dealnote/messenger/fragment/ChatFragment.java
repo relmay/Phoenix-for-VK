@@ -6,15 +6,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.AttrRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
@@ -111,7 +111,7 @@ public class ChatFragment extends PlaceSupportPresenterFragment<ChatPrensenter, 
     private View mHeaderView;
     private LoadMoreFooterHelper mLoadMoreFooterHelper;
 
-    private RecyclerView mRecyclerView;
+    private androidx.recyclerview.widget.RecyclerView mRecyclerView;
     private MessagesAdapter mAdapter;
 
     private InputViewController mInputViewController;
@@ -181,8 +181,8 @@ public class ChatFragment extends PlaceSupportPresenterFragment<ChatPrensenter, 
         inflater.inflate(R.menu.menu_chat, menu);
     }
 
-    private RecyclerView.LayoutManager createLayoutManager() {
-        return new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, true);
+    private androidx.recyclerview.widget.RecyclerView.LayoutManager createLayoutManager() {
+        return new androidx.recyclerview.widget.LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, true);
     }
 
     @Override

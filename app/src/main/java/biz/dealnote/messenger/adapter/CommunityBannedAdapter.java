@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -31,7 +31,7 @@ import biz.dealnote.messenger.view.OnlineView;
  * Created by admin on 14.06.2017.
  * phoenix
  */
-public class CommunityBannedAdapter extends RecyclerView.Adapter<CommunityBannedAdapter.Holder> {
+public class CommunityBannedAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<CommunityBannedAdapter.Holder> {
 
     private List<Banned> data;
     private final Transformation transformation;
@@ -124,7 +124,7 @@ public class CommunityBannedAdapter extends RecyclerView.Adapter<CommunityBanned
         void onBannedLongClick(Banned banned);
     }
 
-    static class Holder extends RecyclerView.ViewHolder {
+    static class Holder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         ImageView avatar;
         OnlineView onlineView;

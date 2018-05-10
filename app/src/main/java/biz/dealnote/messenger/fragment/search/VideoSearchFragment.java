@@ -1,9 +1,9 @@
 package biz.dealnote.messenger.fragment.search;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import java.util.List;
 
@@ -29,21 +29,21 @@ public class VideoSearchFragment extends AbsSearchFragment<VideosSearchPresenter
     }
 
     @Override
-    void setAdapterData(RecyclerView.Adapter adapter, List<Video> data) {
+    void setAdapterData(androidx.recyclerview.widget.RecyclerView.Adapter adapter, List<Video> data) {
         ((VideosAdapter)adapter).setData(data);
     }
 
     @Override
-    RecyclerView.Adapter createAdapter(List<Video> data) {
+    androidx.recyclerview.widget.RecyclerView.Adapter createAdapter(List<Video> data) {
         VideosAdapter adapter = new VideosAdapter(getActivity(), data);
         adapter.setVideoOnClickListener(this);
         return adapter;
     }
 
     @Override
-    protected RecyclerView.LayoutManager createLayoutManager() {
+    protected androidx.recyclerview.widget.RecyclerView.LayoutManager createLayoutManager() {
         int columns = getContext().getResources().getInteger(R.integer.videos_column_count);
-        return new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
+        return new androidx.recyclerview.widget.StaggeredGridLayoutManager(columns, androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL);
     }
 
     @Override

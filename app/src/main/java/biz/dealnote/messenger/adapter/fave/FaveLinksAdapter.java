@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter.fave;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +17,7 @@ import biz.dealnote.messenger.model.FaveLink;
 import biz.dealnote.messenger.util.Utils;
 import biz.dealnote.messenger.util.ViewUtils;
 
-public class FaveLinksAdapter extends RecyclerView.Adapter<FaveLinksAdapter.Holder> {
+public class FaveLinksAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<FaveLinksAdapter.Holder> {
 
     private List<FaveLink> data;
     private Context context;
@@ -96,12 +96,12 @@ public class FaveLinksAdapter extends RecyclerView.Adapter<FaveLinksAdapter.Hold
     }
 
     @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+    public void onDetachedFromRecyclerView(androidx.recyclerview.widget.RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
         this.recyclerView = null;
     }
 
-    private RecyclerView recyclerView;
+    private androidx.recyclerview.widget.RecyclerView recyclerView;
 
     public interface ClickListener {
         void onLinkClick(int index, FaveLink link);

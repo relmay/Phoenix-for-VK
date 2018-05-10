@@ -4,8 +4,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
@@ -158,7 +158,7 @@ public class LongpollService extends Service implements Longpoll.Callback {
         Intent intent = new Intent(WHAT_REALTIME_ACTIONS);
         intent.putParcelableArrayListExtra(EXTRA_REALTIME_ACTIONS,
                 new ArrayList<>(Collections.singletonList(new RefreshListeningRequest())));
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
         Logger.d(TAG, "updateRegistration");
     }

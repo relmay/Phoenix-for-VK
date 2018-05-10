@@ -1,14 +1,14 @@
 package biz.dealnote.messenger.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +33,7 @@ import static biz.dealnote.messenger.util.Objects.nonNull;
  * Created by admin on 15.04.2017.
  * phoenix
  */
-public class DualTabPhotosFragment extends Fragment implements BackPressCallback {
+public class DualTabPhotosFragment extends androidx.fragment.app.Fragment implements BackPressCallback {
 
     public static DualTabPhotosFragment newInstance(Sources sources) {
         Bundle args = new Bundle();
@@ -71,14 +71,14 @@ public class DualTabPhotosFragment extends Fragment implements BackPressCallback
         View root = inflater.inflate(R.layout.activity_dual_tab_photos, container, false);
         ((AppCompatActivity) getActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
 
-        TabLayout tabLayout = root.findViewById(R.id.tablayout);
-        tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
+        com.google.android.material.tabs.TabLayout tabLayout = root.findViewById(R.id.tablayout);
+        tabLayout.setTabGravity(com.google.android.material.tabs.TabLayout.GRAVITY_CENTER);
         int tabColorPrimary = CurrentTheme.getPrimaryTextColorOnColoredBackgroundCode(getActivity());
         int tabColorSecondary = CurrentTheme.getSecondaryTextColorOnColoredBackgroundCode(getActivity());
         tabLayout.setTabTextColors(tabColorSecondary, tabColorPrimary);
 
-        ViewPager viewPager = root.findViewById(R.id.view_pager);
-        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+        androidx.viewpager.widget.ViewPager viewPager = root.findViewById(R.id.view_pager);
+        viewPager.addOnPageChangeListener(new androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener(){
             @Override
             public void onPageSelected(int position) {
                 mCurrentTab = position;
@@ -125,7 +125,7 @@ public class DualTabPhotosFragment extends Fragment implements BackPressCallback
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public androidx.fragment.app.Fragment getItem(int position) {
             AbsSelectableSource source = mSources.get(position);
 
             if (source instanceof LocalPhotosSelectableSource) {

@@ -1,6 +1,6 @@
 package biz.dealnote.messenger.util;
 
-import android.support.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 
 public class ExifGeoDegree {
 
@@ -9,10 +9,10 @@ public class ExifGeoDegree {
     private Double Longitude;
 
     public ExifGeoDegree(ExifInterface exif) {
-        String attrLATITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+        String attrLATITUDE = exif.getAttribute(androidx.exifinterface.media.ExifInterface.TAG_GPS_LATITUDE);
         String attrLATITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
         String attrLONGITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-        String attrLONGITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+        String attrLONGITUDE_REF = exif.getAttribute(androidx.exifinterface.media.ExifInterface.TAG_GPS_LONGITUDE_REF);
 
         if ((attrLATITUDE != null)
                 && (attrLATITUDE_REF != null)

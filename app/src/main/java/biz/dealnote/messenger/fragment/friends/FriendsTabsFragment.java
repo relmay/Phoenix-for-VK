@@ -2,14 +2,14 @@ package biz.dealnote.messenger.fragment.friends;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,9 +61,9 @@ public class FriendsTabsFragment extends BasePresenterFragment<FriendsTabsPresen
 
     private CharSequence[] titles;
     private Adapter adapter;
-    private TabLayout tabLayout;
+    private com.google.android.material.tabs.TabLayout tabLayout;
 
-    private ViewPager viewPager;
+    private androidx.viewpager.widget.ViewPager viewPager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -193,7 +193,7 @@ public class FriendsTabsFragment extends BasePresenterFragment<FriendsTabsPresen
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public androidx.fragment.app.Fragment getItem(int position) {
             switch (position){
                 case TAB_ALL_FRIENDS:
                     return AllFriendsFragment.newInstance(accountId, userId);

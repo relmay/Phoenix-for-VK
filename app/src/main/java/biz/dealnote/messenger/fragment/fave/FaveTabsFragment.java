@@ -1,14 +1,14 @@
 package biz.dealnote.messenger.fragment.fave;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,7 +82,7 @@ public class FaveTabsFragment extends BaseFragment {
 
         TabLayout tabLayout = view.findViewById(R.id.tablayout);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
+        tabLayout.setTabGravity(com.google.android.material.tabs.TabLayout.GRAVITY_CENTER);
 
         int tabColorPrimary = CurrentTheme.getPrimaryTextColorOnColoredBackgroundCode(getActivity());
         int tabColorSecondary = CurrentTheme.getSecondaryTextColorOnColoredBackgroundCode(getActivity());
@@ -96,7 +96,7 @@ public class FaveTabsFragment extends BaseFragment {
         }
     }
 
-    private void setupViewPager(ViewPager viewPager) {
+    private void setupViewPager(androidx.viewpager.widget.ViewPager viewPager) {
         Adapter adapter = new Adapter(getChildFragmentManager());
         adapter.addFragment(FavePhotosFragment.newInstance(getAccountId()), getString(R.string.photos));
         adapter.addFragment(FaveVideosFragment.newInstance(getAccountId()), getString(R.string.videos));
@@ -135,7 +135,7 @@ public class FaveTabsFragment extends BaseFragment {
         private final List<Fragment> mFragments = new ArrayList<>();
         private final List<String> mFragmentTitles = new ArrayList<>();
 
-        public Adapter(FragmentManager fm) {
+        public Adapter(androidx.fragment.app.FragmentManager fm) {
             super(fm);
         }
 
@@ -145,7 +145,7 @@ public class FaveTabsFragment extends BaseFragment {
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public androidx.fragment.app.Fragment getItem(int position) {
             return mFragments.get(position);
         }
 

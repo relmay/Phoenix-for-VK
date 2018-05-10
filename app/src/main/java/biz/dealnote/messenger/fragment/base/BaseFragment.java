@@ -1,11 +1,11 @@
 package biz.dealnote.messenger.fragment.base;
 
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public class BaseFragment extends Fragment {
+public class BaseFragment extends androidx.fragment.app.Fragment {
 
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 

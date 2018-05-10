@@ -4,9 +4,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
@@ -228,7 +228,7 @@ public class MessagesAdapter extends RecyclerBindableAdapter<Message, RecyclerVi
     }
 
     @Override
-    protected RecyclerView.ViewHolder viewHolder(View view, int type) {
+    protected androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder(View view, int type) {
         switch (type) {
             case TYPE_DELETED:
                 return new DeletedMessageHolder(view);
@@ -359,7 +359,7 @@ public class MessagesAdapter extends RecyclerBindableAdapter<Message, RecyclerVi
         }
     }
 
-    private class DeletedMessageHolder extends RecyclerView.ViewHolder {
+    private class DeletedMessageHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         Button buttonRestore;
 

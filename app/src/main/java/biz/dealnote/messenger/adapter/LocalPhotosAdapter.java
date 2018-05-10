@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +18,7 @@ import biz.dealnote.messenger.R;
 import biz.dealnote.messenger.api.PicassoInstance;
 import biz.dealnote.messenger.model.LocalPhoto;
 
-public class LocalPhotosAdapter extends RecyclerView.Adapter<LocalPhotosAdapter.ViewHolder> {
+public class LocalPhotosAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<LocalPhotosAdapter.ViewHolder> {
 
     public static final String TAG = LocalPhotosAdapter.class.getSimpleName();
 

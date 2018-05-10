@@ -1,9 +1,9 @@
 package biz.dealnote.messenger.adapter;
 
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
@@ -11,9 +11,9 @@ import java.lang.ref.WeakReference;
 
 import biz.dealnote.messenger.util.Objects;
 
-public abstract class MyFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
+public abstract class MyFragmentStatePagerAdapter extends androidx.fragment.app.FragmentStatePagerAdapter {
 
-    private SparseArray<WeakReference<Fragment>> fragments;
+    private SparseArray<WeakReference<androidx.fragment.app.Fragment>> fragments;
 
     public MyFragmentStatePagerAdapter(FragmentManager fm) {
         super(fm);
@@ -23,7 +23,7 @@ public abstract class MyFragmentStatePagerAdapter extends FragmentStatePagerAdap
     @NonNull
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        Fragment fragment = (Fragment) super.instantiateItem(container, position);
+        Fragment fragment = (androidx.fragment.app.Fragment) super.instantiateItem(container, position);
         fragments.put(position, new WeakReference<>(fragment));
         return fragment;
     }
@@ -34,8 +34,8 @@ public abstract class MyFragmentStatePagerAdapter extends FragmentStatePagerAdap
         super.destroyItem(container, position, object);
     }
 
-    public Fragment findFragmentByPosition(int position){
-        WeakReference<Fragment> weak = fragments.get(position);
+    public androidx.fragment.app.Fragment findFragmentByPosition(int position){
+        WeakReference<androidx.fragment.app.Fragment> weak = fragments.get(position);
         return Objects.isNull(weak) ? null : weak.get();
     }
 }

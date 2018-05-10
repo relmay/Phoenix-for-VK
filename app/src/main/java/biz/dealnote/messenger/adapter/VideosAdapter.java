@@ -1,8 +1,8 @@
 package biz.dealnote.messenger.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +20,7 @@ import biz.dealnote.messenger.util.Objects;
 import biz.dealnote.messenger.util.Utils;
 import biz.dealnote.messenger.view.VideoServiceIcons;
 
-public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.Holder> {
+public class VideosAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<VideosAdapter.Holder> {
 
     private Context context;
     private List<Video> data;
@@ -87,7 +87,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.Holder> {
         void onVideoClick(int position, Video video);
     }
 
-    public class Holder extends RecyclerView.ViewHolder {
+    public class Holder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         View card;
         ImageView image;

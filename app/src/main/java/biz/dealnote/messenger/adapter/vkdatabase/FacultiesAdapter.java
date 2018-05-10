@@ -1,7 +1,7 @@
 package biz.dealnote.messenger.adapter.vkdatabase;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +44,7 @@ public class FacultiesAdapter extends RecyclerView.Adapter<FacultiesAdapter.Hold
         return mData.size();
     }
 
-    public class Holder extends RecyclerView.ViewHolder {
+    public class Holder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
         TextView name;
 

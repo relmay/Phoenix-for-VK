@@ -2,12 +2,12 @@ package biz.dealnote.messenger.activity;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -62,7 +62,7 @@ public abstract class NoMainActivity extends AppCompatActivity {
         return R.id.fragment;
     }
 
-    private FragmentManager.OnBackStackChangedListener mBackStackListener = this::resolveToolbarNavigationIcon;
+    private androidx.fragment.app.FragmentManager.OnBackStackChangedListener mBackStackListener = this::resolveToolbarNavigationIcon;
 
     private Toolbar mToolbar;
 
@@ -76,7 +76,7 @@ public abstract class NoMainActivity extends AppCompatActivity {
     private void resolveToolbarNavigationIcon() {
         if (Objects.isNull(mToolbar)) return;
 
-        FragmentManager manager = getSupportFragmentManager();
+        androidx.fragment.app.FragmentManager manager = getSupportFragmentManager();
         if (manager.getBackStackEntryCount() > 1) {
             mToolbar.setNavigationIcon(CurrentTheme.getDrawableFromAttribute(this, R.attr.toolbarBackIcon));
         } else {
@@ -88,7 +88,7 @@ public abstract class NoMainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        FragmentManager fm = getSupportFragmentManager();
+        androidx.fragment.app.FragmentManager fm = getSupportFragmentManager();
 
         Fragment front = getSupportFragmentManager().findFragmentById(getMainContainerViewId());
         if (front instanceof BackPressCallback) {

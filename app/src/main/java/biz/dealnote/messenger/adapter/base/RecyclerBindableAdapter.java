@@ -1,9 +1,9 @@
 package biz.dealnote.messenger.adapter.base;
 
-import android.support.annotation.LayoutRes;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.LayoutRes;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +12,7 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RecyclerBindableAdapter<T, VH extends RecyclerView.ViewHolder> extends AbsRecyclerViewAdapter<VH> {
+public abstract class RecyclerBindableAdapter<T, VH extends androidx.recyclerview.widget.RecyclerView.ViewHolder> extends AbsRecyclerViewAdapter<VH> {
 
     public static final int TYPE_HEADER = 7898;
     public static final int TYPE_FOOTER = 7899;
@@ -155,7 +155,7 @@ public abstract class RecyclerBindableAdapter<T, VH extends RecyclerView.ViewHol
         //if it's a staggered grid, span the whole layout
         if (manager instanceof StaggeredGridLayoutManager) {
             StaggeredGridLayoutManager.LayoutParams layoutParams =
-                    new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    new androidx.recyclerview.widget.StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.setFullSpan(true);
             vh.itemView.setLayoutParams(layoutParams);
@@ -218,11 +218,11 @@ public abstract class RecyclerBindableAdapter<T, VH extends RecyclerView.ViewHol
 
     private void setManager(RecyclerView.LayoutManager manager) {
         this.manager = manager;
-        if (this.manager instanceof GridLayoutManager) {
+        if (this.manager instanceof androidx.recyclerview.widget.GridLayoutManager) {
             ((GridLayoutManager) this.manager).setSpanSizeLookup(spanSizeLookup);
         } else if (this.manager instanceof StaggeredGridLayoutManager) {
-            ((StaggeredGridLayoutManager) this.manager).setGapStrategy(
-                    StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+            ((androidx.recyclerview.widget.StaggeredGridLayoutManager) this.manager).setGapStrategy(
+                    androidx.recyclerview.widget.StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         }
     }
 

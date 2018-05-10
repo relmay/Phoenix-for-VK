@@ -2,10 +2,10 @@ package biz.dealnote.messenger.fragment.search;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +23,7 @@ import biz.dealnote.messenger.view.MySearchView;
  * Created by admin on 01.05.2017.
  * phoenix
  */
-public class SingleTabSeachFragment extends Fragment implements MySearchView.OnQueryTextListener, MySearchView.OnAdditionalButtonClickListener {
+public class SingleTabSeachFragment extends androidx.fragment.app.Fragment implements MySearchView.OnQueryTextListener, MySearchView.OnAdditionalButtonClickListener {
 
     public static Bundle buildArgs(int accountId, @SearchContentType int contentType, @Nullable BaseSearchCriteria criteria) {
         Bundle args = new Bundle();
@@ -88,15 +88,15 @@ public class SingleTabSeachFragment extends Fragment implements MySearchView.OnQ
         return root;
     }
 
-    private FragmentManager.FragmentLifecycleCallbacks mFragmentLifecycleCallbacks = new FragmentManager.FragmentLifecycleCallbacks() {
+    private androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks mFragmentLifecycleCallbacks = new androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks() {
         @Override
-        public void onFragmentViewCreated(FragmentManager fm, Fragment f, View v, Bundle savedInstanceState) {
+        public void onFragmentViewCreated(androidx.fragment.app.FragmentManager fm, Fragment f, View v, Bundle savedInstanceState) {
             syncChildFragment();
         }
     };
 
     private void syncChildFragment(){
-        Fragment fragment = getChildFragmentManager().findFragmentById(R.id.child_container);
+        androidx.fragment.app.Fragment fragment = getChildFragmentManager().findFragmentById(R.id.child_container);
 
         if(fragment instanceof AbsSearchFragment){
             ((AbsSearchFragment) fragment).syncYourCriteriaWithParent();
@@ -110,7 +110,7 @@ public class SingleTabSeachFragment extends Fragment implements MySearchView.OnQ
     }
 
     private void fireNewQuery(String query) {
-        Fragment fragment = getChildFragmentManager().findFragmentById(R.id.child_container);
+        androidx.fragment.app.Fragment fragment = getChildFragmentManager().findFragmentById(R.id.child_container);
 
         // MVP
         if(fragment instanceof AbsSearchFragment){
@@ -119,7 +119,7 @@ public class SingleTabSeachFragment extends Fragment implements MySearchView.OnQ
     }
 
     private void attachChildFragment(){
-        Fragment fragment = SearchFragmentFactory.create(mContentType, mAccountId, mInitialCriteria);
+        androidx.fragment.app.Fragment fragment = SearchFragmentFactory.create(mContentType, mAccountId, mInitialCriteria);
         getChildFragmentManager()
                 .beginTransaction()
                 .replace(R.id.child_container, fragment)

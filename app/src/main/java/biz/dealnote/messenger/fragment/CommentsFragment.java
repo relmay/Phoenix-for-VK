@@ -4,14 +4,14 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -92,8 +92,8 @@ public class CommentsFragment extends PlaceSupportPresenterFragment<CommentsPres
     }
 
     private CommentsInputViewController mInputController;
-    private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLinearLayoutManager;
+    private androidx.recyclerview.widget.RecyclerView mRecyclerView;
+    private androidx.recyclerview.widget.LinearLayoutManager mLinearLayoutManager;
 
     private ViewGroup mReplyView;
     private TextView mReplyText;
@@ -124,7 +124,7 @@ public class CommentsFragment extends PlaceSupportPresenterFragment<CommentsPres
         mInputController = new CommentsInputViewController(requireActivity(), root, this);
         mInputController.setOnSickerClickListener(this);
 
-        mLinearLayoutManager = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, true);
+        mLinearLayoutManager = new LinearLayoutManager(requireActivity(), androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, true);
 
         mRecyclerView = root.findViewById(R.id.list);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);

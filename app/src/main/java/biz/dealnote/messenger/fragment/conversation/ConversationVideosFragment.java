@@ -1,9 +1,9 @@
 package biz.dealnote.messenger.fragment.conversation;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +26,7 @@ public class ConversationVideosFragment extends AbsChatAttachmentsFragment<Video
     }
 
     @Override
-    public RecyclerView.Adapter createAdapter() {
+    public androidx.recyclerview.widget.RecyclerView.Adapter createAdapter() {
         VideosAdapter adapter = new VideosAdapter(getActivity(), Collections.emptyList());
         adapter.setVideoOnClickListener(this);
         return adapter;

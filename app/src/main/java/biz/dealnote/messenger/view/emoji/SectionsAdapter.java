@@ -2,7 +2,7 @@ package biz.dealnote.messenger.view.emoji;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +14,7 @@ import biz.dealnote.messenger.R;
 import biz.dealnote.messenger.api.PicassoInstance;
 import biz.dealnote.messenger.settings.CurrentTheme;
 
-public class SectionsAdapter extends RecyclerView.Adapter<SectionsAdapter.Holder> {
+public class SectionsAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<SectionsAdapter.Holder> {
 
     private Context mContext;
     private List<AbsSection> data;

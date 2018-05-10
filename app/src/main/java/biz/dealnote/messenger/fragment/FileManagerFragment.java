@@ -7,11 +7,11 @@ import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.StatFs;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -43,7 +43,7 @@ import biz.dealnote.messenger.util.InputTextDialog;
 import biz.dealnote.messenger.util.Logger;
 import biz.dealnote.messenger.util.Utils;
 
-public class FileManagerFragment extends Fragment implements FileManagerAdapter.ClickListener, BackPressCallback {
+public class FileManagerFragment extends androidx.fragment.app.Fragment implements FileManagerAdapter.ClickListener, BackPressCallback {
 
     public static final String EXTRA_START_DIRECTOTY = "start_directory";
     public static final String EXTRA_SHOW_CANNOT_READ = "show_cannot_read";
@@ -118,7 +118,7 @@ public class FileManagerFragment extends Fragment implements FileManagerAdapter.
         mRecyclerView = root.findViewById(R.id.list);
         empty = root.findViewById(R.id.empty);
 
-        mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager = new androidx.recyclerview.widget.LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.setHasFixedSize(Boolean.TRUE);
 
@@ -453,7 +453,7 @@ public class FileManagerFragment extends Fragment implements FileManagerAdapter.
             states = new HashMap<>(size);
             for (int i = 0; i < size; i++) {
                 String key = in.readString();
-                Parcelable value = in.readParcelable(LinearLayoutManager.SavedState.class.getClassLoader());
+                Parcelable value = in.readParcelable(androidx.recyclerview.widget.LinearLayoutManager.SavedState.class.getClassLoader());
                 states.put(key, value);
             }
         }
