@@ -155,7 +155,7 @@ dependencies {
     implementation "com.google.firebase:firebase-crash:15.0.2"
     implementation "com.google.firebase:firebase-database:15.0.1"
     implementation "com.google.firebase:firebase-messaging:15.0.2"
-    implementation 'com.google.android.exoplayer:exoplayer:2.8.0'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.8.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
