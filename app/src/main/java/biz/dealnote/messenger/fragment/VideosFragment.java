@@ -3,13 +3,13 @@ package biz.dealnote.messenger.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-import androidx.appcompat.widget.Toolbar;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,12 +63,12 @@ public class VideosFragment extends BasePresenterFragment<VideosListPresenter, I
     @Override
     public IPresenterFactory<VideosListPresenter> getPresenterFactory(@Nullable Bundle saveInstanceState) {
         return () -> {
-            int accountId = getArguments().getInt(Extra.ACCOUNT_ID);
-            int albumId = getArguments().getInt(Extra.ALBUM_ID);
-            int ownerId = getArguments().getInt(Extra.OWNER_ID);
+            int accountId = requireArguments().getInt(Extra.ACCOUNT_ID);
+            int albumId = requireArguments().getInt(Extra.ALBUM_ID);
+            int ownerId = requireArguments().getInt(Extra.OWNER_ID);
 
-            String optAlbumTitle = getArguments().getString(EXTRA_ALBUM_TITLE);
-            String action = getArguments().getString(Extra.ACTION);
+            String optAlbumTitle = requireArguments().getString(EXTRA_ALBUM_TITLE);
+            String action = requireArguments().getString(Extra.ACTION);
             return new VideosListPresenter(accountId, ownerId, albumId, action, optAlbumTitle, saveInstanceState);
         };
     }
@@ -90,13 +90,13 @@ public class VideosFragment extends BasePresenterFragment<VideosListPresenter, I
 
     private VideosAdapter mAdapter;
 
-    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView mEmpty;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        inTabsContainer = getArguments().getBoolean(EXTRA_IN_TABS_CONTAINER);
+        inTabsContainer = requireArguments().getBoolean(EXTRA_IN_TABS_CONTAINER);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class VideosFragment extends BasePresenterFragment<VideosListPresenter, I
                     .setBlockNavigationDrawer(false)
                     .setStatusBarColored(getActivity(),true)
                     .build()
-                    .apply(getActivity());
+                    .apply(requireActivity());
         }
     }
 
@@ -147,7 +147,7 @@ public class VideosFragment extends BasePresenterFragment<VideosListPresenter, I
 
         if (!inTabsContainer) {
             toolbar.setVisibility(View.VISIBLE);
-            ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+            ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         } else {
             toolbar.setVisibility(View.GONE);
         }
@@ -159,8 +159,8 @@ public class VideosFragment extends BasePresenterFragment<VideosListPresenter, I
 
         mEmpty = root.findViewById(R.id.empty);
 
-        int columns = getContext().getResources().getInteger(R.integer.videos_column_count);
-        androidx.recyclerview.widget.StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
+        int columns = requireActivity().getResources().getInteger(R.integer.videos_column_count);
+        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);
         recyclerView.addOnScrollListener(new PicassoPauseOnScrollListener(Constants.PICASSO_TAG));
         recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
@@ -170,7 +170,7 @@ public class VideosFragment extends BasePresenterFragment<VideosListPresenter, I
             }
         });
 
-        mAdapter = new VideosAdapter(getActivity(), Collections.emptyList());
+        mAdapter = new VideosAdapter(requireActivity(), Collections.emptyList());
         mAdapter.setVideoOnClickListener(this);
         recyclerView.setAdapter(mAdapter);
 
@@ -224,12 +224,12 @@ public class VideosFragment extends BasePresenterFragment<VideosListPresenter, I
     public void returnSelectionToParent(Video video) {
         Intent intent = new Intent();
         intent.putParcelableArrayListExtra(Extra.ATTACHMENTS, Utils.singletonArrayList(video));
-        getActivity().setResult(Activity.RESULT_OK, intent);
-        getActivity().finish();
+        requireActivity().setResult(Activity.RESULT_OK, intent);
+        requireActivity().finish();
     }
 
     @Override
     public void showVideoPreview(int accountId, Video video) {
-        PlaceFactory.getVideoPreviewPlace(accountId, video).tryOpenWith(getActivity());
+        PlaceFactory.getVideoPreviewPlace(accountId, video).tryOpenWith(requireActivity());
     }
 }

@@ -28,6 +28,8 @@ import biz.dealnote.mvp.reflect.OnGuiCreated;
 import io.reactivex.disposables.CompositeDisposable;
 
 import static biz.dealnote.messenger.util.Objects.nonNull;
+import static biz.dealnote.messenger.util.RxUtils.dummy;
+import static biz.dealnote.messenger.util.RxUtils.ignore;
 import static biz.dealnote.messenger.util.Utils.findIndexByPredicate;
 import static biz.dealnote.messenger.util.Utils.findInfoByPredicate;
 import static biz.dealnote.messenger.util.Utils.getCauseIfRuntime;
@@ -336,8 +338,7 @@ public abstract class AbsWallPresenter<V extends IWallView> extends PlaceSupport
     public void firePostRestoreClick(Post post) {
         appendDisposable(walls.restore(getAccountId(), post.getOwnerId(), post.getVkid())
                 .compose(RxUtils.applyCompletableIOToMainSchedulers())
-                .subscribe(() -> {
-                }, t -> showError(getView(), getCauseIfRuntime(t))));
+                .subscribe(dummy(), t -> showError(getView(), t)));
     }
 
     public void fireLikeLongClick(Post post) {
@@ -353,8 +354,7 @@ public abstract class AbsWallPresenter<V extends IWallView> extends PlaceSupport
 
         appendDisposable(walls.like(accountId, post.getOwnerId(), post.getVkid(), !post.isUserLikes())
                 .compose(RxUtils.applySingleIOToMainSchedulers())
-                .subscribe(ignored -> {
-                }, t -> showError(getView(), getCauseIfRuntime(t))));
+                .subscribe(ignore(), t -> showError(getView(), t)));
     }
 
     int getWallFilter() {
@@ -444,7 +444,6 @@ public abstract class AbsWallPresenter<V extends IWallView> extends PlaceSupport
     public void fireButtonRemoveClick(Post post) {
         appendDisposable(walls.delete(getAccountId(), ownerId, post.getVkid())
                 .compose(RxUtils.applyCompletableIOToMainSchedulers())
-                .subscribe(() -> {
-                }, throwable -> showError(getView(), getCauseIfRuntime(throwable))));
+                .subscribe(dummy(), t -> showError(getView(), t)));
     }
 }

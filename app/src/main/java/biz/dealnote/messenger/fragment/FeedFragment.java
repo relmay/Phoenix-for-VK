@@ -2,14 +2,14 @@ package biz.dealnote.messenger.fragment;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,7 +54,7 @@ import static biz.dealnote.messenger.util.Objects.nonNull;
 import static biz.dealnote.messenger.util.Utils.nonEmpty;
 
 public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, IFeedView> implements IFeedView,
-        androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener, FeedAdapter.ClickListener, HorizontalOptionsAdapter.Listener<FeedSource> {
+        SwipeRefreshLayout.OnRefreshListener, FeedAdapter.ClickListener, HorizontalOptionsAdapter.Listener<FeedSource> {
 
     private static final String TAG = FeedFragment.class.getSimpleName();
 
@@ -63,7 +63,7 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
     private RecyclerView mRecycleView;
     private RecyclerView.LayoutManager mFeedLayoutManager;
 
-    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private LoadMoreFooterHelper mLoadMoreFooterHelper;
 
@@ -122,17 +122,17 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_new_feed, container, false);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
 
         mSwipeRefreshLayout = root.findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         styleSwipeRefreshLayoutWithCurrentTheme(mSwipeRefreshLayout);
 
-        if (Utils.is600dp(getActivity())) {
-            boolean land = Utils.isLandscape(getActivity());
+        if (Utils.is600dp(requireActivity())) {
+            boolean land = Utils.isLandscape(requireActivity());
             mFeedLayoutManager = new StaggeredGridLayoutManager(land ? 2 : 1, StaggeredGridLayoutManager.VERTICAL);
         } else {
-            mFeedLayoutManager = new LinearLayoutManager(getActivity(), androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, false);
+            mFeedLayoutManager = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false);
         }
 
         mRecycleView = root.findViewById(R.id.fragment_feeds_list);
@@ -155,7 +155,7 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
         ViewGroup headerView = (ViewGroup) inflater.inflate(R.layout.header_feed, mRecycleView, false);
         RecyclerView headerRecyclerView = headerView.findViewById(R.id.header_list);
 
-        mHeaderLayoutManager = new androidx.recyclerview.widget.LinearLayoutManager(getActivity(), androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false);
+        mHeaderLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         headerRecyclerView.setLayoutManager(mHeaderLayoutManager);
 
         mAdapter = new FeedAdapter(getActivity(), Collections.emptyList(), this);
@@ -229,7 +229,7 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
                 .setBlockNavigationDrawer(false)
                 .setStatusBarColored(getActivity(),true)
                 .build()
-                .apply(getActivity());
+                .apply(requireActivity());
     }
 
     @Override
@@ -271,20 +271,18 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
 
     @Override
     public void goToLikes(int accountId, String type, int ownerId, int id) {
-        PlaceFactory.getLikesCopiesPlace(accountId, type, ownerId, id, ILikesInteractor.FILTER_LIKES)
-                .tryOpenWith(getActivity());
+        PlaceFactory.getLikesCopiesPlace(accountId, type, ownerId, id, ILikesInteractor.FILTER_LIKES).tryOpenWith(requireActivity());
     }
 
     @Override
     public void goToReposts(int accountId, String type, int ownerId, int id) {
-        PlaceFactory.getLikesCopiesPlace(accountId, type, ownerId, id, ILikesInteractor.FILTER_COPIES)
-                .tryOpenWith(getActivity());
+        PlaceFactory.getLikesCopiesPlace(accountId, type, ownerId, id, ILikesInteractor.FILTER_COPIES).tryOpenWith(requireActivity());
     }
 
     @Override
     public void goToPostComments(int accountId, int postId, int ownerId) {
         Commented commented = new Commented(postId, ownerId, CommentedType.POST, null);
-        PlaceFactory.getCommentsPlace(accountId, commented, null).tryOpenWith(getActivity());
+        PlaceFactory.getCommentsPlace(accountId, commented, null).tryOpenWith(requireActivity());
     }
 
     @Override
@@ -294,8 +292,8 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
 
     private void restoreRecycleViewManagerState(String state) {
         if (nonEmpty(state)) {
-            if (mFeedLayoutManager instanceof androidx.recyclerview.widget.LinearLayoutManager) {
-                androidx.recyclerview.widget.LinearLayoutManager.SavedState savedState = gson().fromJson(state, LinearLayoutManager.SavedState.class);
+            if (mFeedLayoutManager instanceof LinearLayoutManager) {
+                LinearLayoutManager.SavedState savedState = gson().fromJson(state, LinearLayoutManager.SavedState.class);
                 mFeedLayoutManager.onRestoreInstanceState(savedState);
             }
 
@@ -458,6 +456,6 @@ public class FeedFragment extends PlaceSupportPresenterFragment<FeedPresenter, I
 
     @Override
     public IPresenterFactory<FeedPresenter> getPresenterFactory(@Nullable Bundle saveInstanceState) {
-        return () -> new FeedPresenter(getArguments().getInt(Extra.ACCOUNT_ID), saveInstanceState);
+        return () -> new FeedPresenter(requireArguments().getInt(Extra.ACCOUNT_ID), saveInstanceState);
     }
 }

@@ -1,11 +1,11 @@
 package biz.dealnote.messenger.fragment;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +49,7 @@ public class VideoAlbumsFragment extends BasePresenterFragment<VideoAlbumsPresen
         return args;
     }
 
-    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private VideoAlbumsNewAdapter mAdapter;
     private TextView mEmpty;
 
@@ -65,8 +65,8 @@ public class VideoAlbumsFragment extends BasePresenterFragment<VideoAlbumsPresen
 
         mEmpty = root.findViewById(R.id.empty);
 
-        int columns = getContext().getResources().getInteger(R.integer.videos_column_count);
-        androidx.recyclerview.widget.StaggeredGridLayoutManager manager = new androidx.recyclerview.widget.StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
+        int columns = requireActivity().getResources().getInteger(R.integer.videos_column_count);
+        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
 
         recyclerView.setLayoutManager(manager);
         recyclerView.addOnScrollListener(new PicassoPauseOnScrollListener(VideoAlbumsNewAdapter.PICASSO_TAG));
@@ -126,7 +126,7 @@ public class VideoAlbumsFragment extends BasePresenterFragment<VideoAlbumsPresen
 
     @Override
     public void openAlbum(int accountId, int ownerId, int albumId, String action, String title) {
-        PlaceFactory.getVideoAlbumPlace(accountId, ownerId, albumId, action, title).tryOpenWith(getActivity());
+        PlaceFactory.getVideoAlbumPlace(accountId, ownerId, albumId, action, title).tryOpenWith(requireActivity());
     }
 
     @Override
@@ -140,9 +140,9 @@ public class VideoAlbumsFragment extends BasePresenterFragment<VideoAlbumsPresen
     @Override
     public IPresenterFactory<VideoAlbumsPresenter> getPresenterFactory(@Nullable Bundle saveInstanceState) {
         return () -> {
-            int ownerId1 = getArguments().getInt(Extra.OWNER_ID);
-            int accountId = getArguments().getInt(Extra.ACCOUNT_ID);
-            String action = getArguments().getString(Extra.ACTION);
+            int ownerId1 = requireArguments().getInt(Extra.OWNER_ID);
+            int accountId = requireArguments().getInt(Extra.ACCOUNT_ID);
+            String action = requireArguments().getString(Extra.ACTION);
             return new VideoAlbumsPresenter(accountId, ownerId1, action, saveInstanceState);
         };
     }

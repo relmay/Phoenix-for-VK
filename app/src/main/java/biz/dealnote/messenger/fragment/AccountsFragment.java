@@ -6,13 +6,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,7 +40,7 @@ import biz.dealnote.messenger.domain.IAccountsInteractor;
 import biz.dealnote.messenger.domain.IOwnersInteractor;
 import biz.dealnote.messenger.domain.InteractorFactory;
 import biz.dealnote.messenger.fragment.base.BaseFragment;
-import biz.dealnote.messenger.longpoll.LongpollInstance;
+import biz.dealnote.messenger.longpoll.LongpollService;
 import biz.dealnote.messenger.model.Account;
 import biz.dealnote.messenger.model.User;
 import biz.dealnote.messenger.settings.Settings;
@@ -263,11 +263,15 @@ public class AccountsFragment extends BaseFragment implements View.OnClickListen
 
         DBHelper.removeDatabaseFor(requireActivity(), account.getId());
 
-        LongpollInstance.get().forceDestroy(account.getId());
+        stopLongpoll();
 
         mData.remove(account);
         mAdapter.notifyDataSetChanged();
         resolveEmptyText();
+    }
+
+    private void stopLongpoll() {
+        requireContext().stopService(new Intent(getActivity(), LongpollService.class));
     }
 
     private void setAsActive(Account account) {

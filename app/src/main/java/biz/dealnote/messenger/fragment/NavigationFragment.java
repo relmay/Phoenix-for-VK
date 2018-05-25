@@ -2,11 +2,10 @@ package biz.dealnote.messenger.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.support.annotation.NonNull;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,7 +98,7 @@ public class NavigationFragment extends BaseFragment implements MenuListAdapter.
     private static final int MAX_RECENT_COUNT = 5;
 
     private NavigationDrawerCallbacks mCallbacks;
-    private androidx.drawerlayout.widget.DrawerLayout mDrawerLayout;
+    private DrawerLayout mDrawerLayout;
     private View mFragmentContainerView;
     private ImageView ivHeaderAvatar;
     private TextView tvUserName;
@@ -161,8 +160,8 @@ public class NavigationFragment extends BaseFragment implements MenuListAdapter.
     public View onCreateView(@NonNull final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
 
-        androidx.recyclerview.widget.RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireActivity()));
+        RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
         View vHeader = inflater.inflate(R.layout.header_navi_menu, recyclerView, false);
 
@@ -364,7 +363,7 @@ public class NavigationFragment extends BaseFragment implements MenuListAdapter.
      * @param fragmentId   The android:id of this fragment in its activity's layout.
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
-    public void setUp(int fragmentId, androidx.drawerlayout.widget.DrawerLayout drawerLayout) {
+    public void setUp(int fragmentId, DrawerLayout drawerLayout) {
         mFragmentContainerView = requireActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
 //        if (drawerLayout != null) {
