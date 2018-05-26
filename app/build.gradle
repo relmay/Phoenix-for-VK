@@ -123,9 +123,11 @@ allprojects {
     }
 }
 
-ext.androidXLibraryVersion = '1.0.0-alpha1'
-ext.retrofitLibraryVersion = '2.4.0'
-ext.okhttpLibraryVersion = '3.10.0'
+ext {
+    androidXLibraryVersion = '1.0.0-alpha1'
+    retrofitLibraryVersion = '2.4.0'
+    okhttpLibraryVersion = '3.10.0'
+}
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -152,9 +154,9 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitLibraryVersion"
     implementation "com.squareup.okhttp3:okhttp:$okhttpLibraryVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttpLibraryVersion"
-    implementation "com.google.firebase:firebase-crash:15.0.2"
-    implementation "com.google.firebase:firebase-database:15.0.1"
-    implementation "com.google.firebase:firebase-messaging:15.0.2"
+    implementation "com.google.firebase:firebase-crash:16.0.0"
+    implementation "com.google.firebase:firebase-database:16.0.1"
+    implementation "com.google.firebase:firebase-messaging:17.0.0"
     implementation 'com.google.android.exoplayer:exoplayer-core:2.8.0'
 }
 
