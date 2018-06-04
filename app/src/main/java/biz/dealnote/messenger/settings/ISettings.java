@@ -59,6 +59,8 @@ public interface ISettings {
 
         boolean isForceExoplayer();
 
+        boolean isKeepLongpoll();
+
         boolean isCommentsDesc();
 
         boolean toggleCommentsDirection();

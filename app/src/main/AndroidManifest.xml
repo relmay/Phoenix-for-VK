@@ -256,6 +256,10 @@
         <activity android:name=".activity.DualTabPhotoActivity"
             android:label="@string/photos"/>
 
+        <service
+            android:exported="false"
+            android:name=".service.KeepLongpollService"/>
+
     </application>
 
 </manifest>
