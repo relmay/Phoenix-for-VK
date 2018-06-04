@@ -3,7 +3,6 @@ package biz.dealnote.messenger.mvp.presenter;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -11,9 +10,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -34,7 +33,8 @@ import biz.dealnote.messenger.domain.IAttachmentsRepository;
 import biz.dealnote.messenger.domain.IMessagesInteractor;
 import biz.dealnote.messenger.domain.InteractorFactory;
 import biz.dealnote.messenger.exception.UploadNotResolvedException;
-import biz.dealnote.messenger.longpoll.LongpollUtils;
+import biz.dealnote.messenger.longpoll.ILongpollManager;
+import biz.dealnote.messenger.longpoll.LongpollInstance;
 import biz.dealnote.messenger.longpoll.model.AbsRealtimeAction;
 import biz.dealnote.messenger.longpoll.model.MessageFlagsReset;
 import biz.dealnote.messenger.longpoll.model.MessageFlagsSet;
@@ -60,7 +60,7 @@ import biz.dealnote.messenger.model.Sticker;
 import biz.dealnote.messenger.mvp.view.IChatView;
 import biz.dealnote.messenger.realtime.Processors;
 import biz.dealnote.messenger.realtime.TmpResult;
-import biz.dealnote.messenger.service.SendService;
+import biz.dealnote.messenger.service.MessageSender;
 import biz.dealnote.messenger.settings.ISettings;
 import biz.dealnote.messenger.settings.Settings;
 import biz.dealnote.messenger.task.TextingNotifier;
@@ -88,6 +88,9 @@ import static biz.dealnote.messenger.util.AppTextUtils.safeTrimmedIsEmpty;
 import static biz.dealnote.messenger.util.CompareUtils.compareInts;
 import static biz.dealnote.messenger.util.Objects.isNull;
 import static biz.dealnote.messenger.util.Objects.nonNull;
+import static biz.dealnote.messenger.util.RxUtils.dummy;
+import static biz.dealnote.messenger.util.RxUtils.ignore;
+import static biz.dealnote.messenger.util.RxUtils.subscribeOnIOAndIgnore;
 import static biz.dealnote.messenger.util.Utils.getCauseIfRuntime;
 import static biz.dealnote.messenger.util.Utils.getSelected;
 import static biz.dealnote.messenger.util.Utils.hasFlag;
@@ -143,10 +146,12 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
     private final int messagesOwnerId;
 
     private final IMessagesInteractor messagesInteractor;
+    private final ILongpollManager longpollManager;
 
     public ChatPrensenter(int accountId, int messagesOwnerId, @NonNull Peer initialPeer, @NonNull OutConfig config, @Nullable Bundle savedInstanceState) {
         super(accountId, savedInstanceState);
         this.messagesInteractor = InteractorFactory.createMessagesInteractor();
+        this.longpollManager = LongpollInstance.get();
         this.messagesOwnerId = messagesOwnerId;
 
         mAudioRecordWrapper = new AudioRecordWrapper.Builder(App.getInstance())
@@ -205,9 +210,13 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         mRecordingLookup = new Lookup(1000);
         mRecordingLookup.setCallback(this::resolveRecordingTimeView);
 
-        appendDisposable(LongpollUtils.observeUpdates(getApplicationContext())
+        appendDisposable(longpollManager.observe()
                 .observeOn(Injection.provideMainThreadScheduler())
-                .subscribe(this::onRealtimeVkActionReceive));
+                .subscribe(this::onRealtimeVkActionReceive, ignore()));
+
+        appendDisposable(longpollManager.observeKeepAlive()
+                .observeOn(Injection.provideMainThreadScheduler())
+                .subscribe(ignore -> onLongpollKeepAliveRequest(), ignore()));
 
         appendDisposable(Processors.realtimeMessages()
                 .observeResults()
@@ -226,15 +235,14 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         updateSubtitle();
     }
 
+    private void onLongpollKeepAliveRequest() {
+        checkLongpoll();
+    }
+
     @SuppressLint("SwitchIntDef")
     private void onRealtimeVkActionReceive(List<AbsRealtimeAction> actions) {
         for (AbsRealtimeAction action : actions) {
             switch (action.getAction()) {
-                case RealtimeAction.KEEP_LISTENING_REQUEST:
-                    if (isLongpollNeed()) {
-                        LongpollUtils.register(getApplicationContext(), messagesOwnerId, getPeerId(), null, null);
-                    }
-                    break;
                 case RealtimeAction.USER_WRITE_TEXT:
                     onUserWriteInDialog((WriteText) action);
                     break;
@@ -514,12 +522,11 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         }
     }
 
+    @SuppressLint("CheckResult")
     private void sendMessage(@NonNull SaveMessageBuilder builder) {
-        final Context app = getApplicationContext();
-
-        this.messagesInteractor.put(builder)
+        messagesInteractor.put(builder)
                 .compose(RxUtils.applySingleIOToMainSchedulers())
-                .doOnSuccess(message -> startSendService(app))
+                .doOnSuccess(message -> startSendService())
                 .subscribe(new WeakConsumer<>(this::onMessageSaveSuccess), this::onMessageSaveError);
     }
 
@@ -551,13 +558,8 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         //}
     }
 
-    private void startSendService(Context context) {
-        Intent intent = new Intent(context, SendService.class);
-        context.startService(intent);
-    }
-
     private void startSendService() {
-        startSendService(getApplicationContext());
+        MessageSender.getSendService().runSendingQueue();
     }
 
     public void fireAttachButtonClick() {
@@ -981,10 +983,17 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         if (isGuiReady()) getView().displayToolbarSubtitle(mSubtitle);
     }
 
+    private void checkLongpoll(){
+        boolean need = isGuiResumed() && getAccountId() != ISettings.IAccountsSettings.INVALID_ID;
+        if(need){
+            longpollManager.keepAlive(getAccountId());
+        }
+    }
+
     @Override
     public void onGuiResumed() {
         super.onGuiResumed();
-        LongpollUtils.register(getApplicationContext(), messagesOwnerId, getPeerId(), null, null);
+        checkLongpoll();
         Processors.realtimeMessages()
                 .registerNotificationsInterceptor(getPresenterId(), Pair.create(messagesOwnerId, getPeerId()));
     }
@@ -992,7 +1001,7 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
     @Override
     public void onGuiPaused() {
         super.onGuiPaused();
-        LongpollUtils.unregister(getApplicationContext(), messagesOwnerId, getPeerId());
+        checkLongpoll();
         Processors.realtimeMessages()
                 .unregisterNotificationsInterceptor(getPresenterId());
     }
@@ -1060,11 +1069,10 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         final int peerId = getPeerId();
         final String body = mDraftMessageText;
 
-        Stores.getInstance().messages()
+        subscribeOnIOAndIgnore(Stores.getInstance()
+                .messages()
                 .saveDraftMessageBody(messagesOwnerId, peerId, body)
-                .subscribeOn(Schedulers.io())
-                .subscribe(ignore -> {
-                }, Analytics::logUnexpectedError);
+                .subscribeOn(Schedulers.io()));
     }
 
     @Override
@@ -1092,7 +1100,7 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
 
             appendDisposable(messagesInteractor.markAsRead(messagesOwnerId, peedId)
                     .compose(RxUtils.applyCompletableIOToMainSchedulers())
-                    .subscribe(() -> {/*ignore*/}, t -> showError(getView(), getCauseIfRuntime(t))));
+                    .subscribe(dummy(), t -> showError(getView(), t)));
         }
     }
 
@@ -1165,7 +1173,7 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         if (!sent.isEmpty()) {
             appendDisposable(messagesInteractor.deleteMessages(messagesOwnerId, sent)
                     .compose(RxUtils.applyCompletableIOToMainSchedulers())
-                    .subscribe(() -> {/*ignore*/}, t -> showError(getView(), getCauseIfRuntime(t))));
+                    .subscribe(dummy(), t -> showError(getView(), t)));
         }
 
         if (hasChanged) {
@@ -1187,12 +1195,9 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
     }
 
     private void deleteMessageFromDbAsync(@NonNull Message message) {
-        Stores.getInstance()
+        subscribeOnIOAndIgnore(Stores.getInstance()
                 .messages()
-                .deleteMessage(messagesOwnerId, message.getId())
-                .subscribeOn(Schedulers.io())
-                .subscribe(ignore -> {
-                }, Analytics::logUnexpectedError);
+                .deleteMessage(messagesOwnerId, message.getId()));
     }
 
     public void fireErrorMessageDeleteClick(@NonNull Message message) {
@@ -1217,7 +1222,7 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
 
         appendDisposable(messagesInteractor.removeChatUser(accountId, chatId, accountId)
                 .compose(RxUtils.applyCompletableIOToMainSchedulers())
-                .subscribe(() -> {}, t -> showError(getView(), getCauseIfRuntime(t))));
+                .subscribe(dummy(), t -> showError(getView(), t)));
     }
 
     public void fireChatTitleClick() {
@@ -1305,7 +1310,7 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
 
         appendDisposable(messagesInteractor.changeChatTitle(this.messagesOwnerId, chatId, newValue)
                 .compose(RxUtils.applyCompletableIOToMainSchedulers())
-                .subscribe(() -> {/*ignore*/}, t -> showError(getView(), getCauseIfRuntime(t))));
+                .subscribe(dummy(), t -> showError(getView(), t)));
     }
 
     public void fireForwardToHereClick(@NonNull ArrayList<Message> messages) {
@@ -1472,10 +1477,6 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         //reInitWithNewPeer(newAccountId, messagesOwnerId, getPeerId(), mPeer.getTitle());
     }
 
-    private boolean isLongpollNeed() {
-        return isGuiResumed();
-    }
-
     public void reInitWithNewPeer(int newAccountId, int newMessagesOwnerId, int newPeerId, String title) {
         saveDraftMessageBody();
 
@@ -1484,11 +1485,11 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
 
         this.mPeer = new Peer(newPeerId).setTitle(title);
 
-        if (isLongpollNeed()) {
-            LongpollUtils.register(getApplicationContext(), newMessagesOwnerId, newPeerId, oldMessageOwnerId, oldPeerId);
-            Processors.realtimeMessages()
-                    .registerNotificationsInterceptor(getPresenterId(), Pair.create(messagesOwnerId, getPeerId()));
+        if (isGuiResumed()) {
+            Processors.realtimeMessages().registerNotificationsInterceptor(getPresenterId(), Pair.create(messagesOwnerId, getPeerId()));
         }
+
+        checkLongpoll();
 
         resolveAccountHotSwapSupport();
         resetDatabaseLoading();
@@ -1595,36 +1596,32 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
             this.uploadFiles = in.createTypedArrayList(Uri.CREATOR);
         }
 
-        public OutConfig setModels(ModelsBundle models) {
+        public void setModels(ModelsBundle models) {
             this.models = models;
-            return this;
         }
 
         private boolean isCloseOnSend() {
             return closeOnSend;
         }
 
-        public OutConfig setCloseOnSend(boolean closeOnSend) {
+        public void setCloseOnSend(boolean closeOnSend) {
             this.closeOnSend = closeOnSend;
-            return this;
         }
 
         private String getInitialText() {
             return initialText;
         }
 
-        public OutConfig setInitialText(String initialText) {
+        public void setInitialText(String initialText) {
             this.initialText = initialText;
-            return this;
         }
 
         private ArrayList<Uri> getUploadFiles() {
             return uploadFiles;
         }
 
-        public OutConfig setUploadFiles(ArrayList<Uri> uploadFiles) {
+        public void setUploadFiles(ArrayList<Uri> uploadFiles) {
             this.uploadFiles = uploadFiles;
-            return this;
         }
 
         @Override
@@ -1640,17 +1637,10 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
             dest.writeTypedList(uploadFiles);
         }
 
-        public OutConfig appendModel(AbsModel model) {
-            this.models.append(model);
-            return this;
-        }
-
-        public OutConfig appendAll(Iterable<? extends AbsModel> models) {
+        public void appendAll(Iterable<? extends AbsModel> models) {
             for (AbsModel model : models) {
                 this.models.append(model);
             }
-            //this.models.append(models);
-            return this;
         }
     }
 }

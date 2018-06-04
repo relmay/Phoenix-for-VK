@@ -6,13 +6,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,7 +40,7 @@ import biz.dealnote.messenger.domain.IAccountsInteractor;
 import biz.dealnote.messenger.domain.IOwnersInteractor;
 import biz.dealnote.messenger.domain.InteractorFactory;
 import biz.dealnote.messenger.fragment.base.BaseFragment;
-import biz.dealnote.messenger.longpoll.LongpollService;
+import biz.dealnote.messenger.longpoll.LongpollInstance;
 import biz.dealnote.messenger.model.Account;
 import biz.dealnote.messenger.model.User;
 import biz.dealnote.messenger.settings.Settings;
@@ -76,11 +76,11 @@ public class AccountsFragment extends BaseFragment implements View.OnClickListen
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_accounts, container, false);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
 
         empty = root.findViewById(R.id.empty);
         mRecyclerView = root.findViewById(R.id.list);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false));
 
         root.findViewById(R.id.fab).setOnClickListener(this);
         return root;
@@ -240,7 +240,7 @@ public class AccountsFragment extends BaseFragment implements View.OnClickListen
     private void startDirectLogin() {
         DirectAuthDialog.newInstance()
                 .targetTo(this, REQEUST_DIRECT_LOGIN)
-                .show(getFragmentManager(), "direct-login");
+                .show(requireFragmentManager(), "direct-login");
     }
 
     @Override
@@ -261,17 +261,13 @@ public class AccountsFragment extends BaseFragment implements View.OnClickListen
                 .accounts()
                 .remove(account.getId());
 
-        DBHelper.removeDatabaseFor(getContext(), account.getId());
+        DBHelper.removeDatabaseFor(requireActivity(), account.getId());
 
-        stopLongpoll();
+        LongpollInstance.get().forceDestroy(account.getId());
 
         mData.remove(account);
         mAdapter.notifyDataSetChanged();
         resolveEmptyText();
-    }
-
-    private void stopLongpoll() {
-        getContext().stopService(new Intent(getActivity(), LongpollService.class));
     }
 
     private void setAsActive(Account account) {
@@ -300,7 +296,7 @@ public class AccountsFragment extends BaseFragment implements View.OnClickListen
             items = new String[]{getString(R.string.delete)};
         }
 
-        new AlertDialog.Builder(getActivity())
+        new AlertDialog.Builder(requireActivity())
                 .setTitle(account.getDisplayName())
                 .setItems(items, (dialog, which) -> {
                     switch (which) {
@@ -321,7 +317,7 @@ public class AccountsFragment extends BaseFragment implements View.OnClickListen
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_ok) {
-            getActivity().finish();
+            requireActivity().finish();
             return true;
         }
 
