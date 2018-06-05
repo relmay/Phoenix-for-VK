@@ -34,7 +34,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            multiDexEnabled false
+            multiDexEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -150,6 +150,7 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitLibraryVersion"
     implementation "com.squareup.okhttp3:okhttp:$okhttpLibraryVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttpLibraryVersion"
+    implementation "com.google.firebase:firebase-core:16.0.0"
     implementation "com.google.firebase:firebase-crash:16.0.0"
     implementation "com.google.firebase:firebase-database:16.0.1"
     implementation "com.google.firebase:firebase-messaging:17.0.0"
