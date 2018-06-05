@@ -33,7 +33,8 @@ import biz.dealnote.messenger.domain.IAttachmentsRepository;
 import biz.dealnote.messenger.domain.IMessagesInteractor;
 import biz.dealnote.messenger.domain.InteractorFactory;
 import biz.dealnote.messenger.exception.UploadNotResolvedException;
-import biz.dealnote.messenger.longpoll.LongpollUtils;
+import biz.dealnote.messenger.longpoll.ILongpollManager;
+import biz.dealnote.messenger.longpoll.LongpollInstance;
 import biz.dealnote.messenger.longpoll.model.AbsRealtimeAction;
 import biz.dealnote.messenger.longpoll.model.MessageFlagsReset;
 import biz.dealnote.messenger.longpoll.model.MessageFlagsSet;
@@ -84,10 +85,10 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 import static biz.dealnote.messenger.util.AppTextUtils.safeTrimmedIsEmpty;
-import static biz.dealnote.messenger.util.CompareUtils.compareInts;
 import static biz.dealnote.messenger.util.Objects.isNull;
 import static biz.dealnote.messenger.util.Objects.nonNull;
 import static biz.dealnote.messenger.util.RxUtils.dummy;
+import static biz.dealnote.messenger.util.RxUtils.ignore;
 import static biz.dealnote.messenger.util.RxUtils.subscribeOnIOAndIgnore;
 import static biz.dealnote.messenger.util.Utils.getCauseIfRuntime;
 import static biz.dealnote.messenger.util.Utils.getSelected;
@@ -119,10 +120,10 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
     private static final Comparator<Message> MESSAGES_COMPARATOR = (rhs, lhs) -> {
         // соблюдаем сортировку как при запросе в бд
         if (lhs.getStatus() == rhs.getStatus()) {
-            return compareInts(lhs.getId(), rhs.getId());
+            return Integer.compare(lhs.getId(), rhs.getId());
         }
 
-        return compareInts(lhs.getStatus(), rhs.getStatus());
+        return Integer.compare(lhs.getStatus(), rhs.getStatus());
     };
 
     private Peer mPeer;
@@ -144,10 +145,12 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
     private final int messagesOwnerId;
 
     private final IMessagesInteractor messagesInteractor;
+    private final ILongpollManager longpollManager;
 
     public ChatPrensenter(int accountId, int messagesOwnerId, @NonNull Peer initialPeer, @NonNull OutConfig config, @Nullable Bundle savedInstanceState) {
         super(accountId, savedInstanceState);
         this.messagesInteractor = InteractorFactory.createMessagesInteractor();
+        this.longpollManager = LongpollInstance.get();
         this.messagesOwnerId = messagesOwnerId;
 
         mAudioRecordWrapper = new AudioRecordWrapper.Builder(App.getInstance())
@@ -206,9 +209,13 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         mRecordingLookup = new Lookup(1000);
         mRecordingLookup.setCallback(this::resolveRecordingTimeView);
 
-        appendDisposable(LongpollUtils.observeUpdates(getApplicationContext())
+        appendDisposable(longpollManager.observe()
                 .observeOn(Injection.provideMainThreadScheduler())
-                .subscribe(this::onRealtimeVkActionReceive));
+                .subscribe(this::onRealtimeVkActionReceive, ignore()));
+
+        appendDisposable(longpollManager.observeKeepAlive()
+                .observeOn(Injection.provideMainThreadScheduler())
+                .subscribe(ignore -> onLongpollKeepAliveRequest(), ignore()));
 
         appendDisposable(Processors.realtimeMessages()
                 .observeResults()
@@ -227,15 +234,14 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         updateSubtitle();
     }
 
+    private void onLongpollKeepAliveRequest() {
+        checkLongpoll();
+    }
+
     @SuppressLint("SwitchIntDef")
     private void onRealtimeVkActionReceive(List<AbsRealtimeAction> actions) {
         for (AbsRealtimeAction action : actions) {
             switch (action.getAction()) {
-                case RealtimeAction.KEEP_LISTENING_REQUEST:
-                    if (isLongpollNeed()) {
-                        LongpollUtils.register(getApplicationContext(), messagesOwnerId, getPeerId(), null, null);
-                    }
-                    break;
                 case RealtimeAction.USER_WRITE_TEXT:
                     onUserWriteInDialog((WriteText) action);
                     break;
@@ -976,10 +982,17 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         if (isGuiReady()) getView().displayToolbarSubtitle(mSubtitle);
     }
 
+    private void checkLongpoll(){
+        boolean need = isGuiResumed() && getAccountId() != ISettings.IAccountsSettings.INVALID_ID;
+        if(need){
+            longpollManager.keepAlive(getAccountId());
+        }
+    }
+
     @Override
     public void onGuiResumed() {
         super.onGuiResumed();
-        LongpollUtils.register(getApplicationContext(), messagesOwnerId, getPeerId(), null, null);
+        checkLongpoll();
         Processors.realtimeMessages()
                 .registerNotificationsInterceptor(getPresenterId(), Pair.create(messagesOwnerId, getPeerId()));
     }
@@ -987,7 +1000,7 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
     @Override
     public void onGuiPaused() {
         super.onGuiPaused();
-        LongpollUtils.unregister(getApplicationContext(), messagesOwnerId, getPeerId());
+        checkLongpoll();
         Processors.realtimeMessages()
                 .unregisterNotificationsInterceptor(getPresenterId());
     }
@@ -1463,10 +1476,6 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         //reInitWithNewPeer(newAccountId, messagesOwnerId, getPeerId(), mPeer.getTitle());
     }
 
-    private boolean isLongpollNeed() {
-        return isGuiResumed();
-    }
-
     public void reInitWithNewPeer(int newAccountId, int newMessagesOwnerId, int newPeerId, String title) {
         saveDraftMessageBody();
 
@@ -1475,11 +1484,11 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
 
         this.mPeer = new Peer(newPeerId).setTitle(title);
 
-        if (isLongpollNeed()) {
-            LongpollUtils.register(getApplicationContext(), newMessagesOwnerId, newPeerId, oldMessageOwnerId, oldPeerId);
-            Processors.realtimeMessages()
-                    .registerNotificationsInterceptor(getPresenterId(), Pair.create(messagesOwnerId, getPeerId()));
+        if (isGuiResumed()) {
+            Processors.realtimeMessages().registerNotificationsInterceptor(getPresenterId(), Pair.create(messagesOwnerId, getPeerId()));
         }
+
+        checkLongpoll();
 
         resolveAccountHotSwapSupport();
         resetDatabaseLoading();

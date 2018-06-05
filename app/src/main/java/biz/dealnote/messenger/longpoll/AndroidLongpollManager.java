@@ -3,7 +3,7 @@ package biz.dealnote.messenger.longpoll;
 import android.content.Context;
 import android.os.Looper;
 import android.os.Message;
-import androidx.annotation.NonNull;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import java.lang.ref.WeakReference;

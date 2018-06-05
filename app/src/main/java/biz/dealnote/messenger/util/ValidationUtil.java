@@ -1,6 +1,6 @@
 package biz.dealnote.messenger.util;
 
-import androidx.core.util.PatternsCompat;
+import android.support.v4.util.PatternsCompat;
 
 import static biz.dealnote.messenger.util.Utils.trimmedIsEmpty;
 
