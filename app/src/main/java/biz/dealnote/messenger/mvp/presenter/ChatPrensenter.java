@@ -60,7 +60,7 @@ import biz.dealnote.messenger.model.Sticker;
 import biz.dealnote.messenger.mvp.view.IChatView;
 import biz.dealnote.messenger.realtime.Processors;
 import biz.dealnote.messenger.realtime.TmpResult;
-import biz.dealnote.messenger.service.MessageSender;
+//import biz.dealnote.messenger.service.MessageSender;
 import biz.dealnote.messenger.settings.ISettings;
 import biz.dealnote.messenger.settings.Settings;
 import biz.dealnote.messenger.task.TextingNotifier;
@@ -558,7 +558,7 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
     }
 
     private void startSendService() {
-        MessageSender.getSendService().runSendingQueue();
+        //MessageSender.getSendService().runSendingQueue();
     }
 
     public void fireAttachButtonClick() {

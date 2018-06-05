@@ -41,7 +41,7 @@ android {
 
         debug {
             minifyEnabled false
-            multiDexEnabled false
+            multiDexEnabled true
         }
     }
 
