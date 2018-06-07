@@ -9,6 +9,9 @@
         <item name="textColorSecondary">#8a000000</item>
         <item name="textColorDisabled">#39000000</item>
 
+        <item name="alertDialogCenterButtons">true</item>
+        <item name="dialogCornerRadius">10dp</item>
+
         <item name="textColorPrimaryOnColoredBack">#ffffffff</item>
         <item name="textColorSecondaryOnColoredBack">#b3ffffff</item>
         <item name="textColorDisabledOnColoredBack">#4Dffffff</item>
