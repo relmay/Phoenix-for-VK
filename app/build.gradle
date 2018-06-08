@@ -9,12 +9,12 @@ android {
         exclude 'META-INF/NOTICE'
     }
 
-    compileSdkVersion 'android-P'
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "biz.dealnote.messenger"
-        minSdkVersion 'P'
-        targetSdkVersion 'P'
+        minSdkVersion 16
+        targetSdkVersion 28
         versionCode 40999
         versionName '4_0_99'
 
