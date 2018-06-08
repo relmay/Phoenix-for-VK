@@ -62,7 +62,7 @@ public abstract class NoMainActivity extends AppCompatActivity {
         return R.id.fragment;
     }
 
-    private androidx.fragment.app.FragmentManager.OnBackStackChangedListener mBackStackListener = this::resolveToolbarNavigationIcon;
+    private FragmentManager.OnBackStackChangedListener mBackStackListener = this::resolveToolbarNavigationIcon;
 
     private Toolbar mToolbar;
 
@@ -76,7 +76,7 @@ public abstract class NoMainActivity extends AppCompatActivity {
     private void resolveToolbarNavigationIcon() {
         if (Objects.isNull(mToolbar)) return;
 
-        androidx.fragment.app.FragmentManager manager = getSupportFragmentManager();
+        FragmentManager manager = getSupportFragmentManager();
         if (manager.getBackStackEntryCount() > 1) {
             mToolbar.setNavigationIcon(CurrentTheme.getDrawableFromAttribute(this, R.attr.toolbarBackIcon));
         } else {
@@ -88,7 +88,7 @@ public abstract class NoMainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        androidx.fragment.app.FragmentManager fm = getSupportFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
 
         Fragment front = getSupportFragmentManager().findFragmentById(getMainContainerViewId());
         if (front instanceof BackPressCallback) {
