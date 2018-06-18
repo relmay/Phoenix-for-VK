@@ -14,7 +14,6 @@ import biz.dealnote.messenger.R;
 import biz.dealnote.messenger.api.model.VKApiCommunity;
 import biz.dealnote.messenger.api.model.VKApiPost;
 import biz.dealnote.messenger.db.AttachToType;
-import biz.dealnote.messenger.db.interfaces.IUploadQueueStore;
 import biz.dealnote.messenger.domain.IAttachmentsRepository;
 import biz.dealnote.messenger.domain.IWalls;
 import biz.dealnote.messenger.model.AbsModel;
@@ -31,9 +30,9 @@ import biz.dealnote.messenger.model.WallEditorAttrs;
 import biz.dealnote.messenger.mvp.view.IPostCreateView;
 import biz.dealnote.messenger.settings.Settings;
 import biz.dealnote.messenger.upload.Method;
+import biz.dealnote.messenger.upload.Upload;
 import biz.dealnote.messenger.upload.UploadDestination;
 import biz.dealnote.messenger.upload.UploadIntent;
-import biz.dealnote.messenger.upload.UploadObject;
 import biz.dealnote.messenger.upload.UploadUtils;
 import biz.dealnote.messenger.util.Analytics;
 import biz.dealnote.messenger.util.AssertUtils;
@@ -73,7 +72,6 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
     private final WallEditorAttrs attrs;
 
     private final IAttachmentsRepository attachmentsRepository;
-    private final IUploadQueueStore uploadsRepository;
     private final IWalls walls;
 
     private Optional<ArrayList<Uri>> upload;
@@ -81,10 +79,8 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
     public PostCreatePresenter(int accountId, int ownerId, @EditingPostType int editingType,
                                ModelsBundle bundle, @NonNull WallEditorAttrs attrs, @Nullable ArrayList<Uri> streams, @Nullable Bundle savedInstanceState) {
         super(accountId, savedInstanceState);
-
         this.upload = Optional.wrap(streams);
         this.attachmentsRepository = Injection.provideAttachmentsRepository();
-        this.uploadsRepository = Injection.provideStores().uploads();
         this.walls = Injection.provideWalls();
 
         this.attrs = attrs;
@@ -161,7 +157,7 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
                     .setSize(size));
         }
 
-        UploadUtils.upload(getApplicationContext(), intents);
+        uploadManager.enqueue(intents);
     }
 
     @Override
@@ -227,7 +223,7 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
         Predicate<AttachmenEntry> predicate = entry -> {
             // сохраняем только те, что не лежат в базе
             AbsModel model = entry.getAttachment();
-            return !(model instanceof UploadObject) && entry.getOptionalId() == 0;
+            return !(model instanceof Upload) && entry.getOptionalId() == 0;
         };
 
         return copyToArrayListWithPredicate(getData(), predicate);
@@ -246,20 +242,24 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
     }
 
     private void setupUploadListening() {
-        appendDisposable(uploadsRepository.observeProgress()
+        appendDisposable(uploadManager.observeDeleting(true)
+                .observeOn(Injection.provideMainThreadScheduler())
+                .subscribe(this::onUploadObjectRemovedFromQueue));
+
+        appendDisposable(uploadManager.observeProgress()
                 .observeOn(Injection.provideMainThreadScheduler())
                 .subscribe(this::onUploadProgressUpdate));
 
-        appendDisposable(uploadsRepository.observeStatusUpdates()
+        appendDisposable(uploadManager.obseveStatus()
                 .observeOn(Injection.provideMainThreadScheduler())
                 .subscribe(this::onUploadStatusUpdate));
 
-        appendDisposable(uploadsRepository.observeQueue()
+        appendDisposable(uploadManager.observeAdding()
                 .observeOn(Injection.provideMainThreadScheduler())
-                .subscribe(updates -> onUploadQueueUpdates(updates, this::isUploadToThis), Analytics::logUnexpectedError));
+                .subscribe(updates -> onUploadQueueUpdates(updates, this::isUploadToThis)));
     }
 
-    private boolean isUploadToThis(UploadObject upload) {
+    private boolean isUploadToThis(Upload upload) {
         UploadDestination dest = upload.getDestination();
         return nonNull(post)
                 && dest.getMethod() == Method.PHOTO_TO_WALL
@@ -274,9 +274,9 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
                 .subscribe(this::onPostRestored, Analytics::logUnexpectedError));
     }
 
-    private void restoreEditingAttachmentsAsync() {
-        appendDisposable(attachmentsSingle()
-                .zipWith(uploadsSingle(), this::combine)
+    private void restoreEditingAttachmentsAsync(int postDbid) {
+        appendDisposable(attachmentsSingle(postDbid)
+                .zipWith(uploadsSingle(postDbid), this::combine)
                 .compose(RxUtils.applySingleIOToMainSchedulers())
                 .subscribe(this::onAttachmentsRestored, Analytics::logUnexpectedError));
     }
@@ -290,18 +290,19 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
 
         setTextBody(post.getText());
 
-        restoreEditingAttachmentsAsync();
+        restoreEditingAttachmentsAsync(post.getDbid());
     }
 
-    private Single<List<AttachmenEntry>> attachmentsSingle() {
+    private Single<List<AttachmenEntry>> attachmentsSingle(int postDbid) {
         return attachmentsRepository
-                .getAttachmentsWithIds(getAccountId(), AttachToType.POST, post.getDbid())
+                .getAttachmentsWithIds(getAccountId(), AttachToType.POST, postDbid)
                 .map(pairs -> createFrom(pairs, true));
     }
 
-    private Single<List<AttachmenEntry>> uploadsSingle() {
-        return uploadsRepository
-                .getAll(this::isUploadToThis)
+    private Single<List<AttachmenEntry>> uploadsSingle(int postDbid) {
+        UploadDestination destination = UploadDestination.forPost(postDbid, ownerId);
+        return uploadManager
+                .get(getAccountId(), destination)
                 .map(AbsAttachmentsEditPresenter::createFrom);
     }
 
@@ -340,7 +341,7 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
         }
 
         UploadDestination destination = UploadDestination.forPost(post.getDbid(), ownerId);
-        UploadUtils.upload(getApplicationContext(), UploadUtils.createIntents(getAccountId(), destination, photos, size, true));
+        uploadManager.enqueue(UploadUtils.createIntents(getAccountId(), destination, photos, size, true));
     }
 
     private boolean filterAttachmentEvents(IAttachmentsRepository.IBaseEvent event) {
@@ -361,8 +362,7 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
                 pollAdded = true;
             }
 
-            getData().add(new AttachmenEntry(true, model)
-                    .setOptionalId(pair.getFirst()));
+            getData().add(new AttachmenEntry(true, model).setOptionalId(pair.getFirst()));
         }
 
         safelyNotifyItemsAdded(size, data.size());
@@ -481,8 +481,8 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
     }
 
     public void fireReadyClick() {
-        appendDisposable(uploadsRepository
-                .getAll(this::isUploadToThis)
+        UploadDestination destination = UploadDestination.forPost(post.getDbid(), ownerId);
+        appendDisposable(uploadManager.get(getAccountId(), destination)
                 .map(List::size)
                 .compose(RxUtils.applySingleIOToMainSchedulers())
                 .subscribe(count -> {
@@ -510,7 +510,7 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
     }
 
     @SuppressWarnings("unused")
-    private void onPostPublishSuccess(Post post){
+    private void onPostPublishSuccess(Post post) {
         changePublishingNowState(false);
 
         this.postPublished = true;
@@ -518,7 +518,7 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
         getView().goBack();
     }
 
-    private void onPostPublishError(Throwable t){
+    private void onPostPublishError(Throwable t) {
         changePublishingNowState(false);
         showError(getView(), getCauseIfRuntime(t));
     }
@@ -529,7 +529,7 @@ public class PostCreatePresenter extends AbsPostEditPresenter<IPostCreateView> {
         }
 
         UploadDestination destination = UploadDestination.forPost(post.getDbid(), ownerId);
-        UploadUtils.cancelByDestination(getApplicationContext(), destination);
+        uploadManager.cancelAll(getAccountId(), destination);
 
         subscribeOnIOAndIgnore(walls.deleteFromCache(getAccountId(), post.getDbid()));
     }

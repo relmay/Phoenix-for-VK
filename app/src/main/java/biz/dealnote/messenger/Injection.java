@@ -6,10 +6,10 @@ import biz.dealnote.messenger.api.CaptchaProvider;
 import biz.dealnote.messenger.api.ICaptchaProvider;
 import biz.dealnote.messenger.api.impl.Networker;
 import biz.dealnote.messenger.api.interfaces.INetworker;
-import biz.dealnote.messenger.db.impl.AppStores;
-import biz.dealnote.messenger.db.impl.LogsStore;
-import biz.dealnote.messenger.db.interfaces.ILogsStore;
-import biz.dealnote.messenger.db.interfaces.IStores;
+import biz.dealnote.messenger.db.impl.AppStorages;
+import biz.dealnote.messenger.db.impl.LogsStorage;
+import biz.dealnote.messenger.db.interfaces.ILogsStorage;
+import biz.dealnote.messenger.db.interfaces.IStorages;
 import biz.dealnote.messenger.domain.IAttachmentsRepository;
 import biz.dealnote.messenger.domain.IBlacklistRepository;
 import biz.dealnote.messenger.domain.IWalls;
@@ -26,10 +26,13 @@ import biz.dealnote.messenger.push.IDevideIdProvider;
 import biz.dealnote.messenger.push.IFcmTokenProvider;
 import biz.dealnote.messenger.push.IPushRegistrationResolver;
 import biz.dealnote.messenger.push.PushRegistrationResolver;
+import biz.dealnote.messenger.service.MessageSender;
 import biz.dealnote.messenger.settings.IProxySettings;
 import biz.dealnote.messenger.settings.ISettings;
 import biz.dealnote.messenger.settings.ProxySettingsImpl;
 import biz.dealnote.messenger.settings.SettingsImpl;
+import biz.dealnote.messenger.upload.IUploadManager;
+import biz.dealnote.messenger.upload.UploadManagerImpl;
 import biz.dealnote.messenger.util.Utils;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -73,6 +76,22 @@ public class Injection {
         }
 
         return resolver;
+    }
+
+    private static volatile IUploadManager uploadManager;
+    private static final Object UPLOADMANAGERLOCK = new Object();
+
+    public static IUploadManager provideUploadManager(){
+        if(uploadManager == null){
+            synchronized (UPLOADMANAGERLOCK){
+                if(uploadManager == null){
+                    uploadManager = new UploadManagerImpl(App.getInstance(), provideNetworkInterfaces(),
+                            provideStores(), provideAttachmentsRepository(), provideWalls(), MessageSender.getSendService());
+                }
+            }
+        }
+
+        return uploadManager;
     }
 
     public static ICaptchaProvider provideCaptchaProvider() {
@@ -120,8 +139,8 @@ public class Injection {
         return networkerInstance;
     }
 
-    public static IStores provideStores(){
-        return AppStores.getInstance(App.getInstance());
+    public static IStorages provideStores(){
+        return AppStorages.getInstance(App.getInstance());
     }
 
     private static volatile IBlacklistRepository blacklistRepository;
@@ -141,13 +160,13 @@ public class Injection {
         return SettingsImpl.getInstance(App.getInstance());
     }
 
-    private static volatile ILogsStore logsStore;
+    private static volatile ILogsStorage logsStore;
 
-    public static ILogsStore provideLogsStore(){
+    public static ILogsStorage provideLogsStore(){
         if(isNull(logsStore)){
             synchronized (Injection.class){
                 if(isNull(logsStore)){
-                    logsStore = new LogsStore(provideApplicationContext());
+                    logsStore = new LogsStorage(provideApplicationContext());
                 }
             }
         }

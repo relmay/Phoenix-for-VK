@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import biz.dealnote.messenger.Injection;
 import biz.dealnote.messenger.R;
-import biz.dealnote.messenger.db.interfaces.IUploadQueueStore;
 import biz.dealnote.messenger.model.AbsModel;
 import biz.dealnote.messenger.model.AttachmenEntry;
 import biz.dealnote.messenger.model.Audio;
@@ -24,14 +24,12 @@ import biz.dealnote.messenger.model.Video;
 import biz.dealnote.messenger.mvp.presenter.base.AccountDependencyPresenter;
 import biz.dealnote.messenger.mvp.view.IBaseAttachmentsEditView;
 import biz.dealnote.messenger.settings.Settings;
-import biz.dealnote.messenger.upload.BaseUploadResponse;
-import biz.dealnote.messenger.upload.UploadObject;
-import biz.dealnote.messenger.upload.UploadUtils;
+import biz.dealnote.messenger.upload.IUploadManager;
+import biz.dealnote.messenger.upload.Upload;
 import biz.dealnote.messenger.util.FileUtil;
 import biz.dealnote.messenger.util.Logger;
 import biz.dealnote.messenger.util.Pair;
 import biz.dealnote.messenger.util.Predicate;
-import biz.dealnote.messenger.util.Utils;
 import biz.dealnote.mvp.reflect.OnGuiCreated;
 
 import static biz.dealnote.messenger.util.AppPerms.hasCameraPermision;
@@ -58,9 +56,12 @@ public abstract class AbsAttachmentsEditPresenter<V extends IBaseAttachmentsEdit
     private final ArrayList<AttachmenEntry> data;
     private Uri currentPhotoCameraUri;
     private Long timerValue;
+    final IUploadManager uploadManager;
 
     AbsAttachmentsEditPresenter(int accountId, @Nullable Bundle savedInstanceState) {
         super(accountId, savedInstanceState);
+        this.uploadManager = Injection.provideUploadManager();
+
         if (nonNull(savedInstanceState)) {
             currentPhotoCameraUri = savedInstanceState.getParcelable(SAVE_CURRENT_PHOTO_CAMERA_URI);
             textBody = savedInstanceState.getString(SAVE_BODY);
@@ -127,75 +128,57 @@ public abstract class AbsAttachmentsEditPresenter<V extends IBaseAttachmentsEdit
         }
     }
 
-    void onUploadProgressUpdate(List<IUploadQueueStore.IProgressUpdate> updates){
+    void onUploadProgressUpdate(List<IUploadManager.IProgressUpdate> updates){
         Logger.d(tag(), "onUploadProgressUpdate, updates:" + updates + ", class: " + updates.getClass());
 
-        for(IUploadQueueStore.IProgressUpdate update : updates){
-            Predicate<AttachmenEntry> predicate = entry -> entry.getAttachment() instanceof UploadObject
-                    && ((UploadObject) entry.getAttachment()).getId() == update.getId();
+        for(IUploadManager.IProgressUpdate update : updates){
+            Predicate<AttachmenEntry> predicate = entry -> entry.getAttachment() instanceof Upload
+                    && ((Upload) entry.getAttachment()).getId() == update.getId();
 
             Pair<Integer, AttachmenEntry> info = findInfoByPredicate(getData(), predicate);
 
             if(nonNull(info)){
                 AttachmenEntry entry = info.getSecond();
 
-                UploadObject object = (UploadObject) entry.getAttachment();
-                if(object.getStatus() != UploadObject.STATUS_UPLOADING) {
+                Upload object = (Upload) entry.getAttachment();
+                if(object.getStatus() != Upload.STATUS_UPLOADING) {
                     continue;
                 }
 
-                object.setProgress(update.getProgress());
-
-                if(isGuiReady()){
-                    getView().updateProgressAtIndex(entry.getId(), update.getProgress());
-                }
+                callView(v -> v.updateProgressAtIndex(entry.getId(), update.getProgress()));
             }
         }
     }
 
-    boolean onUploadObjectRemovedFromQueue(int id, @Nullable BaseUploadResponse response){
-        int index = findUploadIndexById(id);
-        if(index != -1){
-            manuallyRemoveElement(index);
-            return true;
+    void onUploadObjectRemovedFromQueue(int[] ids){
+        for(int id : ids){
+            int index = findUploadIndexById(id);
+            if(index != -1){
+                manuallyRemoveElement(index);
+            }
         }
-
-        return false;
     }
 
-    void onUploadQueueUpdates(List<IUploadQueueStore.IQueueUpdate> updates, Predicate<UploadObject> predicate){
-        //boolean hasChanges = false;
-        List<IUploadQueueStore.IQueueUpdate> added = Utils.copyListWithPredicate(updates,
-                update -> update.isAdding() && predicate.test(update.object()));
+    void onUploadQueueUpdates(List<Upload> updates, Predicate<Upload> predicate){
+        int startSize = data.size();
+        int count = 0;
 
-        if(nonEmpty(added)){
-            int startSize = this.data.size();
-            for(IUploadQueueStore.IQueueUpdate update : added){
-                this.data.add(new AttachmenEntry(true, update.object()));
-            }
-
-            safelyNotifyItemsAdded(startSize, added.size());
-        }
-
-        for(IUploadQueueStore.IQueueUpdate update : updates){
-            if(!update.isAdding()){
-                onUploadObjectRemovedFromQueue(update.getId(), update.response());
+        for(Upload u : updates){
+            if(predicate.test(u)){
+                data.add(new AttachmenEntry(true, u));
+                count++;
             }
         }
 
-        //if(hasChanges){
-        //    safeNotifyDataSetChanged();
-        //}
+        if(count > 0){
+            safelyNotifyItemsAdded(startSize, count);
+        }
     }
 
     void safelyNotifyItemsAdded(int position, int count){
         if (isGuiReady()){
             getView().notifyItemRangeInsert(position, count);
         }
-    }
-
-    void safelyNotifyItemAdded(int position){
-        safelyNotifyItemsAdded(position, 1);
     }
 
     List<AttachmenEntry> combine(List<AttachmenEntry> first, List<AttachmenEntry> second){
@@ -205,22 +188,17 @@ public abstract class AbsAttachmentsEditPresenter<V extends IBaseAttachmentsEdit
         return data;
     }
 
-    void onUploadStatusUpdate(IUploadQueueStore.IStatusUpdate update){
+    void onUploadStatusUpdate(Upload update){
         Logger.d(tag(), "onUploadStatusUpdate, id: " + update.getId() + ", status: " + update.getStatus());
-
         int index = findUploadIndexById(update.getId());
-
         if(index != -1){
-            UploadObject object = (UploadObject) getData().get(index).getAttachment();
-            object.setStatus(update.getStatus());
-
             safeNotifyDataSetChanged();
         }
     }
 
-    static List<AttachmenEntry> createFrom(List<UploadObject> objects){
+    static List<AttachmenEntry> createFrom(List<Upload> objects){
         List<AttachmenEntry> data = new ArrayList<>(objects.size());
-        for (UploadObject object : objects) {
+        for (Upload object : objects) {
             data.add(new AttachmenEntry(true, object));
         }
 
@@ -242,10 +220,9 @@ public abstract class AbsAttachmentsEditPresenter<V extends IBaseAttachmentsEdit
     }
 
     public final void fireRemoveClick(int index, @NonNull AttachmenEntry attachment) {
-        if (attachment.getAttachment() instanceof UploadObject) {
-            UploadObject upload = (UploadObject) attachment.getAttachment();
-
-            UploadUtils.cancelById(getApplicationContext(), upload.getId());
+        if (attachment.getAttachment() instanceof Upload) {
+            Upload upload = (Upload) attachment.getAttachment();
+            uploadManager.cancel(upload.getId());
             return;
         }
 
@@ -451,7 +428,7 @@ public abstract class AbsAttachmentsEditPresenter<V extends IBaseAttachmentsEdit
 
     boolean hasUploads(){
         for(AttachmenEntry entry : data){
-            if(entry.getAttachment() instanceof UploadObject){
+            if(entry.getAttachment() instanceof Upload){
                 return true;
             }
         }
@@ -462,7 +439,7 @@ public abstract class AbsAttachmentsEditPresenter<V extends IBaseAttachmentsEdit
     int findUploadIndexById(int id) {
         for (int i = 0; i < data.size(); i++) {
             AttachmenEntry item = data.get(i);
-            if (item.getAttachment() instanceof UploadObject && ((UploadObject) item.getAttachment()).getId() == id) {
+            if (item.getAttachment() instanceof Upload && ((Upload) item.getAttachment()).getId() == id) {
                 return i;
             }
         }

@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import java.io.InputStream;
 
 import biz.dealnote.messenger.api.IUploadRetrofitProvider;
-import biz.dealnote.messenger.api.PercentageListener;
+import biz.dealnote.messenger.api.PercentagePublisher;
 import biz.dealnote.messenger.api.interfaces.IUploadApi;
 import biz.dealnote.messenger.api.model.upload.UploadDocDto;
 import biz.dealnote.messenger.api.model.upload.UploadOwnerPhotoDto;
@@ -18,7 +18,6 @@ import biz.dealnote.messenger.util.Objects;
 import io.reactivex.Single;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import retrofit2.Call;
 
 /**
  * Created by Ruslan Kolbasa on 31.07.2017.
@@ -28,7 +27,7 @@ public class UploadApi implements IUploadApi {
 
     private final IUploadRetrofitProvider provider;
 
-    public UploadApi(IUploadRetrofitProvider provider) {
+    UploadApi(IUploadRetrofitProvider provider) {
         this.provider = provider;
     }
 
@@ -36,7 +35,7 @@ public class UploadApi implements IUploadApi {
         return provider.provideUploadRetrofit().blockingGet().create(IUploadService.class);
     }
 
-    private static ProgressRequestBody.UploadCallbacks wrapPercentageListener(final PercentageListener listener){
+    private static ProgressRequestBody.UploadCallbacks wrapPercentageListener(final PercentagePublisher listener){
         return percentage -> {
             if(Objects.nonNull(listener)){
                 listener.onProgressChanged(percentage);
@@ -45,44 +44,37 @@ public class UploadApi implements IUploadApi {
     }
 
     @Override
-    public Call<UploadDocDto> uploadDocument(String server, String filename, @NonNull InputStream is, PercentageListener listener) {
+    public Single<UploadDocDto> uploadDocumentRx(String server, String filename, @NonNull InputStream is, PercentagePublisher listener) {
         ProgressRequestBody body = new ProgressRequestBody(is, wrapPercentageListener(listener), MediaType.parse("*/*"));
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", filename, body);
-        return service().uploadDocument(server, part);
+        return service().uploadDocumentRx(server, part);
     }
 
     @Override
-    public Call<UploadOwnerPhotoDto> uploadOwnerPhoto(String server, @NonNull InputStream is, PercentageListener listener) {
+    public Single<UploadOwnerPhotoDto> uploadOwnerPhotoRx(String server, @NonNull InputStream is, PercentagePublisher listener) {
         ProgressRequestBody body = new ProgressRequestBody(is, wrapPercentageListener(listener), MediaType.parse("image/*"));
         MultipartBody.Part part = MultipartBody.Part.createFormData("photo", "photo.jpg", body);
-        return service().uploadOwnerPhoto(server, part);
+        return service().uploadOwnerPhotoRx(server, part);
     }
 
     @Override
-    public Call<UploadPhotoToWallDto> uploadPhotoToWall(String server, @NonNull InputStream is, PercentageListener listener) {
+    public Single<UploadPhotoToWallDto> uploadPhotoToWallRx(String server, @NonNull InputStream is, PercentagePublisher listener) {
         ProgressRequestBody body = new ProgressRequestBody(is, wrapPercentageListener(listener), MediaType.parse("image/*"));
         MultipartBody.Part part = MultipartBody.Part.createFormData("photo", "photo.jpg", body);
-        return service().uploadPhotoToWall(server, part);
+        return service().uploadPhotoToWallRx(server, part);
     }
 
     @Override
-    public Call<UploadPhotoToMessageDto> uploadPhotoToMessage(String server, @NonNull InputStream is, PercentageListener listener) {
-        ProgressRequestBody body = new ProgressRequestBody(is, wrapPercentageListener(listener), MediaType.parse("image/*"));
-        MultipartBody.Part part = MultipartBody.Part.createFormData("photo", "photo.jpg", body);
-        return service().uploadPhotoToMessage(server, part);
-    }
-
-    @Override
-    public Single<UploadPhotoToMessageDto> uploadPhotoToMessageRx(String server, @NonNull InputStream is, PercentageListener listener) {
+    public Single<UploadPhotoToMessageDto> uploadPhotoToMessageRx(String server, @NonNull InputStream is, PercentagePublisher listener) {
         ProgressRequestBody body = new ProgressRequestBody(is, wrapPercentageListener(listener), MediaType.parse("image/*"));
         MultipartBody.Part part = MultipartBody.Part.createFormData("photo", "photo.jpg", body);
         return service().uploadPhotoToMessageRx(server, part);
     }
 
     @Override
-    public Call<UploadPhotoToAlbumDto> uploadPhotoToAlbum(String server, @NonNull InputStream is, PercentageListener listener) {
+    public Single<UploadPhotoToAlbumDto> uploadPhotoToAlbumRx(String server, @NonNull InputStream is, PercentagePublisher listener) {
         ProgressRequestBody body = new ProgressRequestBody(is, wrapPercentageListener(listener), MediaType.parse("image/*"));
         MultipartBody.Part part = MultipartBody.Part.createFormData("file1", "photo.jpg", body);
-        return service().uploadPhotoToAlbum(server, part);
+        return service().uploadPhotoToAlbumRx(server, part);
     }
 }

@@ -10,7 +10,6 @@ import java.util.List;
 
 import biz.dealnote.messenger.Injection;
 import biz.dealnote.messenger.api.model.VKApiCommunity;
-import biz.dealnote.messenger.db.interfaces.IUploadQueueStore;
 import biz.dealnote.messenger.domain.IOwnersInteractor;
 import biz.dealnote.messenger.domain.IPhotosInteractor;
 import biz.dealnote.messenger.domain.InteractorFactory;
@@ -23,12 +22,12 @@ import biz.dealnote.messenger.model.PhotoAlbum;
 import biz.dealnote.messenger.model.wrappers.SelectablePhotoWrapper;
 import biz.dealnote.messenger.mvp.presenter.base.AccountDependencyPresenter;
 import biz.dealnote.messenger.mvp.view.IVkPhotosView;
-import biz.dealnote.messenger.upload.BaseUploadResponse;
+import biz.dealnote.messenger.upload.IUploadManager;
+import biz.dealnote.messenger.upload.Upload;
 import biz.dealnote.messenger.upload.UploadDestination;
 import biz.dealnote.messenger.upload.UploadIntent;
-import biz.dealnote.messenger.upload.UploadObject;
+import biz.dealnote.messenger.upload.UploadResult;
 import biz.dealnote.messenger.upload.UploadUtils;
-import biz.dealnote.messenger.upload.task.PhotoToAlbumTask;
 import biz.dealnote.messenger.util.AssertUtils;
 import biz.dealnote.messenger.util.Pair;
 import biz.dealnote.messenger.util.RxUtils;
@@ -38,9 +37,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 import static biz.dealnote.messenger.util.Objects.isNull;
 import static biz.dealnote.messenger.util.Objects.nonNull;
-import static biz.dealnote.messenger.util.Utils.copyListWithPredicate;
 import static biz.dealnote.messenger.util.Utils.findIndexById;
-import static biz.dealnote.messenger.util.Utils.findInfoById;
 import static biz.dealnote.messenger.util.Utils.getCauseIfRuntime;
 import static biz.dealnote.messenger.util.Utils.nonEmpty;
 
@@ -59,10 +56,10 @@ public class VkPhotosPresenter extends AccountDependencyPresenter<IVkPhotosView>
 
     private final IPhotosInteractor interactor;
     private final IOwnersInteractor ownersInteractor;
-    private final IUploadQueueStore uploadsQueue;
+    private final IUploadManager uploadManager;
 
     private final List<SelectablePhotoWrapper> photos;
-    private final List<UploadObject> uploads;
+    private final List<Upload> uploads;
 
     private final UploadDestination destination;
     private final String action;
@@ -83,7 +80,7 @@ public class VkPhotosPresenter extends AccountDependencyPresenter<IVkPhotosView>
 
         this.interactor = InteractorFactory.createPhotosInteractor();
         this.ownersInteractor = InteractorFactory.createOwnerInteractor();
-        this.uploadsQueue = Injection.provideStores().uploads();
+        this.uploadManager = Injection.provideUploadManager();
 
         this.destination = UploadDestination.forPhotoAlbum(albumId, ownerId);
 
@@ -100,19 +97,25 @@ public class VkPhotosPresenter extends AccountDependencyPresenter<IVkPhotosView>
             this.owner = ownerWrapper.get();
         }
 
-        loadUploadsData();
-        loadCachedPhotos();
-        requestActualData(0);
+        loadInitialData();
 
-        appendDisposable(uploadsQueue.observeQueue()
+        appendDisposable(uploadManager.observeAdding()
                 .observeOn(Injection.provideMainThreadScheduler())
-                .subscribe(this::onUploadQueueUpdates));
+                .subscribe(this::onUploadQueueAdded));
 
-        appendDisposable(uploadsQueue.observeStatusUpdates()
+        appendDisposable(uploadManager.observeDeleting(true)
+                .observeOn(Injection.provideMainThreadScheduler())
+                .subscribe(this::onUploadsRemoved));
+
+        appendDisposable(uploadManager.observeResults()
+                .observeOn(Injection.provideMainThreadScheduler())
+                .subscribe(this::onUploadResults));
+
+        appendDisposable(uploadManager.obseveStatus()
                 .observeOn(Injection.provideMainThreadScheduler())
                 .subscribe(this::onUploadStatusUpdate));
 
-        appendDisposable(uploadsQueue.observeProgress()
+        appendDisposable(uploadManager.observeProgress()
                 .observeOn(Injection.provideMainThreadScheduler())
                 .subscribe(this::onUploadProgressUpdate));
 
@@ -186,78 +189,54 @@ public class VkPhotosPresenter extends AccountDependencyPresenter<IVkPhotosView>
         }
     }
 
-    private void onUploadQueueUpdates(List<IUploadQueueStore.IQueueUpdate> updates) {
-        List<IUploadQueueStore.IQueueUpdate> added = copyListWithPredicate(updates, update -> {
-            if (update.isAdding()) {
-                UploadObject o = update.object();
-                AssertUtils.requireNonNull(o);
-                return o.getDestination().compareTo(destination);
+    private void onUploadQueueAdded(List<Upload> added) {
+        int startUploadSize = uploads.size();
+        int count = 0;
+
+        for (Upload upload : added) {
+            if (destination.compareTo(upload.getDestination())) {
+                uploads.add(upload);
+                count++;
             }
-
-            return false;
-        });
-
-        if (nonEmpty(added)) {
-            int startUploadSize = this.uploads.size();
-
-            for (IUploadQueueStore.IQueueUpdate update : added) {
-                this.uploads.add(update.object());
-            }
-
-            callView(view -> view.notifyUploadAdded(startUploadSize, added.size()));
         }
 
-        if (added.size() == updates.size()) {
-            return;
+        if (count > 0) {
+            int finalCount = count;
+            callView(view -> view.notifyUploadAdded(startUploadSize, finalCount));
         }
+    }
 
-        for (IUploadQueueStore.IQueueUpdate update : updates) {
-            if (!update.isAdding()) {
-                int index = findIndexById(this.uploads, update.getId());
+    private void onUploadsRemoved(int[] ids) {
+        for (int id : ids) {
+            int index = findIndexById(uploads, id);
 
-                if (index != -1) {
-                    this.uploads.remove(index);
-                    callView(view -> view.notifyUploadRemoved(index));
-
-                    BaseUploadResponse response = update.response();
-
-                    if (nonNull(response)) {
-                        Photo photo = ((PhotoToAlbumTask.Response) response).photo;
-                        this.photos.add(0, new SelectablePhotoWrapper(photo));
-
-                        callView(view -> view.notifyPhotosAdded(0, 1));
-                    }
-                }
+            if (index != -1) {
+                uploads.remove(index);
+                callView(view -> view.notifyUploadRemoved(index));
             }
         }
     }
 
-    private void onUploadStatusUpdate(IUploadQueueStore.IStatusUpdate update) {
-        Pair<Integer, UploadObject> info = findInfoById(this.uploads, update.getId());
-
-        if (nonNull(info)) {
-            UploadObject o = info.getSecond();
-            o.setStatus(update.getStatus());
-
-            if (update.getStatus() != UploadObject.STATUS_UPLOADING) {
-                o.setProgress(0);
-            }
-
-            callView(view -> view.notifyUploadItemChanged(info.getFirst()));
+    private void onUploadResults(Pair<Upload, UploadResult<?>> pair) {
+        if (destination.compareTo(pair.getFirst().getDestination())) {
+            Photo photo = (Photo) pair.getSecond().getResult();
+            photos.add(0, new SelectablePhotoWrapper(photo));
+            callView(view -> view.notifyPhotosAdded(0, 1));
         }
     }
 
-    private void onUploadProgressUpdate(List<IUploadQueueStore.IProgressUpdate> updates) {
-        for (IUploadQueueStore.IProgressUpdate update : updates) {
-            Pair<Integer, UploadObject> info = findInfoById(this.uploads, update.getId());
+    private void onUploadStatusUpdate(Upload upload) {
+        int index = findIndexById(uploads, upload.getId());
+        if (index != -1) {
+            callView(view -> view.notifyUploadItemChanged(index));
+        }
+    }
 
-            if (nonNull(info)) {
-                UploadObject upload = info.getSecond();
-
-                if (upload.getStatus() == UploadObject.STATUS_UPLOADING && upload.getProgress() != update.getProgress()) {
-                    upload.setProgress(update.getProgress());
-                    callView(view -> view.notifyUploadProgressChanged(update.getId(), update.getProgress()));
-                }
+    private void onUploadProgressUpdate(List<IUploadManager.IProgressUpdate> updates) {
+        for (IUploadManager.IProgressUpdate update : updates) {
+            int index = findIndexById(uploads, update.getId());
+            if (index != -1) {
+                callView(view -> view.notifyUploadProgressChanged(update.getId(), update.getProgress()));
             }
         }
     }
@@ -316,30 +295,24 @@ public class VkPhotosPresenter extends AccountDependencyPresenter<IVkPhotosView>
         }
     }
 
-    private void loadUploadsData() {
-        appendDisposable(uploadsQueue.getByDestination(getAccountId(), destination)
+    private void loadInitialData() {
+        final int accountId = getAccountId();
+        cacheDisposable.add(interactor.getAllCachedData(accountId, ownerId, albumId)
+                .zipWith(uploadManager.get(getAccountId(), destination), Pair::create)
                 .compose(RxUtils.applySingleIOToMainSchedulers())
-                .subscribe(this::onUploadsReceived));
+                .subscribe(this::onInitialDataReceived));
     }
 
-    private void loadCachedPhotos() {
-        cacheDisposable.add(interactor.getAllCachedData(getAccountId(), ownerId, albumId)
-                .compose(RxUtils.applySingleIOToMainSchedulers())
-                .subscribe(this::onCachedPhotosReceived));
-    }
+    private void onInitialDataReceived(Pair<List<Photo>, List<Upload>> data) {
+        photos.clear();
+        photos.addAll(wrappersOf(data.getFirst()));
 
-    private void onCachedPhotosReceived(List<Photo> photos) {
-        this.photos.clear();
-        this.photos.addAll(wrappersOf(photos));
+        uploads.clear();
+        uploads.addAll(data.getSecond());
 
         callView(IVkPhotosView::notifyDataSetChanged);
-    }
 
-    private void onUploadsReceived(List<UploadObject> uploadObjects) {
-        this.uploads.clear();
-        this.uploads.addAll(uploadObjects);
-
-        callView(IVkPhotosView::notifyDataSetChanged);
+        requestActualData(0);
     }
 
     @Override
@@ -353,8 +326,8 @@ public class VkPhotosPresenter extends AccountDependencyPresenter<IVkPhotosView>
         return VkPhotosPresenter.class.getSimpleName();
     }
 
-    public void fireUploadRemoveClick(UploadObject o) {
-        UploadUtils.cancelById(getApplicationContext(), o.getId());
+    public void fireUploadRemoveClick(Upload o) {
+        uploadManager.cancel(o.getId());
     }
 
     public void fireRefresh() {
@@ -388,7 +361,7 @@ public class VkPhotosPresenter extends AccountDependencyPresenter<IVkPhotosView>
 
     public void firePhotosForUploadSelected(List<LocalPhoto> photos, int size) {
         List<UploadIntent> intents = UploadUtils.createIntents(getAccountId(), destination, photos, size, true);
-        UploadUtils.upload(getApplicationContext(), intents);
+        uploadManager.enqueue(intents);
     }
 
     public void firePhotoSelectionChanged(SelectablePhotoWrapper wrapper) {

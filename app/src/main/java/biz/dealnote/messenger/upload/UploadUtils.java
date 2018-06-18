@@ -1,87 +1,68 @@
 package biz.dealnote.messenger.upload;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.ContextWrapper;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.os.RemoteException;
-import androidx.annotation.NonNull;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.WeakHashMap;
 
-import biz.dealnote.messenger.Extra;
-import biz.dealnote.messenger.db.Stores;
 import biz.dealnote.messenger.model.LocalPhoto;
-import biz.dealnote.messenger.util.Analytics;
-import biz.dealnote.messenger.util.Logger;
-import io.reactivex.schedulers.Schedulers;
+import biz.dealnote.messenger.util.IOUtils;
 
-public class UploadUtils {
+public final class UploadUtils {
 
-    private static final String TAG = UploadUtils.class.getSimpleName();
-    private static IUploadService mService = null;
-    private static final WeakHashMap<Context, ServiceBinder> mConnectionMap;
+    private UploadUtils(){
 
-    static {
-        mConnectionMap = new WeakHashMap<>();
     }
 
-    private UploadUtils() {}
+    public static InputStream openStream(Context context, Uri uri, int size) throws IOException {
+        InputStream originalStream;
 
-    public static void upload(@NonNull Context context, List<UploadIntent> intents){
-        final Context app = context.getApplicationContext();
-
-        Stores.getInstance()
-                .uploads()
-                .put(intents)
-                .subscribeOn(Schedulers.io())
-                .subscribe(objects -> uploadFirst(app), Analytics::logUnexpectedError);
-    }
-
-    private static void uploadFirst(Context context){
-        Intent intent = new Intent(context, UploadService.class);
-        intent.setAction(UploadService.ACTION_UPLOAD_FIRST);
-        context.startService(intent);
-    }
-
-    public static void cancelByDestination(@NonNull Context context, @NonNull UploadDestination destination){
-        Intent intent = new Intent(context, UploadService.class);
-        intent.setAction(UploadService.ACTION_CANCEL_BY_DESTINATION);
-        intent.putExtra(Extra.DESTINATION, destination);
-        context.startService(intent);
-    }
-
-    /**
-     * @param context  The {@link Context} to use
-     * @param callback The {@link ServiceConnection} to use
-     * @return The new instance of {@link ServiceToken}
-     */
-    public static ServiceToken bindToService(final Context context, final ServiceConnection callback) {
-        ContextWrapper contextWrapper = new ContextWrapper(context);
-        ServiceBinder binder = new ServiceBinder(callback);
-        Intent intent = new Intent().setClass(contextWrapper, UploadService.class);
-
-        if (contextWrapper.bindService(intent, binder, 0)) {
-            mConnectionMap.put(contextWrapper, binder);
-            return new ServiceToken(contextWrapper);
+        File filef = new File(uri.getPath());
+        if (filef.isFile()) {
+            originalStream = new FileInputStream(filef);
+        } else {
+            originalStream = context.getContentResolver().openInputStream(uri);
         }
 
-        Logger.d(TAG, "bindToService, count: " + mConnectionMap.size());
-        return null;
-    }
-
-    public static UploadObject getCurrent(){
-        if(mService != null){
-            try {
-                return mService.getCurrent();
-            } catch (RemoteException ignored) {}
+        if (size == Upload.IMAGE_SIZE_FULL) {
+            return originalStream;
         }
 
-        return null;
+        Bitmap bitmap = BitmapFactory.decodeStream(originalStream);
+        File tempFile = new File(context.getExternalCacheDir() + File.separator + "scale.jpg");
+
+        FileOutputStream ostream = null;
+        Bitmap target = null;
+
+        try {
+            if (tempFile.exists()) {
+                if (!tempFile.delete()) {
+                    throw new IOException("Unable to delete old image file");
+                }
+            }
+
+            if (!tempFile.createNewFile()) {
+                throw new IOException("Unable to create new file");
+            }
+
+            ostream = new FileOutputStream(tempFile);
+            target = scaleDown(bitmap, size, true);
+            target.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+            return new FileInputStream(tempFile);
+        } finally {
+            IOUtils.recycleBitmapQuietly(bitmap);
+            IOUtils.recycleBitmapQuietly(target);
+            IOUtils.closeStreamQuietly(ostream);
+            IOUtils.closeStreamQuietly(originalStream);
+        }
     }
 
     public static List<UploadIntent> createIntents(int accountId, UploadDestination destination, List<LocalPhoto> photos, int size,
@@ -97,71 +78,14 @@ public class UploadUtils {
         return intents;
     }
 
-    public static void cancelById(Context context, int id){
-        Intent intent = new Intent(context, UploadService.class);
-        intent.setAction(UploadService.ACTION_CANCEL_BY_ID);
-        intent.putExtra(Extra.ID, id);
-        context.startService(intent);
-    }
-
-    /**
-     * @param token The {@link ServiceToken} to unbind from
-     */
-    public static void unbindFromService(final ServiceToken token) {
-        if (token == null) {
-            return;
+    private static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
+        if (realImage.getHeight() < maxImageSize && realImage.getWidth() < maxImageSize) {
+            return realImage;
         }
 
-        final ContextWrapper mContextWrapper = token.mWrappedContext;
-        final ServiceBinder mBinder = mConnectionMap.remove(mContextWrapper);
-        if (mBinder == null) {
-            return;
-        }
-
-        mContextWrapper.unbindService(mBinder);
-        if (mConnectionMap.isEmpty()) {
-            mService = null;
-        }
-    }
-
-    public static final class ServiceBinder implements ServiceConnection {
-
-        private final ServiceConnection mCallback;
-
-        public ServiceBinder(final ServiceConnection callback) {
-            mCallback = callback;
-        }
-
-        @Override
-        public void onServiceConnected(final ComponentName className, final IBinder service) {
-            mService = IUploadService.Stub.asInterface(service);
-
-            if (mCallback != null) {
-                mCallback.onServiceConnected(className, service);
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(final ComponentName className) {
-            if (mCallback != null) {
-                mCallback.onServiceDisconnected(className);
-            }
-
-            mService = null;
-        }
-    }
-
-    public static final class ServiceToken {
-
-        public ContextWrapper mWrappedContext;
-
-        /**
-         * Constructor of <code>ServiceToken</code>
-         *
-         * @param context The {@link ContextWrapper} to use
-         */
-        public ServiceToken(final ContextWrapper context) {
-            mWrappedContext = context;
-        }
+        float ratio = Math.min(maxImageSize / realImage.getWidth(), maxImageSize / realImage.getHeight());
+        int width = Math.round(ratio * realImage.getWidth());
+        int height = Math.round(ratio * realImage.getHeight());
+        return Bitmap.createScaledBitmap(realImage, width, height, filter);
     }
 }

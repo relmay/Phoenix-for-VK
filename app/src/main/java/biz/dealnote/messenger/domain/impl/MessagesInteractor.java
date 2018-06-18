@@ -3,6 +3,9 @@ package biz.dealnote.messenger.domain.impl;
 import android.annotation.SuppressLint;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,9 +33,9 @@ import biz.dealnote.messenger.crypt.CryptHelper;
 import biz.dealnote.messenger.crypt.KeyLocationPolicy;
 import biz.dealnote.messenger.crypt.KeyPairDoesNotExistException;
 import biz.dealnote.messenger.db.column.UserColumns;
-import biz.dealnote.messenger.db.interfaces.IDialogsStore;
-import biz.dealnote.messenger.db.interfaces.IMessagesStore;
-import biz.dealnote.messenger.db.interfaces.IStores;
+import biz.dealnote.messenger.db.interfaces.IDialogsStorage;
+import biz.dealnote.messenger.db.interfaces.IMessagesStorage;
+import biz.dealnote.messenger.db.interfaces.IStorages;
 import biz.dealnote.messenger.db.model.MessagePatch;
 import biz.dealnote.messenger.db.model.entity.DialogEntity;
 import biz.dealnote.messenger.db.model.entity.Entity;
@@ -60,9 +63,9 @@ import biz.dealnote.messenger.model.SentMsg;
 import biz.dealnote.messenger.model.User;
 import biz.dealnote.messenger.model.criteria.DialogsCriteria;
 import biz.dealnote.messenger.model.criteria.MessagesCriteria;
-import biz.dealnote.messenger.upload.Method;
-import biz.dealnote.messenger.upload.UploadObject;
-import biz.dealnote.messenger.upload.experimental.UploadService;
+import biz.dealnote.messenger.upload.IUploadManager;
+import biz.dealnote.messenger.upload.Upload;
+import biz.dealnote.messenger.upload.UploadDestination;
 import biz.dealnote.messenger.util.Objects;
 import biz.dealnote.messenger.util.Optional;
 import biz.dealnote.messenger.util.Unixtime;
@@ -73,10 +76,12 @@ import io.reactivex.SingleTransformer;
 
 import static biz.dealnote.messenger.util.Objects.isNull;
 import static biz.dealnote.messenger.util.Objects.nonNull;
+import static biz.dealnote.messenger.util.RxUtils.safelyCloseAction;
 import static biz.dealnote.messenger.util.Utils.isEmpty;
 import static biz.dealnote.messenger.util.Utils.listEmptyIfNull;
 import static biz.dealnote.messenger.util.Utils.nonEmpty;
 import static biz.dealnote.messenger.util.Utils.safeCountOf;
+import static biz.dealnote.messenger.util.Utils.safelyClose;
 
 /**
  * Created by admin on 03.09.2017.
@@ -85,15 +90,17 @@ import static biz.dealnote.messenger.util.Utils.safeCountOf;
 public class MessagesInteractor implements IMessagesInteractor {
 
     private final IOwnersInteractor ownersInteractor;
-    private final IStores stores;
+    private final IStorages stores;
     private final INetworker networker;
     private final IMessagesDecryptor decryptor;
+    private final IUploadManager uploadManager;
 
-    public MessagesInteractor(INetworker networker, IOwnersInteractor ownersInteractor, IStores stores) {
+    public MessagesInteractor(INetworker networker, IOwnersInteractor ownersInteractor, IStorages stores, IUploadManager uploadManager) {
         this.ownersInteractor = ownersInteractor;
         this.networker = networker;
         this.stores = stores;
         this.decryptor = new MessagesDecryptor(stores);
+        this.uploadManager = uploadManager;
     }
 
     @Override
@@ -250,7 +257,7 @@ public class MessagesInteractor implements IMessagesInteractor {
     @Override
     public Single<List<Dialog>> getDialogs(int accountId, int count, Integer startMessageId) {
         final boolean clear = isNull(startMessageId);
-        final IDialogsStore dialogsStore = this.stores.dialogs();
+        final IDialogsStorage dialogsStore = this.stores.dialogs();
 
         return networker.vkDefault(accountId)
                 .messages()
@@ -438,7 +445,7 @@ public class MessagesInteractor implements IMessagesInteractor {
 
     @Override
     public Single<Integer> send(int accountId, int dbid) {
-        final IMessagesStore store = this.stores.messages();
+        final IMessagesStorage store = this.stores.messages();
 
         return store
                 .findMessagesByIds(accountId, Collections.singletonList(dbid), true, false)
@@ -461,7 +468,7 @@ public class MessagesInteractor implements IMessagesInteractor {
 
     @Override
     public Single<SentMsg> sendUnsentMessage(Collection<Integer> accountIds) {
-        final IMessagesStore store = this.stores.messages();
+        final IMessagesStorage store = this.stores.messages();
 
         return store
                 .findFirstUnsentMessage(accountIds, true, false)
@@ -729,19 +736,28 @@ public class MessagesInteractor implements IMessagesInteractor {
             return docsApi.getUploadServer(null, "audio_message")
                     .flatMap(server -> {
                         final File file = new File(filePath);
+                        final InputStream[] is = new InputStream[1];
 
-                        return UploadService.uploadDocument(networker, server, file)
-                                .flatMap(uploadDto -> docsApi
-                                        .save(uploadDto.file, null, null)
-                                        .map(dtos -> {
-                                            if (dtos.isEmpty()) {
-                                                throw new Exception("Unable to save voice message");
-                                            }
+                        try {
+                            is[0] = new FileInputStream(file);
+                            return networker.uploads()
+                                    .uploadDocumentRx(server.getUrl(), file.getName(), is[0], null)
+                                    .doFinally(safelyCloseAction(is[0]))
+                                    .flatMap(uploadDto -> docsApi
+                                            .save(uploadDto.file, null, null)
+                                            .map(dtos -> {
+                                                if (dtos.isEmpty()) {
+                                                    throw new NotFoundException("Unable to save voice message");
+                                                }
 
-                                            VkApiDoc dto = dtos.get(0);
-                                            IAttachmentToken token = AttachmentsTokenCreator.ofDocument(dto.id, dto.ownerId, dto.accessKey);
-                                            return Optional.wrap(token);
-                                        }));
+                                                VkApiDoc dto = dtos.get(0);
+                                                IAttachmentToken token = AttachmentsTokenCreator.ofDocument(dto.id, dto.ownerId, dto.accessKey);
+                                                return Optional.wrap(token);
+                                            }));
+                        } catch (FileNotFoundException e){
+                            safelyClose(is[0]);
+                            return Single.error(e);
+                        }
                     });
         }
 
@@ -783,8 +799,8 @@ public class MessagesInteractor implements IMessagesInteractor {
             return Single.just(MessageStatus.QUEUE);
         }
 
-        return stores.uploads()
-                .getByDestination(accountId, builder.getDraftMessageId(), 0, Method.PHOTO_TO_MESSAGE)
+        UploadDestination destination = UploadDestination.forMessage(builder.getDraftMessageId());
+        return uploadManager.get(accountId, destination)
                 .map(uploads -> {
                     if (uploads.isEmpty()) {
                         return MessageStatus.QUEUE;
@@ -792,12 +808,12 @@ public class MessagesInteractor implements IMessagesInteractor {
 
                     boolean uploadingNow = false;
 
-                    for (UploadObject o : uploads) {
-                        if (o.getStatus() == UploadObject.STATUS_CANCELLING) {
+                    for (Upload o : uploads) {
+                        if (o.getStatus() == Upload.STATUS_CANCELLING) {
                             continue;
                         }
 
-                        if (o.getStatus() == UploadObject.STATUS_ERROR) {
+                        if (o.getStatus() == Upload.STATUS_ERROR) {
                             throw new UploadNotResolvedException();
                         }
 
