@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -32,6 +31,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import biz.dealnote.messenger.Extra;
 import biz.dealnote.messenger.Injection;
@@ -114,6 +114,7 @@ import biz.dealnote.messenger.settings.CurrentTheme;
 import biz.dealnote.messenger.settings.ISettings;
 import biz.dealnote.messenger.settings.Settings;
 import biz.dealnote.messenger.util.Accounts;
+import biz.dealnote.messenger.util.Action;
 import biz.dealnote.messenger.util.AppPerms;
 import biz.dealnote.messenger.util.AssertUtils;
 import biz.dealnote.messenger.util.Logger;
@@ -213,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements NavigationFragmen
             public void onDrawerClosed(View drawerView) {
                 switch (drawerView.getId()) {
                     case R.id.navigation_drawer:
-                        openTargetPage();
+                        postResume(MainActivity::openTargetPage);
                         break;
                 }
             }
@@ -243,7 +244,34 @@ public class MainActivity extends AppCompatActivity implements NavigationFragmen
                 }
             }
         }
-        Logger.d(TAG, "" + (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK));
+    }
+
+    private void postResume(Action<MainActivity> action){
+        if(resumed){
+            action.call(this);
+        } else {
+            postResumeActions.add(action);
+        }
+    }
+
+    private List<Action<MainActivity>> postResumeActions = new ArrayList<>(0);
+
+    private boolean resumed;
+
+    @Override
+    protected void onPause() {
+        resumed = false;
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        resumed = true;
+        for(Action<MainActivity> action : postResumeActions){
+            action.call(this);
+        }
+        postResumeActions.clear();
     }
 
     private void startEnterPinActivity() {

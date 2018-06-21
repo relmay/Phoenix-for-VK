@@ -1,4 +1,3 @@
-//noinspection GradleCompatible
 apply plugin: 'com.android.application'
 
 android {
@@ -15,8 +14,8 @@ android {
         applicationId "biz.dealnote.messenger"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 40999
-        versionName '4_0_99'
+        versionCode 41007
+        versionName '4.1.0'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
