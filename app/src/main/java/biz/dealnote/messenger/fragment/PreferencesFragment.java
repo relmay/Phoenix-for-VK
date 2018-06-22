@@ -10,13 +10,7 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceScreen;
 import androidx.annotation.NonNull;
-import androidx.core.preference.PreferenceFragment;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +34,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 import biz.dealnote.messenger.Constants;
 import biz.dealnote.messenger.Extra;
 import biz.dealnote.messenger.R;
@@ -75,12 +75,11 @@ import biz.dealnote.messenger.util.Objects;
 import biz.dealnote.messenger.util.RoundTransformation;
 import biz.dealnote.messenger.util.Utils;
 
-import static android.preference.Preference.OnPreferenceChangeListener;
 import static biz.dealnote.messenger.util.Utils.isEmpty;
 import static biz.dealnote.messenger.util.Utils.safelyClose;
 import static biz.dealnote.messenger.util.Utils.safelyRecycle;
 
-public class PreferencesFragment extends PreferenceFragment {
+public class PreferencesFragment extends PreferenceFragmentCompat {
 
     public static final int APP_GROUP_ID = 72124992;
 
@@ -120,37 +119,8 @@ public class PreferencesFragment extends PreferenceFragment {
         return fragment;
     }
 
-    public static File getDrawerBackgroundFile(Context context, boolean light) {
-        return new File(context.getFilesDir(), light ? "drawer_light.jpg" : "drawer_dark.jpg");
-    }
-
-    private void disableOnlyFullAppPrefs() {
-        String fullOnly = " FULL ONLY ";
-        int color = Utils.adjustAlpha(CurrentTheme.getColorAccent(getActivity()), 100);
-
-        for (String name : AppPrefs.ONLY_FULL_APP_PREFS) {
-            Preference preference = findPreference(name);
-            if (preference != null) {
-                preference.setEnabled(false);
-
-                CharSequence summary = TextUtils.isEmpty(preference.getTitle()) ? "" : preference.getTitle();
-                summary = fullOnly + " " + summary;
-
-                Spannable spannable = SpannableStringBuilder.valueOf(summary);
-
-                BackgroundColorSpan span = new BackgroundColorSpan(color);
-                ForegroundColorSpan span1 = new ForegroundColorSpan(Color.WHITE);
-
-                spannable.setSpan(span, 0, fullOnly.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                spannable.setSpan(span1, 0, fullOnly.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                preference.setTitle(spannable);
-            }
-        }
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.settings);
 
         if (!AppPrefs.isFullApp()) {
@@ -170,7 +140,7 @@ public class PreferencesFragment extends PreferenceFragment {
             screen.addPreference(getFullApp);
         }
 
-        OnPreferenceChangeListener recreateListener = (preference, o) -> {
+        Preference.OnPreferenceChangeListener recreateListener = (preference, o) -> {
             requireActivity().recreate();
             return true;
         };
@@ -368,19 +338,47 @@ public class PreferencesFragment extends PreferenceFragment {
         });
     }
 
+//    @Override
+//    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.preference_list_fragment, container, false);
+//        ((AppCompatActivity) requireActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
+//        return root;
+//    }
+
+    public static File getDrawerBackgroundFile(Context context, boolean light) {
+        return new File(context.getFilesDir(), light ? "drawer_light.jpg" : "drawer_dark.jpg");
+    }
+
+    private void disableOnlyFullAppPrefs() {
+        String fullOnly = " FULL ONLY ";
+        int color = Utils.adjustAlpha(CurrentTheme.getColorAccent(getActivity()), 100);
+
+        for (String name : AppPrefs.ONLY_FULL_APP_PREFS) {
+            Preference preference = findPreference(name);
+            if (preference != null) {
+                preference.setEnabled(false);
+
+                CharSequence summary = TextUtils.isEmpty(preference.getTitle()) ? "" : preference.getTitle();
+                summary = fullOnly + " " + summary;
+
+                Spannable spannable = SpannableStringBuilder.valueOf(summary);
+
+                BackgroundColorSpan span = new BackgroundColorSpan(color);
+                ForegroundColorSpan span1 = new ForegroundColorSpan(Color.WHITE);
+
+                spannable.setSpan(span, 0, fullOnly.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannable.setSpan(span1, 0, fullOnly.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                preference.setTitle(spannable);
+            }
+        }
+    }
+
     private void onSecurityClick() {
         if (Settings.get().security().isUsePinForSecurity()) {
             startActivityForResult(new Intent(getActivity(), EnterPinActivity.class), REQUEST_PIN_FOR_SECURITY);
         } else {
             PlaceFactory.getSecuritySettingsPlace().tryOpenWith(requireActivity());
         }
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.preference_list_fragment, container, false);
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
-        return root;
     }
 
     private void tryDeleteFile(@NonNull File file) throws IOException {

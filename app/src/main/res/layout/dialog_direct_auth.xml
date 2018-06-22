@@ -14,9 +14,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:textSize="16sp"
                 android:id="@+id/field_username"
                 android:layout_width="match_parent"
@@ -28,9 +29,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:textSize="16sp"
                 android:id="@+id/field_password"
                 android:layout_width="match_parent"
@@ -48,9 +50,10 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:textSize="16sp"
                     android:id="@+id/field_app_code"
                     android:layout_width="match_parent"
@@ -60,8 +63,9 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_send_code_via_sms"
+                style="@style/Widget.MaterialComponents.Button"
                 android:background="?attr/selectableItemBackground"
                 android:textStyle="bold"
                 android:textColor="?attr/colorAccent"
@@ -78,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:textSize="16sp"
                 android:id="@+id/field_sms_code"
                 android:layout_width="match_parent"
@@ -102,9 +106,10 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:textSize="16sp"
                     android:id="@+id/field_captcha"
                     android:layout_width="match_parent"

@@ -136,6 +136,7 @@ dependencies {
     implementation "androidx.vectordrawable:vectordrawable:1.0.0-alpha3"
     implementation "androidx.media:media:1.0.0-alpha3"
     implementation "androidx.browser:browser:1.0.0-alpha3"
+    implementation "androidx.preference:preference:1.0.0-alpha3"
     implementation "androidx.exifinterface:exifinterface:1.0.0-alpha3"
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.chrisbanes:PhotoView:2.1.3'

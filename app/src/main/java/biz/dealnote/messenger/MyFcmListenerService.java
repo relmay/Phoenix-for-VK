@@ -37,6 +37,8 @@ public class MyFcmListenerService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage message) {
         Context context = getApplicationContext();
+        Logger.d(TAG, message.getData().size() > 0 ? "Data-notification" : "Notification-notification");
+
         String pushType = message.getData().get("type");
 
         Logger.d(TAG, "onMessage, from: " + message.getFrom() + ", pushType: " + pushType + ", data: " + message.getData());

@@ -8,7 +8,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import androidx.core.preference.PreferenceFragment;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.preference.PreferenceFragmentCompat;
 import biz.dealnote.messenger.R;
 import biz.dealnote.messenger.activity.ActivityFeatures;
 import biz.dealnote.messenger.activity.ActivityUtils;
@@ -29,15 +29,14 @@ import biz.dealnote.messenger.listener.OnSectionResumeCallback;
 import biz.dealnote.messenger.settings.Settings;
 import biz.dealnote.messenger.util.Logger;
 
-public class NotificationPreferencesFragment extends PreferenceFragment {
+public class NotificationPreferencesFragment extends PreferenceFragmentCompat {
 
     private static final String TAG = NotificationPreferencesFragment.class.getSimpleName();
 
     public static final int REQUEST_CODE_RINGTONE = 116;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.notication_settings);
 
         findPreference("notif_sound").setOnPreferenceClickListener(preference -> {
@@ -50,13 +49,6 @@ public class NotificationPreferencesFragment extends PreferenceFragment {
     protected void finalize() throws Throwable {
         Logger.d(TAG, "finalize");
         super.finalize();
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.preference_list_fragment, container, false);
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
-        return root;
     }
 
     private Ringtone current;

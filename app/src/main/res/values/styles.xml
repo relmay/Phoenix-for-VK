@@ -2,6 +2,7 @@
 
     <style name="Base.App.DayNight" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:colorBackground">@android:color/background_light</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <item name="windowActionModeOverlay">true</item>
 
