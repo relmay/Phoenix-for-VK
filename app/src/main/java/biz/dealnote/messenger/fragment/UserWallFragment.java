@@ -95,7 +95,7 @@ public class UserWallFragment extends AbsWallFragment<IUserWallView, UserWallPre
 
     @Override
     public void showAvatarUploadedMessage(int accountId, Post post) {
-        new android.support.v7.app.AlertDialog.Builder(requireActivity())
+        new androidx.appcompat.app.AlertDialog.Builder(requireActivity())
                 .setTitle(R.string.success)
                 .setMessage(R.string.avatar_was_changed_successfully)
                 .setPositiveButton(R.string.button_show, (dialog, which) -> PlaceFactory.getPostPreviewPlace(accountId, post.getVkid(), post.getOwnerId(), post).tryOpenWith(requireActivity()))
