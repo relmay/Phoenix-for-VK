@@ -78,7 +78,7 @@ public class NotificationUtils {
         }
     }
 
-    public static int optInt(String data, String name) {
+    public static int optInt(String data) {
         return optInt(data, 0);
     }
 

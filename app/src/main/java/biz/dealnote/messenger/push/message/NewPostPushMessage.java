@@ -9,6 +9,10 @@ import android.os.Bundle;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.Map;
 
 import biz.dealnote.messenger.Extra;
 import biz.dealnote.messenger.R;
@@ -32,46 +36,72 @@ import static biz.dealnote.messenger.util.Utils.stringEmptyIfNull;
  */
 public class NewPostPushMessage {
 
- //04-14 13:00:42.166 1784-2485/ru.ezorrio.phoenix D/MyFcmListenerService: onMessage,
-    // from: 652332232777, collapseKey: null, data: {image_type=user, from_id=280186075,
-    // id=new_post_280186075_56, url=https://vk.com/wall280186075_56,
-    // body=Добро пожаловать на мою страницу. Мы тестируем FCM, icon=followers_24,
-    // time=1523700043, type=post, badge=1,
-    // image=[{"width":200,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cb\/OkkyraBZJCY.jpg","height":200},
-    // {"width":100,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cc\/dRPyhRW_dvU.jpg","height":100},
-    // {"width":50,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cd\/BB6tk_bcJ3U.jpg","height":50}],
-    // sound=1, title=Yevgeni Polkin published a post, to_id=216143660, group_id=posts,
-    // context={"item_id":"56","owner_id":280186075,"type":"post"}}
+//key: image_type, value: user, class: class java.lang.String
+//key: from_id, value: 216143660, class: class java.lang.String
+//key: id, value: new_post_216143660_1137, class: class java.lang.String
+//key: url, value: https://vk.com/wall216143660_1137, class: class java.lang.String
+//key: body, value: Мы тестируем FCM. Всем здравствуйте.
+//
+//key: icon, value: followers_24, class: class java.lang.String
+//key: time, value: 1529683043, class: class java.lang.String
+//key: type, value: post, class: class java.lang.String
+//key: badge, value: 1, class: class java.lang.String
+//key: image, value: [{"width":200,"url":"https:\/\/pp.userapi.com\/c844520\/v844520706\/71a39\/nc5YPeh1yEI.jpg","height":200},{"width":100,"url":"https:\/\/pp.userapi.com\/c844520\/v844520706\/71a3a\/pZLtq6sleHo.jpg","height":100},{"width":50,"url":"https:\/\/pp.userapi.com\/c844520\/v844520706\/71a3b\/qoFJrYXVFdc.jpg","height":50}], class: class java.lang.String
+//key: sound, value: 1, class: class java.lang.String
+//key: title, value: Emin Guliev published a post, class: class java.lang.String
+//key: to_id, value: 280186075, class: class java.lang.String
+//key: group_id, value: posts, class: class java.lang.String
+//key: context, value: {"item_id":"1137","owner_id":216143660,"type":"post"}, class: class java.lang.String
+    private int accountId;
+    private long from;
+    private int from_id;
+    private String url;
+    private String body;
+    private long time;
+    private int badge;
+    private String image;
+    private boolean sound;
+    private String title;
+    private int to_id;
+    private String group_id;
+    private int item_id;
+    private int owner_id;
+    private String context_type;
 
-    private final int accountId;
+    class PostContext {
+        @SerializedName("item_id")
+        int item_id;
 
-    private final int fromId;
+        @SerializedName("owner_id")
+        int owner_id;
 
-    private final int postId;
-
-    private final String text;
-
-    private final String groupName;
-
-    private final String firstName;
-
-    private final String lastName;
-
-    //private String postType;
+        @SerializedName("type")
+        String type;
+    }
 
     public NewPostPushMessage(int accountId, RemoteMessage remote){
         this.accountId = accountId;
-        this.fromId = optInt(remote, "from_id");
-        this.postId = optInt(remote, "post_id");
-        this.text = remote.getData().get("text");
-        this.groupName = remote.getData().get("group_name");
-        this.firstName = remote.getData().get("first_name");
-        this.lastName = remote.getData().get("last_name");
-        //this.postType = bundle.getString("post_type"); // group_status, status
+        Map<String, String> data = remote.getData();
+        this.from = Long.parseLong(remote.getFrom());
+        this.from_id = Integer.parseInt(data.get("from_id"));
+        this.url = data.get("url");
+        this.body = data.get("body");
+        this.time = Long.parseLong(data.get("time"));
+        this.badge = Integer.parseInt(data.get("badge"));
+        this.image = data.get("image");
+        this.sound = Integer.parseInt(data.get("sound")) == 1;
+        this.title = data.get("title");
+        this.to_id = Integer.parseInt(data.get("to_id"));
+        this.group_id = data.get("group_id");
+
+        PostContext context = new Gson().fromJson(data.get("context"), PostContext.class);
+        this.item_id = context.item_id;
+        this.owner_id = context.owner_id;
+        this.context_type = context.type;
     }
 
     public void notifyIfNeed(Context context){
-        if(fromId == 0){
+        if(from_id == 0){
             Logger.wtf("NewPostPushMessage", "from_id is NULL!!!");
             return;
         }
@@ -82,13 +112,10 @@ public class NewPostPushMessage {
             return;
         }
 
-        OwnerInfo.getRx(context, accountId, fromId)
-                .subscribeOn(NotificationScheduler.INSTANCE)
-                .subscribe(ownerInfo -> notifyImpl(context, ownerInfo), ignored -> {});
+        notifyImpl(context);
     }
 
-    private void notifyImpl(Context context, OwnerInfo info){
-        String ownerName = fromId > 0 ? (stringEmptyIfNull(firstName) + " " + stringEmptyIfNull(lastName)) : groupName;
+    private void notifyImpl(Context context){
         final NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Utils.hasOreo()){
             nManager.createNotificationChannel(AppNotificationChannels.getNewPostChannel(context));
@@ -96,26 +123,25 @@ public class NewPostPushMessage {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, AppNotificationChannels.NEW_POST_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notify_statusbar)
-                .setLargeIcon(info.getAvatar())
-                .setContentTitle(context.getString(R.string.new_post_title))
-                .setContentText(context.getString(R.string.new_post_was_published_in, ownerName))
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setContentTitle(title)
+                .setContentText(body)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
                 .setAutoCancel(true);
 
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
 
         Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra(Extra.PLACE, PlaceFactory.getPostPreviewPlace(accountId, postId, fromId));
+        intent.putExtra(Extra.PLACE, PlaceFactory.getPostPreviewPlace(accountId, item_id, from_id));
 
         intent.setAction(MainActivity.ACTION_OPEN_PLACE);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        PendingIntent contentIntent = PendingIntent.getActivity(context, fromId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, from_id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         builder.setContentIntent(contentIntent);
         Notification notification = builder.build();
 
         configOtherPushNotification(notification);
 
-        nManager.notify(String.valueOf(fromId), NotificationHelper.NOTIFICATION_NEW_POSTS_ID, notification);
+        nManager.notify(String.valueOf(from_id), NotificationHelper.NOTIFICATION_NEW_POSTS_ID, notification);
     }
 }
