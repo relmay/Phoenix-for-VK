@@ -3,6 +3,7 @@ package biz.dealnote.messenger.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;

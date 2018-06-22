@@ -5,6 +5,7 @@ import androidx.annotation.CheckResult;
 import java.util.Collection;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import biz.dealnote.messenger.api.model.VKApiMessage;
 import biz.dealnote.messenger.model.AbsModel;
 import biz.dealnote.messenger.model.AppChatUser;
