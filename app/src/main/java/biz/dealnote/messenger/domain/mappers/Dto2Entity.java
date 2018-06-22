@@ -31,6 +31,7 @@ import biz.dealnote.messenger.api.model.VKApiVideo;
 import biz.dealnote.messenger.api.model.VKApiVideoAlbum;
 import biz.dealnote.messenger.api.model.VKApiWikiPage;
 import biz.dealnote.messenger.api.model.VkApiAttachments;
+import biz.dealnote.messenger.api.model.VkApiConversation;
 import biz.dealnote.messenger.api.model.VkApiDialog;
 import biz.dealnote.messenger.api.model.VkApiDoc;
 import biz.dealnote.messenger.api.model.VkApiPostSource;
@@ -72,6 +73,7 @@ import biz.dealnote.messenger.db.model.entity.PollEntity;
 import biz.dealnote.messenger.db.model.entity.PostEntity;
 import biz.dealnote.messenger.db.model.entity.PrivacyEntity;
 import biz.dealnote.messenger.db.model.entity.SchoolEntity;
+import biz.dealnote.messenger.db.model.entity.SimpleDialogEntity;
 import biz.dealnote.messenger.db.model.entity.StickerEntity;
 import biz.dealnote.messenger.db.model.entity.TopicEntity;
 import biz.dealnote.messenger.db.model.entity.UniversityEntity;
@@ -607,18 +609,47 @@ public class Dto2Entity {
                 .setAttachments(attachmentsEntities);
     }
 
-    public static DialogEntity buildDialogDbo(VkApiDialog dto) {
-        MessageEntity messageDbo = buildMessageDbo(dto.message);
+    public static SimpleDialogEntity dto2Entity(VkApiConversation dto){
+        SimpleDialogEntity entity = new SimpleDialogEntity(dto.peer.id)
+                .setInRead(dto.inRead)
+                .setOutRead(dto.outRead)
+                .setLastMessageId(dto.lastMessageId)
+                .setUnreadCount(dto.unreadCount);
 
-        return new DialogEntity(messageDbo.getPeerId())
-                .setLastMessageId(messageDbo.getId())
-                .setAdminId(messageDbo.getAdminId())
-                .setMessage(messageDbo)
-                .setPhoto50(messageDbo.getPhoto50())
-                .setPhoto100(messageDbo.getPhoto100())
-                .setPhoto200(messageDbo.getPhoto200())
-                .setTitle(messageDbo.getTitle())
-                .setUnreadCount(dto.unread);
+        if(nonNull(dto.settings)){
+            entity.setTitle(dto.settings.title);
+
+            if(nonNull(dto.settings.photo)){
+                entity.setPhoto50(dto.settings.photo.photo50)
+                        .setPhoto100(dto.settings.photo.photo100)
+                        .setPhoto200(dto.settings.photo.photo200);
+            }
+        }
+
+        return entity;
+    }
+
+    public static DialogEntity buildDialogDbo(VkApiDialog dto) {
+        MessageEntity messageEntity = buildMessageDbo(dto.lastMessage);
+
+        DialogEntity entity = new DialogEntity(messageEntity.getPeerId())
+                .setLastMessageId(messageEntity.getId())
+                .setMessage(messageEntity)
+                .setInRead(dto.conversation.inRead)
+                .setOutRead(dto.conversation.outRead)
+                .setUnreadCount(dto.conversation.unreadCount);
+
+        if(nonNull(dto.conversation.settings)){
+            entity.setTitle(dto.conversation.settings.title);
+
+            if(nonNull(dto.conversation.settings.photo)){
+                entity.setPhoto50(dto.conversation.settings.photo.photo50)
+                        .setPhoto100(dto.conversation.settings.photo.photo100)
+                        .setPhoto200(dto.conversation.settings.photo.photo200);
+            }
+        }
+
+        return entity;
     }
 
     public static List<Entity> buildAttachmentsEntities(VkApiAttachments attachments) {
@@ -837,7 +868,7 @@ public class Dto2Entity {
                 .setDate(dto.date)
                 .setRead(dto.read_state)
                 .setOut(dto.out)
-                .setTitle(dto.title)
+                //.setTitle(dto.title)
                 .setBody(dto.body)
                 .setEncrypted(encrypted)
                 .setImportant(dto.important)
@@ -846,16 +877,13 @@ public class Dto2Entity {
                 .setHasAttachmens(nonNull(dto.attachments) && !dto.attachments.isEmpty())
                 .setStatus(MessageStatus.SENT) // only sent can be
                 .setOriginalId(dto.id)
-                .setChatActive(dto.chat_active)
-                .setUsersCount(dto.users_count)
-                .setAdminId(dto.admin_id)
                 .setAction(Message.fromApiChatAction(dto.action))
                 .setActionMemberId(dto.action_mid)
                 .setActionEmail(dto.action_email)
                 .setActionText(dto.action_text)
-                .setPhoto50(dto.photo_50)
-                .setPhoto100(dto.photo_100)
-                .setPhoto200(dto.photo_200)
+                .setPhoto50(dto.action_photo_50)
+                .setPhoto100(dto.action_photo_100)
+                .setPhoto200(dto.action_photo_200)
                 .setRandomId(randomId);
 
         if (entity.isHasAttachmens()) {
@@ -953,7 +981,7 @@ public class Dto2Entity {
         return new PhotoSizeEntity.Size()
                 .setH(dto.height)
                 .setW(dto.width)
-                .setUrl(dto.src);
+                .setUrl(dto.url);
     }
 
     public static PhotoSizeEntity buildPhotoSizeDbo(List<PhotoSizeDto> dtos) {

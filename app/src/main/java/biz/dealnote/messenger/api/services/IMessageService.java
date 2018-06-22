@@ -6,11 +6,13 @@ import java.util.Map;
 import biz.dealnote.messenger.api.model.ChatUserDto;
 import biz.dealnote.messenger.api.model.Items;
 import biz.dealnote.messenger.api.model.VKApiMessage;
+import biz.dealnote.messenger.api.model.VkApiConversation;
 import biz.dealnote.messenger.api.model.VkApiLongpollServer;
 import biz.dealnote.messenger.api.model.response.AttachmentsHistoryResponse;
 import biz.dealnote.messenger.api.model.response.BaseResponse;
 import biz.dealnote.messenger.api.model.response.ChatsInfoResponse;
 import biz.dealnote.messenger.api.model.response.DialogsResponse;
+import biz.dealnote.messenger.api.model.response.ItemsProfilesGroupsResponse;
 import biz.dealnote.messenger.api.model.response.LongpollHistoryResponse;
 import biz.dealnote.messenger.api.model.response.MessageHistoryResponse;
 import biz.dealnote.messenger.api.model.response.SearchDialogsResponse;
@@ -312,27 +314,21 @@ public interface IMessageService {
     Single<BaseResponse<Items<VKApiMessage>>> getById(@Field("message_ids") String messageIds,
                                                       @Field("preview_length") Integer previewLength);
 
-    /**
-     * Returns a list of the current user's conversations.
-     *
-     * @param offset         Offset needed to return a specific subset of messages.
-     * @param count          Number of messages to return. Default 20, maximum value 200
-     * @param startMessageId ID of the message from what to return dialogs.
-     * @param previewLength  Number of characters after which to truncate a previewed message.
-     *                       To preview the full message, specify 0.
-     *                       NOTE: Messages are not truncated by default. Messages are truncated by words.
-     * @param unread         1 — return unread messages only.
-     * @param important      1 — return important messages only.
-     * @return Returns a list of dialog objects.
-     */
+    //https://vk.com/dev/messages.getConversations
     @FormUrlEncoded
-    @POST("messages.getDialogs")
+    @POST("messages.getConversations")
     Single<BaseResponse<DialogsResponse>> getDialogs(@Field("offset") Integer offset,
                                                      @Field("count") Integer count,
                                                      @Field("start_message_id") Integer startMessageId,
-                                                     @Field("preview_length") Integer previewLength,
-                                                     @Field("unread") Integer unread,
-                                                     @Field("important") Integer important);
+                                                     @Field("extended") Integer extended,
+                                                     @Field("fields") String fields);
+
+    //https://vk.com/dev/messages.getConversationsById
+    @FormUrlEncoded
+    @POST("messages.getConversationsById")
+    Single<BaseResponse<ItemsProfilesGroupsResponse<VkApiConversation>>> getConversationsById(@Field("peer_ids") String peerIds,
+                                                                                              @Field("extended") Integer extended,
+                                                                                              @Field("fields") String fields);
 
     @FormUrlEncoded
     @POST("messages.getLongPollServer")

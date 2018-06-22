@@ -6,22 +6,14 @@ import java.util.List;
 
 import biz.dealnote.messenger.api.model.VKApiCommunity;
 import biz.dealnote.messenger.api.model.VKApiUser;
-import biz.dealnote.messenger.api.model.VkApiDialog;
 
-/**
- * Created by ruslan.kolbasa on 28.12.2016.
- * phoenix
- */
-public class DialogsResponse {
+public class ItemsProfilesGroupsResponse<T> {
 
     @SerializedName("items")
-    public List<VkApiDialog> dialogs;
+    public List<T> items;
 
     @SerializedName("count")
     public int count;
-
-    @SerializedName("unread_count")
-    public int unreadCount;
 
     @SerializedName("profiles")
     public List<VKApiUser> profiles;

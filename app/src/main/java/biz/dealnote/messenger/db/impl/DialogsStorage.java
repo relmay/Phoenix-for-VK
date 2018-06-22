@@ -22,6 +22,7 @@ import biz.dealnote.messenger.db.column.DialogsColumns;
 import biz.dealnote.messenger.db.interfaces.IDialogsStorage;
 import biz.dealnote.messenger.db.model.entity.DialogEntity;
 import biz.dealnote.messenger.db.model.entity.MessageEntity;
+import biz.dealnote.messenger.db.model.entity.SimpleDialogEntity;
 import biz.dealnote.messenger.model.Chat;
 import biz.dealnote.messenger.model.ChatAction;
 import biz.dealnote.messenger.model.criteria.DialogsCriteria;
@@ -56,9 +57,13 @@ class DialogsStorage extends AbsStorage implements IDialogsStorage {
         this.unreadDialogsCounter = PublishSubject.create();
     }
 
+    private static String unreadKeyFor(int accountId) {
+        return "unread" + accountId;
+    }
+
     @Override
     public int getUnreadDialogsCount(int accountId) {
-        synchronized (this){
+        synchronized (this) {
             return preferences.getInt(unreadKeyFor(accountId), 0);
         }
     }
@@ -86,7 +91,7 @@ class DialogsStorage extends AbsStorage implements IDialogsStorage {
                         break;
                     }
 
-                    dbos.add(mapDbo(cursor));
+                    dbos.add(mapEntity(cursor));
                 }
 
                 cursor.close();
@@ -95,62 +100,6 @@ class DialogsStorage extends AbsStorage implements IDialogsStorage {
             e.onSuccess(dbos);
             Exestime.log("getDialogs", start);
         });
-    }
-
-    private static class DialogUpdateImpl implements IDialogUpdate {
-
-        final int accountId;
-        final int peerId;
-        final int lastMessageId;
-        final int unreadCount;
-
-        private DialogUpdateImpl(int accountId, int peerId, int lastMessageId, int unreadCount) {
-            this.accountId = accountId;
-            this.peerId = peerId;
-            this.lastMessageId = lastMessageId;
-            this.unreadCount = unreadCount;
-        }
-
-        @Override
-        public int getAccountId() {
-            return accountId;
-        }
-
-        @Override
-        public int getPeerId() {
-            return peerId;
-        }
-
-        @Override
-        public int getLastMessageId() {
-            return lastMessageId;
-        }
-
-        @Override
-        public int getUnreadCount() {
-            return unreadCount;
-        }
-    }
-
-    private static class DialogEventImpl implements IDeletedDialog {
-
-        final int accountId;
-        final int peerId;
-
-        private DialogEventImpl(int accountId, int peerId) {
-            this.accountId = accountId;
-            this.peerId = peerId;
-        }
-
-        @Override
-        public int getAccountId() {
-            return accountId;
-        }
-
-        @Override
-        public int getPeerId() {
-            return peerId;
-        }
     }
 
     @Override
@@ -183,27 +132,27 @@ class DialogsStorage extends AbsStorage implements IDialogsStorage {
     }
 
     @Override
-    public Completable insertDialogs(int accountId, List<DialogEntity> dbos, boolean clearBefore) {
+    public Completable insertDialogs(int accountId, List<DialogEntity> entities, boolean clearBefore) {
         return Completable.create(emitter -> {
             final long start = System.currentTimeMillis();
             final Uri uri = MessengerContentProvider.getDialogsContentUriFor(accountId);
             final ArrayList<ContentProviderOperation> operations = new ArrayList<>();
 
-            if(clearBefore){
+            if (clearBefore) {
                 operations.add(ContentProviderOperation.newDelete(uri).build());
             }
 
-            for(DialogEntity dbo : dbos){
-                ContentValues cv = createCv(dbo);
+            for (DialogEntity entity : entities) {
+                ContentValues cv = createCv(entity);
                 operations.add(ContentProviderOperation.newInsert(uri).withValues(cv).build());
 
-                MessagesStorage.appendDboOperation(accountId, dbo.getMessage(), operations, null, null);
+                MessagesStorage.appendDboOperation(accountId, entity.getMessage(), operations, null, null);
             }
 
             getContentResolver().applyBatch(MessengerContentProvider.AUTHORITY, operations);
             emitter.onComplete();
 
-            Exestime.log("DialogsStorage.insertDialogs", start, "count: " + dbos.size() + ", clearBefore: " + clearBefore);
+            Exestime.log("DialogsStorage.insertDialogs", start, "count: " + entities.size() + ", clearBefore: " + clearBefore);
         });
     }
 
@@ -217,34 +166,94 @@ class DialogsStorage extends AbsStorage implements IDialogsStorage {
         });
     }
 
-    private ContentValues createCv(DialogEntity dbo){
+    private ContentValues createCv(DialogEntity entity) {
         ContentValues cv = new ContentValues();
-        MessageEntity messageDbo = dbo.getMessage();
+        MessageEntity messageDbo = entity.getMessage();
 
         cv.put(DialogsColumns._ID, messageDbo.getPeerId());
-        cv.put(DialogsColumns.UNREAD, dbo.getUnreadCount());
-        cv.put(DialogsColumns.TITLE, messageDbo.getTitle());
-        cv.put(DialogsColumns.PHOTO_50, messageDbo.getPhoto50());
-        cv.put(DialogsColumns.PHOTO_100, messageDbo.getPhoto100());
-        cv.put(DialogsColumns.PHOTO_200, messageDbo.getPhoto200());
-        cv.put(DialogsColumns.ADMIN_ID, messageDbo.getAdminId());
+        cv.put(DialogsColumns.UNREAD, entity.getUnreadCount());
+        cv.put(DialogsColumns.TITLE, entity.getTitle());
+        cv.put(DialogsColumns.IN_READ, entity.getInRead());
+        cv.put(DialogsColumns.OUT_READ, entity.getOutRead());
+        cv.put(DialogsColumns.PHOTO_50, entity.getPhoto50());
+        cv.put(DialogsColumns.PHOTO_100, entity.getPhoto100());
+        cv.put(DialogsColumns.PHOTO_200, entity.getPhoto200());
         cv.put(DialogsColumns.LAST_MESSAGE_ID, messageDbo.getId());
         return cv;
     }
 
+    private ContentValues createCv(SimpleDialogEntity entity) {
+        ContentValues cv = new ContentValues();
+        cv.put(DialogsColumns._ID, entity.getPeerId());
+        cv.put(DialogsColumns.UNREAD, entity.getUnreadCount());
+        cv.put(DialogsColumns.TITLE, entity.getTitle());
+        cv.put(DialogsColumns.IN_READ, entity.getInRead());
+        cv.put(DialogsColumns.OUT_READ, entity.getOutRead());
+        cv.put(DialogsColumns.PHOTO_50, entity.getPhoto50());
+        cv.put(DialogsColumns.PHOTO_100, entity.getPhoto100());
+        cv.put(DialogsColumns.PHOTO_200, entity.getPhoto200());
+        cv.put(DialogsColumns.LAST_MESSAGE_ID, entity.getLastMessageId());
+        return cv;
+    }
+
+    @Override
+    public Completable saveSimple(int accountId, @NonNull SimpleDialogEntity entity) {
+        return Completable.create(emitter -> {
+            final Uri uri = MessengerContentProvider.getDialogsContentUriFor(accountId);
+            final ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+            operations.add(ContentProviderOperation.newInsert(uri).withValues( createCv(entity)).build());
+            getContentResolver().applyBatch(MessengerContentProvider.AUTHORITY, operations);
+            emitter.onComplete();
+        });
+    }
+
+    @Override
+    public Single<Optional<SimpleDialogEntity>> findSimple(int accountId, int peerId) {
+        return Single.create(emitter -> {
+            String[] projection = {
+                    DialogsColumns.UNREAD,
+                    DialogsColumns.TITLE,
+                    DialogsColumns.IN_READ,
+                    DialogsColumns.OUT_READ,
+                    DialogsColumns.PHOTO_50,
+                    DialogsColumns.PHOTO_100,
+                    DialogsColumns.PHOTO_200,
+                    DialogsColumns.LAST_MESSAGE_ID
+            };
+
+            Uri uri = MessengerContentProvider.getDialogsContentUriFor(accountId);
+            Cursor cursor = getContentResolver().query(uri, projection,
+                    DialogsColumns.FULL_ID + " = ?", new String[]{String.valueOf(peerId)}, null);
+
+            SimpleDialogEntity entity = null;
+            if (cursor != null) {
+                if (cursor.moveToNext()) {
+                    entity = new SimpleDialogEntity(peerId)
+                            .setTitle(cursor.getString(cursor.getColumnIndex(DialogsColumns.TITLE)))
+                            .setPhoto200(cursor.getString(cursor.getColumnIndex(DialogsColumns.PHOTO_200)))
+                            .setPhoto100(cursor.getString(cursor.getColumnIndex(DialogsColumns.PHOTO_100)))
+                            .setPhoto50(cursor.getString(cursor.getColumnIndex(DialogsColumns.PHOTO_50)))
+                            .setLastMessageId(cursor.getInt(cursor.getColumnIndex(DialogsColumns.LAST_MESSAGE_ID)))
+                            .setInRead(cursor.getInt(cursor.getColumnIndex(DialogsColumns.IN_READ)))
+                            .setOutRead(cursor.getInt(cursor.getColumnIndex(DialogsColumns.OUT_READ)));
+                }
+
+                cursor.close();
+            }
+
+            emitter.onSuccess(Optional.wrap(entity));
+        });
+    }
+
     @Override
     public void setUnreadDialogsCount(int accountId, int unreadCount) {
-        synchronized (this){
+        synchronized (this) {
             preferences.edit()
                     .putInt(unreadKeyFor(accountId), unreadCount)
                     .apply();
         }
 
         unreadDialogsCounter.onNext(new Pair<>(accountId, unreadCount));
-    }
-
-    private static String unreadKeyFor(int accountId) {
-        return "unread" + accountId;
     }
 
     @Override
@@ -307,7 +316,6 @@ class DialogsStorage extends AbsStorage implements IDialogsStorage {
                     DialogsColumns.PHOTO_200,
                     DialogsColumns.PHOTO_100,
                     DialogsColumns.PHOTO_50,
-                    DialogsColumns.ADMIN_ID
             };
 
             Uri uri = MessengerContentProvider.getDialogsContentUriFor(accountId);
@@ -321,8 +329,7 @@ class DialogsStorage extends AbsStorage implements IDialogsStorage {
                     chat.setTitle(cursor.getString(cursor.getColumnIndex(DialogsColumns.TITLE)))
                             .setPhoto200(cursor.getString(cursor.getColumnIndex(DialogsColumns.PHOTO_200)))
                             .setPhoto100(cursor.getString(cursor.getColumnIndex(DialogsColumns.PHOTO_100)))
-                            .setPhoto50(cursor.getString(cursor.getColumnIndex(DialogsColumns.PHOTO_50)))
-                            .setAdminId(cursor.getInt(cursor.getColumnIndex(DialogsColumns.ADMIN_ID)));
+                            .setPhoto50(cursor.getString(cursor.getColumnIndex(DialogsColumns.PHOTO_50)));
                 }
 
                 cursor.close();
@@ -332,7 +339,7 @@ class DialogsStorage extends AbsStorage implements IDialogsStorage {
         });
     }
 
-    private DialogEntity mapDbo(@NonNull Cursor cursor) {
+    private DialogEntity mapEntity(@NonNull Cursor cursor) {
         @ChatAction
         int action = cursor.getInt(cursor.getColumnIndex(DialogsColumns.FOREIGN_MESSAGE_ACTION));
 
@@ -346,7 +353,7 @@ class DialogsStorage extends AbsStorage implements IDialogsStorage {
                 .setBody(cursor.getString(cursor.getColumnIndex(DialogsColumns.FOREIGN_MESSAGE_BODY)))
                 .setDate(cursor.getLong(cursor.getColumnIndex(DialogsColumns.FOREIGN_MESSAGE_DATE)))
                 .setOut(cursor.getInt(cursor.getColumnIndex(DialogsColumns.FOREIGN_MESSAGE_OUT)) == 1)
-                .setTitle(cursor.getString(cursor.getColumnIndex(DialogsColumns.FOREIGN_MESSAGE_TITLE)))
+                //.setTitle(cursor.getString(cursor.getColumnIndex(DialogsColumns.FOREIGN_MESSAGE_TITLE)))
                 .setRead(cursor.getInt(cursor.getColumnIndex(DialogsColumns.FOREIGN_MESSAGE_READ_STATE)) == 1)
                 .setHasAttachmens(cursor.getInt(cursor.getColumnIndex(DialogsColumns.FOREIGN_MESSAGE_HAS_ATTACHMENTS)) == 1)
                 .setForwardCount(cursor.getInt(cursor.getColumnIndex(DialogsColumns.FOREIGN_MESSAGE_FWD_COUNT)))
@@ -355,12 +362,69 @@ class DialogsStorage extends AbsStorage implements IDialogsStorage {
 
         return new DialogEntity(peerId)
                 .setMessage(message)
+                .setInRead(cursor.getInt(cursor.getColumnIndex(DialogsColumns.IN_READ)))
+                .setOutRead(cursor.getInt(cursor.getColumnIndex(DialogsColumns.OUT_READ)))
                 .setTitle(cursor.getString(cursor.getColumnIndex(DialogsColumns.TITLE)))
                 .setPhoto50(cursor.getString(cursor.getColumnIndex(DialogsColumns.PHOTO_50)))
                 .setPhoto100(cursor.getString(cursor.getColumnIndex(DialogsColumns.PHOTO_100)))
                 .setPhoto200(cursor.getString(cursor.getColumnIndex(DialogsColumns.PHOTO_200)))
                 .setUnreadCount(cursor.getInt(cursor.getColumnIndex(DialogsColumns.UNREAD)))
-                .setAdminId(cursor.getInt(cursor.getColumnIndex(DialogsColumns.ADMIN_ID)))
                 .setLastMessageId(cursor.getInt(cursor.getColumnIndex(DialogsColumns.LAST_MESSAGE_ID)));
+    }
+
+    private static class DialogUpdateImpl implements IDialogUpdate {
+
+        final int accountId;
+        final int peerId;
+        final int lastMessageId;
+        final int unreadCount;
+
+        private DialogUpdateImpl(int accountId, int peerId, int lastMessageId, int unreadCount) {
+            this.accountId = accountId;
+            this.peerId = peerId;
+            this.lastMessageId = lastMessageId;
+            this.unreadCount = unreadCount;
+        }
+
+        @Override
+        public int getAccountId() {
+            return accountId;
+        }
+
+        @Override
+        public int getPeerId() {
+            return peerId;
+        }
+
+        @Override
+        public int getLastMessageId() {
+            return lastMessageId;
+        }
+
+        @Override
+        public int getUnreadCount() {
+            return unreadCount;
+        }
+    }
+
+    private static class DialogEventImpl implements IDeletedDialog {
+
+        final int accountId;
+        final int peerId;
+
+        private DialogEventImpl(int accountId, int peerId) {
+            this.accountId = accountId;
+            this.peerId = peerId;
+        }
+
+        @Override
+        public int getAccountId() {
+            return accountId;
+        }
+
+        @Override
+        public int getPeerId() {
+            return peerId;
+        }
     }
 }
