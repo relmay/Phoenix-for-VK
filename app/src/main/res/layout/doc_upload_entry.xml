@@ -6,13 +6,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
-        app:cardBackgroundColor="?android:windowBackground"
-        app:cardCornerRadius="2dp"
-        app:cardElevation="4dp">
+        app:cardBackgroundColor="?android:windowBackground">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,6 +79,6 @@
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>

@@ -10,41 +10,35 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_margin="8dp"
-            app:cardElevation="2dp"
             app:cardBackgroundColor="?attr/android:colorBackground"
-            app:cardCornerRadius="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <include layout="@layout/content_community_settings_main"/>
 
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_margin="8dp"
-            app:cardElevation="2dp"
             app:cardBackgroundColor="?attr/android:colorBackground"
-            app:cardCornerRadius="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <include layout="@layout/content_community_settings_additional"/>
 
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_margin="8dp"
-            app:cardElevation="2dp"
             app:cardBackgroundColor="?attr/android:colorBackground"
-            app:cardCornerRadius="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <include layout="@layout/content_community_settings_commentsl"/>
 
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 

@@ -43,13 +43,11 @@
                         android:textSize="16sp"
                         tools:text="Video" />
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="16dp"
-                        app:cardBackgroundColor="?android:colorBackground"
-                        app:cardCornerRadius="2dp"
-                        app:cardElevation="2dp">
+                        app:cardBackgroundColor="?android:colorBackground">
 
                         <RelativeLayout
                             android:layout_width="match_parent"
@@ -91,7 +89,7 @@
 
                         </RelativeLayout>
 
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <biz.dealnote.messenger.view.emoji.EmojiconTextView
                         android:autoLink="web"

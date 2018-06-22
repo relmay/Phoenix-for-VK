@@ -8,16 +8,14 @@
     app:altAspectRatioHeight="4"
     app:altAspectRatioWidth="3">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="8dp"
-        app:cardBackgroundColor="?android:colorBackground"
-        app:cardCornerRadius="2dp"
-        app:cardElevation="4dp">
+        app:cardBackgroundColor="?android:colorBackground">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -92,6 +90,6 @@
 
         </RelativeLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </biz.dealnote.messenger.view.AlternativeAspectRatioFrameLayout>
