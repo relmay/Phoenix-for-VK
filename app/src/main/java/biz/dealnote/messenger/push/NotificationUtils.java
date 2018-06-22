@@ -70,18 +70,16 @@ public class NotificationUtils {
         }
     }
 
-    public static int optInt(RemoteMessage data, String name, int defaultValue) {
-        String value = data.getData().get(name);
-
+    public static int optInt(String data, int defaultValue) {
         try {
-            return safeIsEmpty(value) ? defaultValue : Integer.parseInt(value);
+            return safeIsEmpty(data) ? defaultValue : Integer.parseInt(data);
         } catch (NumberFormatException e) {
             return defaultValue;
         }
     }
 
-    public static int optInt(RemoteMessage data, String name) {
-        return optInt(data, name, 0);
+    public static int optInt(String data, String name) {
+        return optInt(data, 0);
     }
 
     public static void configOtherPushNotification(Notification notification) {

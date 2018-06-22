@@ -63,7 +63,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/button_send_code_via_sms"
                 style="@style/Widget.MaterialComponents.Button"
                 android:background="?attr/selectableItemBackground"

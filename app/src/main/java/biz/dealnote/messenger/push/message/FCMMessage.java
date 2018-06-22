@@ -31,7 +31,7 @@ public class FCMMessage {
     // {"width":50,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cd\/BB6tk_bcJ3U.jpg","height":50}],
     // sound=1, title=Yevgeni Polkin, to_id=216143660, group_id=msg_280186075, context={"msg_id":828342,"sender_id":280186075}}
 
-    public int from;
+    public long from;
     public String collapse_key;
     public String image_type;
     public int from_id;
@@ -60,14 +60,14 @@ public class FCMMessage {
         FCMMessage message = new FCMMessage();
         Map<String, String> data = remote.getData();
 
-        message.from = Integer.parseInt(data.get("from"));
+        message.from = Long.parseLong(remote.getFrom());
         message.collapse_key = data.get("collapse_key");
         message.image_type = data.get("image_type");
         message.from_id = Integer.parseInt(data.get("from_id"));
         message.body = VKStringUtils.unescape(data.get("body"));
         message.vk_time = Long.parseLong(data.get("time"));
         message.type = data.get("type");
-        message.badge = NotificationUtils.optInt(remote, "badge", -1);
+        message.badge = NotificationUtils.optInt(remote.getData().get("badge"), -1);
         //message.image = data.get("image"); //todo
         message.sound = Integer.parseInt(data.get("sound")) == 1;
         message.title = data.get("title");

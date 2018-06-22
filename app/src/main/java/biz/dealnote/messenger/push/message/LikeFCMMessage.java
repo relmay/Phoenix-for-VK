@@ -43,28 +43,33 @@ import static biz.dealnote.messenger.util.Utils.stringEmptyIfNull;
  */
 public class LikeFCMMessage {
 
-    //04-14 12:41:10.371 31492-31526/ru.ezorrio.phoenix D/MyFcmListenerService: onMessage,
-    // from: 652332232777, collapseKey: null, data: {image_type=user, from_id=280186075,
-    // id=like_280186075_photo216143660_456241076, url=https://vk.com/photo216143660_456241076?access_key=cda1847c1773ae7bca,
-    // body=Yevgeni Polkin liked your photo, icon=like_24, time=1523698870, type=like, badge=1,
-    // image=[{"width":200,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cb\/OkkyraBZJCY.jpg","height":200},
-    // {"width":100,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cc\/dRPyhRW_dvU.jpg","height":100},
-    // {"width":50,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cd\/BB6tk_bcJ3U.jpg","height":50}],
-    // sound=0, title=Notification, to_id=216143660, group_id=likes,
-    // context={"feedback":true,"item_id":"456241076","owner_id":"216143660","type":"photo"}}
+// key: id, value: like_216143660_photo280186075_456239045, class: class java.lang.String
+// key: url, value: https://vk.com/photo280186075_456239045?access_key=d7d37c46854499dd3f, class: class java.lang.String
+// key: body, value: Emin Guliev liked your photo, class: class java.lang.String
+// key: icon, value: like_24, class: class java.lang.String
+// key: time, value: 1529682146, class: class java.lang.String
+// key: type, value: like, class: class java.lang.String
+// key: badge, value: 1, class: class java.lang.String
+// key: image, value: [{"width":200,"url":"https:\/\/pp.userapi.com\/c844520\/v844520706\/71a39\/nc5YPeh1yEI.jpg","height":200},{"width":100,"url":"https:\/\/pp.userapi.com\/c844520\/v844520706\/71a3a\/pZLtq6sleHo.jpg","height":100},{"width":50,"url":"https:\/\/pp.userapi.com\/c844520\/v844520706\/71a3b\/qoFJrYXVFdc.jpg","height":50}], class: class java.lang.String
+// key: sound, value: 0, class: class java.lang.String
+// key: title, value: Notification, class: class java.lang.String
+// key: to_id, value: 280186075, class: class java.lang.String
+// key: group_id, value: likes, class: class java.lang.String
+// key: context, value: {"feedback":true,"item_id":"456239045","owner_id":"280186075","type":"photo"}, class: class java.lang.String
 
     private final int accountId;
 
-    private int from;
-    private String collapse_key;
-    private String image_type;
+    private long from;
+    private String id;
+    private String url;
+    private long time;
+    private boolean sound;
+    private String title;
     private int from_id;
     private String body;
     private long vk_time;
     private String type;
     private int badge;
-    private boolean sound;
-    private String title;
     private int to_id;
     private String group_id;
     private boolean is_feedback;
