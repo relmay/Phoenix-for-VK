@@ -108,7 +108,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
                 new NewPostPushMessage(accountId, message).notifyIfNeed(context);
                 break;
             case PushType.LIKE:
-                //new LikeFCMMessage(accountId, message).notifyIfNeed(context);
+                new LikeFCMMessage(accountId, message).notifyIfNeed(context);
                 break;
             default:
                 PersistentLogger.logThrowable("Push issues", new Exception("Unespected Push event, collapse_key: " + pushType + ", dump: " + bundleDump));

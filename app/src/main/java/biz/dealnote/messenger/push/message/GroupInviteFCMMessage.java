@@ -42,9 +42,9 @@ public class GroupInviteFCMMessage {
 
     public static GroupInviteFCMMessage fromRemoteMessage(@NonNull RemoteMessage remote) {
         GroupInviteFCMMessage message = new GroupInviteFCMMessage();
-        message.from_id = NotificationUtils.optInt(remote, "from_id");
+        message.from_id = Integer.parseInt(remote.getData().get("from_id"));
         //message.name = bundle.getString("name");
-        message.group_id = NotificationUtils.optInt(remote, "group_id");
+        message.group_id = Integer.parseInt(remote.getData().get("group_id"));
         //message.from = FriendFCMMessage.optLong(bundle, "from");
         //message.type = bundle.getString("type");
         return message;

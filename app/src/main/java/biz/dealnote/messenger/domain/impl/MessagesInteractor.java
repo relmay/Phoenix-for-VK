@@ -1,7 +1,6 @@
 package biz.dealnote.messenger.domain.impl;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import biz.dealnote.messenger.Constants;
 import biz.dealnote.messenger.api.interfaces.IDocsApi;
 import biz.dealnote.messenger.api.interfaces.IMessagesApi;

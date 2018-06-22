@@ -6,9 +6,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -34,6 +38,7 @@ import biz.dealnote.messenger.util.Utils;
 import static biz.dealnote.messenger.push.NotificationUtils.configOtherPushNotification;
 import static biz.dealnote.messenger.push.NotificationUtils.optInt;
 import static biz.dealnote.messenger.util.Objects.isNull;
+import static biz.dealnote.messenger.util.Utils.getActionBarHeight;
 import static biz.dealnote.messenger.util.Utils.singletonArrayList;
 import static biz.dealnote.messenger.util.Utils.stringEmptyIfNull;
 
@@ -57,6 +62,20 @@ public class LikeFCMMessage {
 // key: group_id, value: likes, class: class java.lang.String
 // key: context, value: {"feedback":true,"item_id":"456239045","owner_id":"280186075","type":"photo"}, class: class java.lang.String
 
+    class LikeContext {
+        @SerializedName("feedback")
+        int feedback;
+
+        @SerializedName("item_id")
+        int item_id;
+
+        @SerializedName("owner_id")
+        int owner_id;
+
+        @SerializedName("type")
+        String type;
+    }
+
     private final int accountId;
 
     private long from;
@@ -67,8 +86,6 @@ public class LikeFCMMessage {
     private String title;
     private int from_id;
     private String body;
-    private long vk_time;
-    private String type;
     private int badge;
     private int to_id;
     private String group_id;
@@ -80,10 +97,28 @@ public class LikeFCMMessage {
     public LikeFCMMessage(int accountId, RemoteMessage remote) {
         this.accountId = accountId;
         Map<String, String> data = remote.getData();
-        this.from = optInt(remote, "from");
+        this.from = Long.parseLong(remote.getFrom());
+        this.id = data.get("id");
+        this.url = data.get("url");
+        this.time = Long.parseLong(data.get("time"));
+        this.sound = Integer.parseInt(data.get("sound")) == 1;
+        this.title = data.get("title");
+        this.from_id = Integer.parseInt("from_id");
+        this.body = data.get("body");
+        this.badge = Integer.parseInt(data.get("badge"));
+        this.to_id = Integer.parseInt(data.get("to_id"));
+        this.group_id = data.get("group_id");
+
+        LikeContext context = new Gson().fromJson(data.get("context"), LikeContext.class);
+
+        this.is_feedback = context.feedback == 1;
+        this.item_id = context.item_id;
+        this.owner_id = context.owner_id;
+        this.like_type = context.type;
     }
 
-//    private void notifyImpl(Context context, OwnerInfo info) {
+    //todo implement place
+    private void notifyImpl(Context context) {
 //        VkPlace parsedPlace = VkPlace.parse(object);
 //
 //        if (isNull(parsedPlace)) {
@@ -134,46 +169,43 @@ public class LikeFCMMessage {
 //            PersistentLogger.logThrowable("Push issues", new Exception("LikeFCMMessage, UNKNOWN PLACE: " + object));
 //            return;
 //        }
-//
-//        final NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-//        if (Utils.hasOreo()){
-//            nManager.createNotificationChannel(AppNotificationChannels.getLikesChannel(context));
-//        }
-//
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, AppNotificationChannels.LIKES_CHANNEL_ID)
-//                .setSmallIcon(R.drawable.ic_statusbar_like)
-//                .setLargeIcon(info.getAvatar())
-//                .setContentTitle(context.getString(R.string.like_title))
-//                .setContentText(contentText)
-//                .setNumber(likesCount)
-//                .setAutoCancel(true);
-//
-//        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
-//
-//        Intent intent = new Intent(context, MainActivity.class);
-//        intent.putExtra(Extra.PLACE, place);
-//        intent.setAction(MainActivity.ACTION_OPEN_PLACE);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//
-//        PendingIntent contentIntent = PendingIntent.getActivity(context, fromId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-//        builder.setContentIntent(contentIntent);
-//
-//        Notification notification = builder.build();
-//
-//        configOtherPushNotification(notification);
-//
-//        nManager.notify("like_" + object, NotificationHelper.NOTIFICATION_LIKE, notification);
-//    }
-//
-//    public void notifyIfNeed(Context context) {
-//        if (!Settings.get()
-//                .notifications()
-//                .isLikeNotificationEnable()) {
-//            return;
-//        }
-//
-//        OwnerInfo.getRx(context.getApplicationContext(), accountId, fromId)
-//                .subscribeOn(NotificationScheduler.INSTANCE)
-//                .subscribe(info -> notifyImpl(context, info), throwable -> {/*ignore*/});
-//    }
+
+        final NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Utils.hasOreo()){
+            nManager.createNotificationChannel(AppNotificationChannels.getLikesChannel(context));
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, AppNotificationChannels.LIKES_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_statusbar_like)
+                .setContentTitle(context.getString(R.string.like_title))
+                .setContentText(title)
+                .setNumber(badge)
+                .setAutoCancel(true);
+
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        Intent intent = new Intent(context, MainActivity.class);
+        //intent.putExtra(Extra.PLACE, place);
+        intent.setAction(MainActivity.ACTION_OPEN_PLACE);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(context, from_id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        builder.setContentIntent(contentIntent);
+
+        Notification notification = builder.build();
+
+        configOtherPushNotification(notification);
+
+        nManager.notify(id, NotificationHelper.NOTIFICATION_LIKE, notification);
+    }
+
+    public void notifyIfNeed(Context context) {
+        if (!Settings.get()
+                .notifications()
+                .isLikeNotificationEnable()) {
+            return;
+        }
+
+        notifyImpl(context);
+    }
 }

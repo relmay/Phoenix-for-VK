@@ -49,7 +49,7 @@ public class WallPostFCMMessage {
     public static WallPostFCMMessage fromRemoteMessage(@NonNull RemoteMessage remote) {
         WallPostFCMMessage message = new WallPostFCMMessage();
         Map<String, String> data = remote.getData();
-        message.from_id = NotificationUtils.optInt(remote, "from_id");
+        message.from_id = Integer.parseInt(remote.getData().get("from_id"));
         //message.first_name = bundle.getString("first_name");
         //message.last_name = bundle.getString("last_name");
 

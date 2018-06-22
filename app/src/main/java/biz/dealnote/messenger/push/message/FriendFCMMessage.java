@@ -43,7 +43,7 @@ public class FriendFCMMessage {
         FriendFCMMessage message = new FriendFCMMessage();
         //message.first_name = bundle.getString("first_name");
         //message.last_name = bundle.getString("last_name");
-        message.uid = NotificationUtils.optInt(remote, "uid");
+        message.uid = Integer.parseInt(remote.getData().get("uid"));
         //message.from = optLong(bundle, "from");
         //message.type = bundle.getString("type");
         //message.badge = optInt(bundle, "badge");
