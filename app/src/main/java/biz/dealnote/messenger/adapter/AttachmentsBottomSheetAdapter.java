@@ -36,7 +36,7 @@ import static biz.dealnote.messenger.util.Utils.isEmpty;
  * Created by admin on 15.04.2017.
  * phoenix
  */
-public class AttachmentsBottomSheetAdapter extends RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder> {
+public class AttachmentsBottomSheetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int ERROR_COLOR = Color.parseColor("#ff0000");
     private static final int VTYPE_BUTTON = 0;
@@ -57,8 +57,9 @@ public class AttachmentsBottomSheetAdapter extends RecyclerView.Adapter<androidx
         this.nonErrorTextColor = CurrentTheme.getPrimaryTextColorCode(context);
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         if (viewType == VTYPE_BUTTON) {
@@ -71,7 +72,7 @@ public class AttachmentsBottomSheetAdapter extends RecyclerView.Adapter<androidx
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case VTYPE_BUTTON:
                 bindAddPhotoButton((ImagesButtonHolder) holder);

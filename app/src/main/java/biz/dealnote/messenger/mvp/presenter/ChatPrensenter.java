@@ -1106,10 +1106,8 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
     }
 
     public void fireEditMessageResult(ModelsBundle accompanyingModels) {
-        //mDraftMessageText = body;
         mOutConfig.setModels(accompanyingModels);
 
-        //resolveDraftMessageText();
         resolveAttachmentsCounter();
         resolveSendButtonState();
     }
