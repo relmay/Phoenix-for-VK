@@ -1,5 +1,6 @@
 package biz.dealnote.messenger.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -8,22 +9,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -34,10 +27,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 import biz.dealnote.messenger.Constants;
@@ -74,6 +71,9 @@ import biz.dealnote.messenger.util.MaskTransformation;
 import biz.dealnote.messenger.util.Objects;
 import biz.dealnote.messenger.util.RoundTransformation;
 import biz.dealnote.messenger.util.Utils;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static biz.dealnote.messenger.util.Utils.isEmpty;
 import static biz.dealnote.messenger.util.Utils.safelyClose;
@@ -120,19 +120,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.settings);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(view.findViewById(R.id.toolbar));
-    }
-
-    @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        addPreferencesFromResource(R.xml.settings);
         if (!AppPrefs.isFullApp()) {
             disableOnlyFullAppPrefs();
         }
@@ -342,7 +331,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
         CheckBoxPreference keepLongpoll = (CheckBoxPreference) findPreference("keep_longpoll");
         keepLongpoll.setOnPreferenceChangeListener((preference, newValue) -> {
             boolean keep = (boolean) newValue;
-            if(keep){
+            if (keep) {
                 KeepLongpollService.start(preference.getContext());
             } else {
                 KeepLongpollService.stop(preference.getContext());
@@ -351,12 +340,11 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
         });
     }
 
-//    @Override
-//    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.preference_list_fragment, container, false);
-//        ((AppCompatActivity) requireActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
-//        return root;
-//    }
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(view.findViewById(R.id.toolbar));
+    }
 
     public static File getDrawerBackgroundFile(Context context, boolean light) {
         return new File(context.getFilesDir(), light ? "drawer_light.jpg" : "drawer_dark.jpg");
@@ -553,6 +541,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
         PlaceFactory.getOwnerWallPlace(getAccountId(), -APP_GROUP_ID, null).tryOpenWith(requireActivity());
     }
 
+    @SuppressLint("CheckResult")
     private void postWallImage() {
         final int ownerId = -APP_GROUP_ID;
 
@@ -560,63 +549,54 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
                 .accounts()
                 .getCurrent();
 
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                try {
-                    postWallImageSync(accountId, ownerId);
-                } catch (Exception e) {
-                    return e.getMessage();
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                if (isAdded()) {
-                    Toast.makeText(getActivity(), s == null ? getString(R.string.thank_you) : s, Toast.LENGTH_LONG).show();
-                }
-            }
-        }.execute();
+        Observable.fromCallable(() -> postWallImageSync(accountId, ownerId))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> Toast.makeText(getActivity(), result ? getString(R.string.thank_you) : getString(R.string.error), Toast.LENGTH_LONG).show());
     }
 
-    private void postWallImageSync(int accountId, int ownerId) {
-        IAccountApis apies = Apis.get()
-                .vkDefault(accountId);
+    @SuppressLint("CheckResult")
+    private boolean postWallImageSync(int accountId, int ownerId) {
+        try {
+            IAccountApis apies = Apis.get()
+                    .vkDefault(accountId);
 
-        List<VKApiPhotoAlbum> albums = apies.photos()
-                .getAlbums(ownerId, null, null, null, true, false)
-                .blockingGet()
-                .getItems();
+            List<VKApiPhotoAlbum> albums = apies.photos()
+                    .getAlbums(ownerId, null, null, null, true, false)
+                    .blockingGet()
+                    .getItems();
 
-        for (VKApiPhotoAlbum album : albums) {
-            if (ALBUM_NAME.equalsIgnoreCase(album.title)) {
-                List<VKApiPhoto> photos = apies.photos()
-                        .get(ownerId, String.valueOf(album.id), null, null, null, 1)
-                        .blockingGet()
-                        .getItems();
+            for (VKApiPhotoAlbum album : albums) {
+                if (ALBUM_NAME.equalsIgnoreCase(album.title)) {
+                    List<VKApiPhoto> photos = apies.photos()
+                            .get(ownerId, String.valueOf(album.id), null, null, null, 1)
+                            .blockingGet()
+                            .getItems();
 
-                if (photos.size() > 0) {
-                    VKApiPhoto photo = photos.get(0);
+                    if (photos.size() > 0) {
+                        VKApiPhoto photo = photos.get(0);
 
-                    Collection<IAttachmentToken> tokens = new ArrayList<>();
-                    tokens.add(AttachmentsTokenCreator.ofPhoto(photo.id, photo.owner_id, photo.access_key));
-                    tokens.add(new LinkAttachmentToken(APP_URL));
+                        Collection<IAttachmentToken> tokens = new ArrayList<>();
+                        tokens.add(AttachmentsTokenCreator.ofPhoto(photo.id, photo.owner_id, photo.access_key));
+                        tokens.add(new LinkAttachmentToken(APP_URL));
 
-                    String message = getString(R.string.app_name) + " #phoenixvk";
+                        String message = getString(R.string.app_name) + " #phoenixvk";
 
-                    apies.wall()
-                            .post(accountId, null, null, message, tokens, null, null,
-                                    null, null, null, null, null, null, null, null)
-                            .blockingGet();
+                        apies.wall()
+                                .post(accountId, null, null, message, tokens, null, null,
+                                        null, null, null, null, null, null, null, null)
+                                .blockingGet();
 
-                    apies.likes()
-                            .add("photo", ownerId, photo.id, photo.access_key)
-                            .blockingGet();
+                        apies.likes()
+                                .add("photo", ownerId, photo.id, photo.access_key)
+                                .blockingGet();
+                    }
                 }
             }
+        } catch (Exception e) {
+            return false;
         }
+        return true;
     }
 
     private void initStartPagePreference(ListPreference lp) {
@@ -706,7 +686,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
         new ActivityFeatures.Builder()
                 .begin()
                 .setBlockNavigationDrawer(false)
-                .setStatusBarColored(getActivity(),true)
+                .setStatusBarColored(getActivity(), true)
                 .build()
                 .apply(requireActivity());
     }
