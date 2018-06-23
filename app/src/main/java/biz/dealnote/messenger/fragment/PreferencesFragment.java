@@ -208,12 +208,14 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
 
         Preference notification = findPreference(KEY_NOTIFICATION);
         if (notification != null) {
-            //these options are not needed for Oreo as channels exists
-            if (Utils.hasOreo()) {
-                ((PreferenceCategory) findPreference("group_general")).removePreference(notification);
-            }
             notification.setOnPreferenceClickListener(preference -> {
-                PlaceFactory.getNotificationSettingsPlace().tryOpenWith(requireActivity());
+                if (Utils.hasOreo()) {
+                    Intent intent = new Intent();
+                    intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                    intent.putExtra("android.provider.extra.APP_PACKAGE", getContext().getPackageName());
+                } else {
+                    PlaceFactory.getNotificationSettingsPlace().tryOpenWith(requireActivity());
+                }
                 return true;
             });
         }

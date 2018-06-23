@@ -116,16 +116,16 @@ public class MyFcmListenerService extends FirebaseMessagingService {
         }
     }
 
-    private void fireNewMessage(int accountId, final @NonNull FCMMessage dto) {
-        try {
-            Processors.realtimeMessages().process(accountId, dto.message_id, true);
-        } catch (QueueContainsException ignored) {
-        }
-
-        if (dto.badge >= 0) {
-            Stores.getInstance()
-                    .dialogs()
-                    .setUnreadDialogsCount(accountId, dto.badge);
-        }
-    }
+//    private void fireNewMessage(int accountId, final @NonNull FCMMessage dto) {
+//        try {
+//            Processors.realtimeMessages().process(accountId, dto.message_id, true);
+//        } catch (QueueContainsException ignored) {
+//        }
+//
+//        if (dto.badge >= 0) {
+//            Stores.getInstance()
+//                    .dialogs()
+//                    .setUnreadDialogsCount(accountId, dto.badge);
+//        }
+//    }
 }
