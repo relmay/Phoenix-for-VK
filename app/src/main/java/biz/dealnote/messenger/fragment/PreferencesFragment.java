@@ -213,6 +213,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
                     Intent intent = new Intent();
                     intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
                     intent.putExtra("android.provider.extra.APP_PACKAGE", getContext().getPackageName());
+                    getContext().startActivity(intent);
                 } else {
                     PlaceFactory.getNotificationSettingsPlace().tryOpenWith(requireActivity());
                 }
