@@ -549,7 +549,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
                 .accounts()
                 .getCurrent();
 
-        Context app = getContext();
+        Context app = requireContext().getApplicationContext();
 
         Observable.fromCallable(() -> postWallImageSync(accountId, ownerId))
                 .subscribeOn(Schedulers.io())
