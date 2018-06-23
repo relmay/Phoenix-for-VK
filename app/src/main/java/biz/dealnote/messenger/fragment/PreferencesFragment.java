@@ -549,10 +549,12 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
                 .accounts()
                 .getCurrent();
 
+        Context app = getContext();
+
         Observable.fromCallable(() -> postWallImageSync(accountId, ownerId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> Toast.makeText(getActivity(), result ? getString(R.string.thank_you) : getString(R.string.error), Toast.LENGTH_LONG).show());
+                .subscribe(result -> Toast.makeText(app, result ? getString(R.string.thank_you) : getString(R.string.error), Toast.LENGTH_LONG).show());
     }
 
     @SuppressLint("CheckResult")
