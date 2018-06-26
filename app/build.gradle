@@ -34,14 +34,14 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            multiDexEnabled false
+            multiDexEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         debug {
             minifyEnabled false
-            multiDexEnabled false
+            multiDexEnabled true
         }
     }
 
@@ -153,6 +153,7 @@ dependencies {
     implementation "com.google.firebase:firebase-database:$firebaseLibraryVersion"
     implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
     implementation "com.android.support:exifinterface:$supportLibraryVersion"
+    implementation 'com.android.support:multidex:1.0.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

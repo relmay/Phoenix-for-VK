@@ -124,6 +124,16 @@
         <item>2</item>
     </string-array>
 
+    <string-array name="array_chat_themes_delete">
+        <item>Delete background for light theme</item>
+        <item>Delete background for dark theme</item>
+    </string-array>
+
+    <string-array name="array_chat_themes_select">
+        <item>Select background for light theme</item>
+        <item>Select background for dark theme</item>
+    </string-array>
+
     <string name="general_settings">General</string>
     <string name="other_settings">Other</string>
     <string name="about_settings">About</string>
@@ -949,7 +959,7 @@
     <string name="likes">Likes</string>
     <string name="success">Success</string>
     <string name="wait_until_file_upload_is_complete">Wait until the file upload is complete</string>
-    <string name="chat_background">Chat background</string>
+    <string name="default_chat_background">Default chat background</string>
     <string name="go_to_post">Go to post</string>
     <string name="go_to_photo">Go to photo</string>
     <string name="go_to_video">Go to video</string>
@@ -1200,4 +1210,9 @@
     <string name="button_show">Show</string>
     <string name="avatar_was_changed_successfully">Your avatar was changed successfully!</string>
 
+    <string name="delete_custom_chat_background">Delete background</string>
+    <string name="custom_chat_background_deleted">Chat background was deleted</string>
+    <string name="nothing_deleted">Nothing deleted</string>
+    <string name="chat_appearance_settings">Chat appearance settings</string>
+    <string name="set_chat_background">Chat background</string>
 </resources>

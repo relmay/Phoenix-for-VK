@@ -24,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -66,11 +67,14 @@ import biz.dealnote.messenger.upload.UploadDestination;
 import biz.dealnote.messenger.util.AssertUtils;
 import biz.dealnote.messenger.util.InputTextDialog;
 import biz.dealnote.messenger.util.Objects;
+import biz.dealnote.messenger.util.RxUtils;
 import biz.dealnote.messenger.view.InputViewController;
 import biz.dealnote.messenger.view.LoadMoreFooterHelper;
 import biz.dealnote.messenger.view.emoji.EmojiconTextView;
 import biz.dealnote.messenger.view.emoji.StickersGridView;
 import biz.dealnote.mvp.core.IPresenterFactory;
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 
 import static biz.dealnote.messenger.util.Objects.nonNull;
 import static biz.dealnote.messenger.util.Utils.safeIsEmpty;
@@ -86,6 +90,8 @@ public class ChatFragment extends PlaceSupportPresenterFragment<ChatPrensenter, 
     private static final String TAG = ChatFragment.class.getSimpleName();
     private static final int REQUEST_RECORD_PERMISSIONS = 15;
     private static final int REQUEST_EDIT_MESSAGE = 150;
+
+    private CompositeDisposable mDisposable = new CompositeDisposable();
 
     public static Bundle buildArgs(int accountId, int peerId, String title, String avaUrl) {
         Bundle bundle = new Bundle();
@@ -122,11 +128,17 @@ public class ChatFragment extends PlaceSupportPresenterFragment<ChatPrensenter, 
         setHasOptionsMenu(true);
     }
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_chat, container, false);
-        root.setBackground(CurrentTheme.getChatBackground(getActivity()));
+
+        ImageView ivBackground = root.findViewById(R.id.chat_background);
+
+        mDisposable.add(Observable.fromCallable(() -> CurrentTheme.getChatBackground(requireActivity()))
+                .compose(RxUtils.applyObservableIOToMainSchedulers())
+                .subscribe(ivBackground::setImageDrawable));
 
         ((AppCompatActivity) requireActivity()).setSupportActionBar(root.findViewById(R.id.toolbar));
 
@@ -819,6 +831,7 @@ public class ChatFragment extends PlaceSupportPresenterFragment<ChatPrensenter, 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mDisposable.dispose();
         mInputViewController.destroyView();
         mInputViewController = null;
     }

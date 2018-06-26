@@ -108,6 +108,9 @@ public class PreferencesFragment extends PreferenceFragment {
     private static final int REQUEST_DARK_SIDEBAR_BACKGROUND = 118;
     private static final int REQUEST_PIN_FOR_SECURITY = 120;
 
+    private static final int REQUEST_LIGHT_CHAT_BACKGROUND = 115;
+    private static final int REQUEST_DARK_CHAT_BACKGROUND = 116;
+
     public static Bundle buildArgs(int accountId) {
         Bundle args = new Bundle();
         args.putInt(Extra.ACCOUNT_ID, accountId);
@@ -350,6 +353,57 @@ public class PreferencesFragment extends PreferenceFragment {
                     return true;
                 });
 
+
+        findPreference("custom_chat_background")
+                .setOnPreferenceClickListener(preference -> {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+                    builder.setTitle(R.string.set_chat_background)
+                            .setItems(R.array.array_chat_themes_select, ((dialogInterface, i) -> {
+                                switch (i) {
+                                    case 0:
+                                        selectLocalImage(REQUEST_LIGHT_CHAT_BACKGROUND);
+                                        break;
+                                    case 1:
+                                        selectLocalImage(REQUEST_DARK_CHAT_BACKGROUND);
+                                        break;
+                                }
+                            }))
+                            .show();
+
+                    return true;
+                });
+
+        findPreference("delete_custom_chat_background")
+                .setOnPreferenceClickListener(preference -> {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+                    builder.setTitle(R.string.delete_custom_chat_background)
+                            .setItems(R.array.array_chat_themes_delete, (dialogInterface, i) -> {
+                                boolean deleted = false;
+
+                                switch (i) {
+                                    case 0:
+                                        deleted = getChatBackgroundFile(requireContext(), true).delete();
+                                        break;
+                                    case 1:
+                                        deleted = getChatBackgroundFile(requireContext(), false).delete();
+                                        break;
+                                }
+
+                                if (deleted) {
+                                    Toast.makeText(requireActivity(),
+                                            R.string.custom_chat_background_deleted,
+                                            Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(requireActivity(),
+                                            R.string.nothing_deleted,
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            })
+                            .show();
+
+                    return true;
+                });
+
         findPreference("source_code")
                 .setOnPreferenceClickListener(preference -> {
                     LinkHelper.openLinkInBrowser(getContext(), getString(R.string.source_code_link));
@@ -412,6 +466,11 @@ public class PreferencesFragment extends PreferenceFragment {
         if (requestCode == REQUEST_PIN_FOR_SECURITY && resultCode == Activity.RESULT_OK) {
             PlaceFactory.getSecuritySettingsPlace().tryOpenWith(requireActivity());
         }
+
+        if ((requestCode == REQUEST_LIGHT_CHAT_BACKGROUND || requestCode == REQUEST_DARK_CHAT_BACKGROUND)
+                && resultCode == Activity.RESULT_OK && data != null) {
+            changeChatBackground(requestCode, data);
+        }
     }
 
     private void changeDrawerBackground(int requestCode, Intent data) {
@@ -426,27 +485,57 @@ public class PreferencesFragment extends PreferenceFragment {
 
         File file = getDrawerBackgroundFile(requireActivity(), light);
 
-        Bitmap original = null;
-        Bitmap scaled = null;
+        saveBackground(file, photo.getFullImageUri().getPath(), 600);
+    }
+
+    public static File getChatBackgroundFile(Context context, boolean light) {
+        return new File(context.getFilesDir(), light ? "chat_background_light.jpg" : "chat_background_dark.jpg");
+    }
+
+    private void changeChatBackground(int requestCode, Intent data) {
+        ArrayList<LocalPhoto> photos = data.getParcelableArrayListExtra(Extra.PHOTOS);
+        if (isEmpty(photos)) {
+            return;
+        }
+
+        LocalPhoto photo = photos.get(0);
+
+        boolean light = requestCode == REQUEST_LIGHT_CHAT_BACKGROUND;
+
+        File file = getChatBackgroundFile(requireActivity(), light);
+
+        saveBackground(file, photo.getFullImageUri().getPath(), 0);
+    }
+
+    /**
+     * Save background.
+     * @param file location where file was saved
+     * @param picPath path of file to save
+     * @param scale max size of scaling. "0" for no scaling
+     */
+    private void saveBackground(File file, String picPath, Integer scale) {
+        Bitmap background = null;
         FileOutputStream fos = null;
 
         try {
-            original = BitmapFactory.decodeFile(photo.getFullImageUri().getPath());
-            scaled = getResizedBitmap(original, 600);
+            background = BitmapFactory.decodeFile(picPath);
+
+            if (scale > 0) {
+                background = getResizedBitmap(background, scale);
+            }
 
             tryDeleteFile(file);
 
             fos = new FileOutputStream(file);
 
-            scaled.compress(Bitmap.CompressFormat.JPEG, 95, fos);
+            background.compress(Bitmap.CompressFormat.JPEG, 95, fos);
 
             fos.flush();
         } catch (IOException e) {
             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
             return;
         } finally {
-            safelyRecycle(original);
-            safelyRecycle(scaled);
+            safelyRecycle(background);
             safelyClose(fos);
         }
 

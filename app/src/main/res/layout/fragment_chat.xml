@@ -2,6 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/chat_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
 
     <include
         layout="@layout/toolbar_with_elevation"/>
@@ -28,15 +33,15 @@
     </LinearLayout>
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/chat_empty_text"
         android:id="@+id/fragment_chat_empty_text"
-        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="492dp"
         android:layout_above="@+id/linearLayout"
-        android:textColor="?android:textColorPrimary"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:gravity="center"
+        android:text="@string/chat_empty_text"
+        android:textColor="?android:textColorPrimary"
         android:textSize="@dimen/font_size_subtitle" />
 
 </RelativeLayout>

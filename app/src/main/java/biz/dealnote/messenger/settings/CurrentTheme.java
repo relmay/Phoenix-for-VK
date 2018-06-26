@@ -12,7 +12,10 @@ import android.util.TypedValue;
 
 import com.squareup.picasso.Transformation;
 
+import java.io.File;
+
 import biz.dealnote.messenger.R;
+import biz.dealnote.messenger.fragment.PreferencesFragment;
 import biz.dealnote.messenger.util.MaskTransformation;
 import biz.dealnote.messenger.util.RoundTransformation;
 
@@ -20,10 +23,21 @@ public class CurrentTheme {
 
     private static final String KEY_CHAT_BACKGROUND = "chat_background";
 
-    public static Drawable getChatBackground(Activity activity){
+    public static Drawable getChatBackground(Activity activity) {
+        boolean dark = Settings.get().ui().isDarkModeEnabled(activity);
+        File file = PreferencesFragment.getChatBackgroundFile(activity, !dark);
+
+        if (!file.exists()) {
+            return getDefaultChatBackground(activity);
+        } else {
+            return Drawable.createFromPath(file.getAbsolutePath());
+        }
+    }
+
+    private static Drawable getDefaultChatBackground(Activity activity) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
         String page = preferences.getString(KEY_CHAT_BACKGROUND, "1");
-        switch (page){
+        switch (page) {
             case "1":
                 return CurrentTheme.getDrawableFromAttribute(activity, R.attr.chat_background_cookies);
             case "2":

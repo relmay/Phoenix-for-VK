@@ -94,13 +94,6 @@
             android:key="navigation_colored"
             android:title="@string/color_navigation_bar" />
 
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/array_chat_background_names"
-            android:entryValues="@array/array_chat_background_items"
-            android:key="chat_background"
-            android:title="@string/chat_background" />
-
         <Preference
             android:key="avatar_style"
             android:summary="@string/avatar_style_summary"
@@ -111,6 +104,23 @@
             android:key="double_press_to_exit"
             android:title="@string/double_press_to_exit" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/chat_appearance_settings">
+        <Preference
+            android:key="custom_chat_background"
+            android:title="@string/set_chat_background" />
+
+        <Preference
+            android:key="delete_custom_chat_background"
+            android:title="@string/delete_custom_chat_background" />
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/array_chat_background_names"
+            android:entryValues="@array/array_chat_background_items"
+            android:key="chat_background"
+            android:title="@string/default_chat_background" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/sidebar_settings">

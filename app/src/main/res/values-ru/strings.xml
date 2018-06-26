@@ -804,7 +804,7 @@
     <string name="push_user_liked_your_post">%1$s нравится Ваша запись на стене</string>
     <string name="push_user_liked_your_comment_on_the_post">%1$s нравится Ваш комментарий к записи</string>
     <string name="likes">Отметки \"Мне нравится\"</string>
-    <string name="chat_background">Фон чата</string>
+    <string name="default_chat_background">Стандартный фон чата</string>
     <string name="go_to_post">Перейти к записи</string>
     <string name="success">Успех</string>
     <string name="post_text">Текст записи</string>
@@ -1042,4 +1042,22 @@
     <string name="files_uploading_notification_title">Загрузка файлов</string>
     <string name="service_pinned_message">%1$s закрепил сообщение</string>
     <string name="service_unpinned_message">%1$s открепил сообщение</string>
+
+    <string name="chat_appearance_settings">Настройки внешнего вида чата</string>
+    <string name="dark_custom_chat_background">Фон чата для темной темы</string>
+    <string name="light_custom_chat_background">Фон чата для светлой темы</string>
+    <string name="delete_custom_chat_background">Удалить фон чата</string>
+    <string name="custom_chat_background_deleted">Фон чата удален</string>
+    <string name="nothing_deleted">Ничего не удалено</string>
+    <string name="set_chat_background">Фон чата</string>
+
+    <string-array name="array_chat_themes_delete">
+        <item>Удалить фон для светлой темы</item>
+        <item>Удалить фон для темной темы</item>
+    </string-array>
+
+    <string-array name="array_chat_themes_select">
+        <item>Выбрать фон для светлой темы</item>
+        <item>Выбрать фон для темной темы</item>
+    </string-array>
 </resources>

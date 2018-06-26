@@ -805,7 +805,7 @@
     <string name="likes">Відмітки \"Мені подобається\"</string>
     <string name="go_to_post">Перейти до запису</string>
     <string name="success">Успіх</string>
-    <string name="chat_background">Фон чату</string>
+    <string name="default_chat_background">Фон чату</string>
     <string name="post_text">Текст запису</string>
     <string name="allow_text_selection">Дозволити виділення тексту</string>
     <string name="in_a_civil_union">У цивільному шлюбі</string>
@@ -1040,4 +1040,22 @@
     <string name="files_uploading_notification_title">Завантаження файлів</string>
     <string name="service_pinned_message">%1$s закріпив повідомлення</string>
     <string name="service_unpinned_message">%1$s відкріпив повідомлення</string>
+
+    <string name="chat_appearance_settings">Налаштування зовнішнього вигляду чату</string>
+    <string name="dark_custom_chat_background">Фон чату для темної теми</string>
+    <string name="light_custom_chat_background">Фон чату для світлої теми</string>
+    <string name="delete_custom_chat_background">Видалити фон чату</string>
+    <string name="custom_chat_background_deleted">Фон чату видалений</string>
+    <string name="nothing_deleted">Нічого не вилучено</string>
+    <string name="set_chat_background">Фон чату</string>
+
+    <string-array name="array_chat_themes_delete">
+        <item>Видалити фон для світлої теми</item>
+        <item>Видалити фон для темної теми</item>
+    </string-array>
+
+    <string-array name="array_chat_themes_select">
+        <item>Вибрати фон для світлої теми</item>
+        <item>Вибрати фон для темної теми</item>
+    </string-array>
 </resources>

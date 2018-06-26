@@ -1,14 +1,14 @@
 package biz.dealnote.messenger;
 
-import android.app.Application;
 import android.support.annotation.NonNull;
+import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
 
 import biz.dealnote.messenger.api.PicassoInstance;
 import biz.dealnote.messenger.service.KeepLongpollService;
 import biz.dealnote.messenger.settings.Settings;
 
-public class App extends Application {
+public class App extends MultiDexApplication {
 
     //noinspection ResourceType
     private static App sInstanse;
