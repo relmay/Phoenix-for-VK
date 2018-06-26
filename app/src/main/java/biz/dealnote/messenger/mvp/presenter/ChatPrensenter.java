@@ -32,6 +32,7 @@ import biz.dealnote.messenger.db.Stores;
 import biz.dealnote.messenger.domain.IAttachmentsRepository;
 import biz.dealnote.messenger.domain.IMessagesInteractor;
 import biz.dealnote.messenger.domain.InteractorFactory;
+import biz.dealnote.messenger.domain.Mode;
 import biz.dealnote.messenger.exception.UploadNotResolvedException;
 import biz.dealnote.messenger.longpoll.ILongpollManager;
 import biz.dealnote.messenger.longpoll.LongpollInstance;
@@ -48,6 +49,7 @@ import biz.dealnote.messenger.media.record.AudioRecordWrapper;
 import biz.dealnote.messenger.media.record.Recorder;
 import biz.dealnote.messenger.model.AbsModel;
 import biz.dealnote.messenger.model.ChatConfig;
+import biz.dealnote.messenger.model.Conversation;
 import biz.dealnote.messenger.model.DraftMessage;
 import biz.dealnote.messenger.model.FwdMessages;
 import biz.dealnote.messenger.model.LoadMoreState;
@@ -306,14 +308,24 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
     private void loadAllCachedData() {
         setCacheLoadingNow(true);
 
-        cacheLoadingDisposable.add(messagesInteractor
-                .getCachedPeerMessages(this.messagesOwnerId, this.getPeerId())
+        cacheLoadingDisposable.add(messagesInteractor.getConversation(messagesOwnerId, mPeer.getId(), Mode.ANY).singleOrError()
+                .zipWith(messagesInteractor.getCachedPeerMessages(messagesOwnerId, mPeer.getId()), Pair::create)
                 .compose(RxUtils.applySingleIOToMainSchedulers())
-                .subscribe(this::onCachedDataReceived, Throwable::printStackTrace));
+                .subscribe(this::onCachedDataReceived, ignore()));
     }
 
     private Integer getLastMessageIdInList() {
         return getData().size() > 0 ? getData().get(getData().size() - 1).getId() : null;
+    }
+
+    private Conversation conversation;
+
+    private void onCachedDataReceived(Pair<Conversation, List<Message>> data){
+        setCacheLoadingNow(false);
+
+        conversation = data.getFirst();
+        lastReadId.setIn(conversation.getInRead()).setOut(conversation.getOutRead());
+        onAllDataLoaded(data.getSecond(), false);
     }
 
     private void onCachedDataReceived(List<Message> messages) {
@@ -456,11 +468,7 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
             setupSendButtonState(newState, true);
         }
 
-        Message lastMessage = safeIsEmpty(getData()) ? null : getData().get(0);
-
-        if (nonNull(lastMessage) && !lastMessage.isOut() && !lastMessage.isRead()) {
-            readAllUnreadMessages();
-        }
+        readAllUnreadMessagesIfExists();
 
         mTextingNotifier.notifyAboutTyping(getPeerId());
     }
@@ -796,10 +804,10 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
 
         int index = indexOf(message.getId());
         if (index != -1) {
-            Message exist = getData().get(index);
-            if (exist.isRead()) {
-                message.setRead(true);
-            }
+            //Message exist = getData().get(index);
+            //if (exist.isRead()) {
+            //    message.setRead(true);
+            //}
 
             getData().remove(index);
         }
@@ -830,6 +838,18 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
     private void onLongpollMessagesRead(int accountId, int peerId, boolean out, int localId) {
         if (messagesOwnerId != accountId || getPeerId() != peerId) return;
 
+        if(nonNull(conversation)){
+            if(out){
+                conversation.setOutRead(localId);
+                lastReadId.setOut(localId);
+            } else {
+                conversation.setInRead(localId);
+                lastReadId.setIn(localId);
+            }
+        }
+
+        safeNotifyDataChanged();
+
         // у нас сообщения в списке от нового к старому
         // ......
         // 896325
@@ -839,7 +859,7 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
 
         //onLongpollMessagesRead, out: true, localId: 1004485, last: 1001210, first: 1004485
 
-        boolean hasChanges = false;
+        /*boolean hasChanges = false;
         for (Message message : getData()) {
             if (!message.isSent()) {
                 continue;
@@ -862,7 +882,7 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
 
         if (hasChanges) {
             safeNotifyDataChanged();
-        }
+        }*/
     }
 
     private void onMessageFlagSet(MessageFlagsSet action) {
@@ -910,10 +930,10 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         }
 
         boolean changed = false;
-        if (hasFlag(reset.getMask(), MessageFlag.UNREAD) && !message.isRead()) {
-            message.setRead(true);
-            changed = true;
-        }
+        //if (hasFlag(reset.getMask(), MessageFlag.UNREAD) && !message.isRead()) {
+        //    message.setRead(true);
+        //    changed = true;
+        //}
 
         if (hasFlag(reset.getMask(), MessageFlag.IMPORTANT) && message.isImportant()) {
             message.setImportant(false);
@@ -1071,25 +1091,19 @@ public class ChatPrensenter extends AbsMessageListPresenter<IChatView> {
         if (message.getStatus() == MessageStatus.ERROR) {
             getView().showErrorSendDialog(message);
         } else {
-            readAllUnreadMessages();
+            readAllUnreadMessagesIfExists();
         }
     }
 
-    private void readAllUnreadMessages() {
-        boolean has = false;
+    private void readAllUnreadMessagesIfExists() {
+        Message last = nonEmpty(getData()) ? getData().get(0) : null;
 
-        for (Message message : getData()) {
-            if (!message.isOut() && !message.isRead()) {
-                message.setRead(true);
-                has = true;
-            }
-        }
+        if (nonNull(last) && !last.isOut() && last.getId() > lastReadId.getIn()) {
+            lastReadId.setIn(last.getId());
 
-        if (has) {
             safeNotifyDataChanged();
-            final int peedId = getPeerId();
 
-            appendDisposable(messagesInteractor.markAsRead(messagesOwnerId, peedId)
+            appendDisposable(messagesInteractor.markAsRead(messagesOwnerId, mPeer.getId(), last.getId())
                     .compose(RxUtils.applyCompletableIOToMainSchedulers())
                     .subscribe(dummy(), t -> showError(getView(), t)));
         }

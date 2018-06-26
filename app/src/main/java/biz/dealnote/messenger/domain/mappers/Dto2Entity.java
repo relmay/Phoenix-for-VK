@@ -613,11 +613,14 @@ public class Dto2Entity {
         SimpleDialogEntity entity = new SimpleDialogEntity(dto.peer.id)
                 .setInRead(dto.inRead)
                 .setOutRead(dto.outRead)
-                .setLastMessageId(dto.lastMessageId)
                 .setUnreadCount(dto.unreadCount);
 
         if(nonNull(dto.settings)){
             entity.setTitle(dto.settings.title);
+
+            if(nonNull(dto.settings.pinnedMesage)){
+                entity.setPinned(buildMessageDbo(dto.settings.pinnedMesage));
+            }
 
             if(nonNull(dto.settings.photo)){
                 entity.setPhoto50(dto.settings.photo.photo50)
@@ -629,7 +632,7 @@ public class Dto2Entity {
         return entity;
     }
 
-    public static DialogEntity buildDialogDbo(VkApiDialog dto) {
+    public static DialogEntity dialog(VkApiDialog dto) {
         MessageEntity messageEntity = buildMessageDbo(dto.lastMessage);
 
         DialogEntity entity = new DialogEntity(messageEntity.getPeerId())
@@ -641,6 +644,10 @@ public class Dto2Entity {
 
         if(nonNull(dto.conversation.settings)){
             entity.setTitle(dto.conversation.settings.title);
+
+            if(nonNull(dto.conversation.settings.pinnedMesage)){
+                entity.setPinned(buildMessageDbo(dto.conversation.settings.pinnedMesage));
+            }
 
             if(nonNull(dto.conversation.settings.photo)){
                 entity.setPhoto50(dto.conversation.settings.photo.photo50)
@@ -866,7 +873,7 @@ public class Dto2Entity {
 
         MessageEntity entity = new MessageEntity(dto.id, dto.peer_id, dto.from_id)
                 .setDate(dto.date)
-                .setRead(dto.read_state)
+                //.setRead(dto.read_state)
                 .setOut(dto.out)
                 //.setTitle(dto.title)
                 .setBody(dto.body)

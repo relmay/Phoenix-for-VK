@@ -1,5 +1,7 @@
 package biz.dealnote.messenger.model;
 
+import static biz.dealnote.messenger.util.Utils.firstNonEmptyString;
+
 public class Conversation {
 
     private final int id;
@@ -14,16 +16,31 @@ public class Conversation {
 
     private String photo200;
 
+    /**
+     * ID of the last read incoming message.
+     */
     private int inRead;
 
+    /**
+     * ID of the last read outcoming message.
+     */
     private int outRead;
-
-    private int lastMessageId;
 
     private Owner interlocutor;
 
+    private Message pinned;
+
     public Conversation(int id) {
         this.id = id;
+    }
+
+    public Conversation setPinned(Message pinned) {
+        this.pinned = pinned;
+        return this;
+    }
+
+    public Message getPinned() {
+        return pinned;
     }
 
     public Conversation setInterlocutor(Owner interlocutor) {
@@ -102,12 +119,11 @@ public class Conversation {
         return this;
     }
 
-    public int getLastMessageId() {
-        return lastMessageId;
+    public String get100orSmallerAvatar(){
+        return firstNonEmptyString(photo100, photo50);
     }
 
-    public Conversation setLastMessageId(int lastMessageId) {
-        this.lastMessageId = lastMessageId;
-        return this;
+    public String getMaxSquareAvatar(){
+        return firstNonEmptyString(photo200, photo100, photo200);
     }
 }

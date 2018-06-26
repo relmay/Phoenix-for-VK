@@ -106,7 +106,6 @@ public class Dto2Model {
 
     public static Chat transform(VKApiChat chat) {
         return new Chat(chat.id)
-                .setAdminId(chat.admin_id)
                 .setPhoto50(chat.photo_50)
                 .setPhoto100(chat.photo_100)
                 .setPhoto200(chat.photo_200)
@@ -223,7 +222,7 @@ public class Dto2Model {
         message.out = update.outbox;
         message.important = update.important;
         message.deleted = update.deleted;
-        message.read_state = !update.unread;
+        //message.read_state = !update.unread;
         message.peer_id = update.peer_id;
         message.from_id = message.out ? accountUid : (Peer.isGroupChat(update.peer_id) ? update.from : update.peer_id);
         message.body = VKStringUtils.unescape(update.text);
@@ -258,6 +257,8 @@ public class Dto2Model {
         Dialog dialog = new Dialog()
                 .setPeerId(message.peer_id)
                 .setUnreadCount(dto.conversation.unreadCount)
+                .setInRead(dto.conversation.inRead)
+                .setOutRead(dto.conversation.outRead)
                 .setMessage(transform(accountId, message, bundle))
                 .setLastMessageId(message.id)
                 .setInterlocutor(interlocutor);
@@ -283,7 +284,7 @@ public class Dto2Model {
                 //.setTitle(message.title)
                 .setPeerId(message.peer_id)
                 .setSenderId(message.from_id)
-                .setRead(message.read_state)
+                //.setRead(message.read_state)
                 .setOut(message.out)
                 .setStatus(MessageStatus.SENT)
                 .setDate(message.date)

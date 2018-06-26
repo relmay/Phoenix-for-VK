@@ -7,6 +7,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import biz.dealnote.messenger.api.model.VKApiMessage;
+import biz.dealnote.messenger.longpoll.model.MessagesRead;
 import biz.dealnote.messenger.model.AbsModel;
 import biz.dealnote.messenger.model.AppChatUser;
 import biz.dealnote.messenger.model.Conversation;
@@ -24,6 +25,8 @@ import io.reactivex.Single;
  * phoenix
  */
 public interface IMessagesInteractor {
+    Completable handleMessagesRead(int accountId, @NonNull List<MessagesRead> reads);
+
     Flowable<Conversation> getConversation(int accountId, int peerId, @NonNull Mode mode);
 
     Completable edit(int accountId, @NonNull Message message, String body, @NonNull List<AbsModel> attachments, boolean keepForwardMessages);
@@ -106,5 +109,5 @@ public interface IMessagesInteractor {
 
     Single<Integer> createGroupChat(int accountId, Collection<Integer> users, String title);
 
-    Completable markAsRead(int accountId, int peerId);
+    Completable markAsRead(int accountId, int peerId, int toId);
 }
