@@ -13,6 +13,7 @@ import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import biz.dealnote.messenger.db.MapFunction;
 import biz.dealnote.messenger.db.interfaces.Cancelable;
 import biz.dealnote.messenger.db.interfaces.IStorage;

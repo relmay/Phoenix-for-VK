@@ -54,7 +54,7 @@ public class NotificationHelper {
      * @param mid      идентификатор сообщения
      * @param imgUrl   ссылка на аватар или изображение беседы
      */
-    private static void showNotification(Context context, int accountId, Bitmap img, String title, String body, int mid,
+    public static void showNotification(Context context, int accountId, Bitmap img, String title, String body, int mid,
                                          int peerId, long messageSentTime, String imgUrl) {
         boolean hideBody = Settings.get()
                 .security()

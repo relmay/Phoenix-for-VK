@@ -1,10 +1,9 @@
 package biz.dealnote.messenger.db.model.entity;
 
-import android.support.annotation.NonNull;
-
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import biz.dealnote.messenger.model.ChatAction;
 import biz.dealnote.messenger.model.MessageStatus;
 

@@ -96,7 +96,7 @@ public class FCMMessage {
         }
 
         NotificationHelper.showNotification(context, accountId, null, title, body, message_id,
-                sender_id, 0, google_sent_time, null);
+                sender_id, vk_time, null);
 
     }
 }
