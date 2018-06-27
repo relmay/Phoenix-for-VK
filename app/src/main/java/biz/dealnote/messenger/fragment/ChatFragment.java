@@ -17,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -91,7 +92,7 @@ public class ChatFragment extends PlaceSupportPresenterFragment<ChatPrensenter, 
     private static final int REQUEST_RECORD_PERMISSIONS = 15;
     private static final int REQUEST_EDIT_MESSAGE = 150;
 
-    private CompositeDisposable mDisposable = new CompositeDisposable();
+    private CompositeDisposable mDisposable;
 
     public static Bundle buildArgs(int accountId, int peerId, String title, String avaUrl) {
         Bundle bundle = new Bundle();
@@ -136,6 +137,7 @@ public class ChatFragment extends PlaceSupportPresenterFragment<ChatPrensenter, 
 
         ImageView ivBackground = root.findViewById(R.id.chat_background);
 
+        mDisposable = new CompositeDisposable();
         mDisposable.add(Observable.fromCallable(() -> CurrentTheme.getChatBackground(requireActivity()))
                 .compose(RxUtils.applyObservableIOToMainSchedulers())
                 .subscribe(ivBackground::setImageDrawable));
